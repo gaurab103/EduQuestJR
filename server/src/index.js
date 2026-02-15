@@ -24,22 +24,42 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/eduque
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
 const IS_VERCEL = process.env.VERCEL === '1';
 
+// Database connection (cached for serverless cold starts)
+let isConnected = false;
+async function connectDB() {
+  if (isConnected) return;
+  await mongoose.connect(MONGODB_URI);
+  isConnected = true;
+  await seedGames();
+  await seedAchievements();
+  await seedStickers();
+}
+
 // Middleware - CORS for production & dev
 app.use(cors({
   origin: (origin, cb) => {
-    // Allow no-origin requests (server-to-server, Postman, etc.)
     if (!origin) return cb(null, true);
-    // Allow any localhost in dev
     if (origin.startsWith('http://localhost')) return cb(null, true);
-    // Allow configured client URL
     if (origin === CLIENT_URL) return cb(null, true);
-    // Allow any *.vercel.app domain
     if (origin.endsWith('.vercel.app')) return cb(null, true);
     cb(null, false);
   },
   credentials: true,
 }));
 app.use(express.json());
+
+// Vercel serverless: connect to DB on every request (cached)
+if (IS_VERCEL) {
+  app.use(async (req, res, next) => {
+    try {
+      await connectDB();
+      next();
+    } catch (err) {
+      console.error('DB connection error:', err.message);
+      res.status(500).json({ message: 'Database connection failed' });
+    }
+  });
+}
 
 // Health check
 app.get('/api/health', (_, res) => {
@@ -57,7 +77,7 @@ app.use('/api/challenges', challengeRoutes);
 app.use('/api/subscription', subscriptionRoutes);
 app.use('/api/ai', aiRoutes);
 
-// PayPal webhook (no auth; body already parsed by express.json())
+// PayPal webhook
 app.post('/api/webhook/paypal', (req, res, next) => {
   subscriptionController.handleWebhook(req, res, next);
 });
@@ -68,30 +88,8 @@ app.use((_, res) => res.status(404).json({ message: 'Route not found' }));
 // Error handler
 app.use(errorHandler);
 
-// Database connection (cached for serverless)
-let isConnected = false;
-async function connectDB() {
-  if (isConnected) return;
-  await mongoose.connect(MONGODB_URI);
-  isConnected = true;
-  await seedGames();
-  await seedAchievements();
-  await seedStickers();
-}
-
-// For Vercel serverless: export the app and connect on first request
-if (IS_VERCEL) {
-  app.use(async (req, res, next) => {
-    try {
-      await connectDB();
-      next();
-    } catch (err) {
-      console.error('DB connection error:', err.message);
-      res.status(500).json({ message: 'Database connection failed' });
-    }
-  });
-} else {
-  // Traditional server startup
+// Traditional server startup (non-Vercel)
+if (!IS_VERCEL) {
   mongoose
     .connect(MONGODB_URI)
     .then(async () => {
