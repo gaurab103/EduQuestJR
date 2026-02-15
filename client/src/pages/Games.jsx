@@ -19,14 +19,14 @@ const CATEGORY_LABELS = {
 };
 
 const CATEGORY_IMAGES = {
-  cognitive: 'https://cdn-icons-png.flaticon.com/128/2906/2906491.png',
-  literacy: 'https://cdn-icons-png.flaticon.com/128/3145/3145765.png',
-  numeracy: 'https://cdn-icons-png.flaticon.com/128/3946/3946069.png',
-  creativity: 'https://cdn-icons-png.flaticon.com/128/3069/3069186.png',
-  sel: 'https://cdn-icons-png.flaticon.com/128/833/833472.png',
-  future_skills: 'https://cdn-icons-png.flaticon.com/128/4712/4712031.png',
-  motor: 'https://cdn-icons-png.flaticon.com/128/3039/3039386.png',
-  auditory: 'https://cdn-icons-png.flaticon.com/128/3039/3039386.png',
+  cognitive: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f9e0.svg',
+  literacy: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4da.svg',
+  numeracy: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4ca.svg',
+  creativity: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3a8.svg',
+  sel: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2764-fe0f.svg',
+  future_skills: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4bb.svg',
+  motor: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/270f-fe0f.svg',
+  auditory: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3b5.svg',
 };
 
 const DIFFICULTY_BADGE = {
@@ -153,7 +153,7 @@ export default function Games() {
 
       {childList.length === 0 && !loading && (
         <div className={styles.noChildBanner}>
-          <img src="https://cdn-icons-png.flaticon.com/128/3940/3940407.png" alt="" className={styles.noChildImg} />
+          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f9d2.svg" alt="" className={styles.noChildImg} />
           <div>
             <strong>No child profile found</strong>
             <p><Link to="/dashboard">Add a child profile</Link> on the dashboard to start playing games.</p>
@@ -167,7 +167,7 @@ export default function Games() {
 
       {dailyChallenge && selectedChildId && (
         <Link to={`/play/${dailyChallenge.game.slug}?child=${selectedChildId}`} className={styles.dailyChallenge}>
-          <img src="https://cdn-icons-png.flaticon.com/128/3064/3064197.png" alt="" className={styles.challengeImg} />
+          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3c6.svg" alt="" className={styles.challengeImg} />
           <div className={styles.challengeInfo}>
             <span className={styles.challengeLabel}>{dailyChallenge.label}</span>
             <span className={styles.challengeGame}>{dailyChallenge.game.title}</span>
@@ -180,7 +180,7 @@ export default function Games() {
 
       {aiRecommendation && selectedChildId && (
         <Link to={`/play/${aiRecommendation.slug}?child=${selectedChildId}`} className={styles.aiRecommendation}>
-          <img src="https://cdn-icons-png.flaticon.com/128/3940/3940403.png" alt="Buddy" className={styles.aiRecImg} />
+          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f43b.svg" alt="Buddy" className={styles.aiRecImg} />
           <span className={styles.aiLabel}>Buddy suggests:</span>
           <span className={styles.aiGame}>{aiRecommendation.title}</span>
           <span className={styles.challengeArrow}>→</span>
@@ -225,7 +225,7 @@ export default function Games() {
         <div className="loading-screen">Loading games...</div>
       ) : filtered.length === 0 ? (
         <div className={styles.empty}>
-          <img src="https://cdn-icons-png.flaticon.com/128/3176/3176298.png" alt="" style={{ width: 48, opacity: 0.5 }} />
+          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3ae.svg" alt="" style={{ width: 48, opacity: 0.5 }} />
           <p>No games found. Try a different filter or search.</p>
         </div>
       ) : (

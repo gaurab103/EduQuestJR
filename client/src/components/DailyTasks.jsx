@@ -80,7 +80,7 @@ export default function DailyTasks({ childId }) {
     <div className={styles.wrapper}>
       <div className={styles.header}>
         <h3 className={styles.title}>
-          <img src="https://cdn-icons-png.flaticon.com/128/3176/3176298.png" alt="" className={styles.titleIcon} />
+          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3af.svg" alt="" className={styles.titleIcon} />
           Daily Quests
         </h3>
         {allDone && <span className={styles.allDone}>All Done!</span>}

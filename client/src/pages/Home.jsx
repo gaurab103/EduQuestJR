@@ -3,30 +3,30 @@ import { useAuth } from '../context/AuthContext';
 import styles from './Home.module.css';
 
 const FEATURES = [
-  { icon: 'https://cdn-icons-png.flaticon.com/128/3176/3176298.png', title: 'Smart Learning', desc: '31+ games across 8 skill categories designed by early childhood experts' },
-  { icon: 'https://cdn-icons-png.flaticon.com/128/3222/3222683.png', title: '30 Levels Per Game', desc: 'Progressive difficulty from Meadow to Cosmos — grows with your child' },
-  { icon: 'https://cdn-icons-png.flaticon.com/128/3940/3940403.png', title: 'AI Buddy Friend', desc: 'Buddy the Bear chats, encourages, and adapts to your child\'s level' },
-  { icon: 'https://cdn-icons-png.flaticon.com/128/3064/3064197.png', title: 'Achievements & Stickers', desc: '25+ real cartoon stickers and 15 badges to collect and display' },
-  { icon: 'https://cdn-icons-png.flaticon.com/128/2906/2906206.png', title: 'Parent Analytics', desc: 'Detailed progress tracking with visual charts and AI-powered insights' },
-  { icon: 'https://cdn-icons-png.flaticon.com/128/3031/3031702.png', title: 'Motor & Audio Games', desc: 'Drawing, handwriting, and sound recognition for holistic development' },
+  { icon: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4da.svg', title: 'Smart Learning', desc: '31+ games across 8 skill categories designed by early childhood experts' },
+  { icon: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4ca.svg', title: '30 Levels Per Game', desc: 'Progressive difficulty from Meadow to Cosmos — grows with your child' },
+  { icon: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f43b.svg', title: 'AI Buddy Friend', desc: 'Buddy the Bear chats, encourages, and adapts to your child\'s level' },
+  { icon: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3c5.svg', title: 'Achievements & Stickers', desc: '25+ real cartoon stickers and 15 badges to collect and display' },
+  { icon: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4ca.svg', title: 'Parent Analytics', desc: 'Detailed progress tracking with visual charts and AI-powered insights' },
+  { icon: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/270f-fe0f.svg', title: 'Motor & Audio Games', desc: 'Drawing, handwriting, and sound recognition for holistic development' },
 ];
 
 const CATEGORIES = [
-  { img: 'https://cdn-icons-png.flaticon.com/128/2906/2906491.png', name: 'Cognitive', color: '#38bdf8', desc: 'Pattern recognition, memory, logic' },
-  { img: 'https://cdn-icons-png.flaticon.com/128/3145/3145765.png', name: 'Literacy', color: '#a78bfa', desc: 'Letters, phonics, rhyming, words' },
-  { img: 'https://cdn-icons-png.flaticon.com/128/3946/3946069.png', name: 'Numeracy', color: '#fb923c', desc: 'Counting, addition, subtraction' },
-  { img: 'https://cdn-icons-png.flaticon.com/128/3069/3069186.png', name: 'Creativity', color: '#f472b6', desc: 'Colors, drawing, imagination' },
-  { img: 'https://cdn-icons-png.flaticon.com/128/833/833472.png', name: 'Social & Emotional', color: '#4ade80', desc: 'Emotions, behavior, breathing' },
-  { img: 'https://cdn-icons-png.flaticon.com/128/4712/4712031.png', name: 'Future Skills', color: '#818cf8', desc: 'Coding basics and logic' },
-  { img: 'https://cdn-icons-png.flaticon.com/128/3039/3039386.png', name: 'Motor Skills', color: '#fbbf24', desc: 'Drawing, writing, motor' },
-  { img: 'https://cdn-icons-png.flaticon.com/128/3039/3039386.png', name: 'Auditory', color: '#f472b6', desc: 'Listening, sound recognition' },
+  { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f9e0.svg', name: 'Cognitive', color: '#38bdf8', desc: 'Pattern recognition, memory, logic' },
+  { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4da.svg', name: 'Literacy', color: '#a78bfa', desc: 'Letters, phonics, rhyming, words' },
+  { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4ca.svg', name: 'Numeracy', color: '#fb923c', desc: 'Counting, addition, subtraction' },
+  { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3a8.svg', name: 'Creativity', color: '#f472b6', desc: 'Colors, drawing, imagination' },
+  { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2764-fe0f.svg', name: 'Social & Emotional', color: '#4ade80', desc: 'Emotions, behavior, breathing' },
+  { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4bb.svg', name: 'Future Skills', color: '#818cf8', desc: 'Coding basics and logic' },
+  { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/270f-fe0f.svg', name: 'Motor Skills', color: '#fbbf24', desc: 'Drawing, writing, motor' },
+  { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3b5.svg', name: 'Auditory', color: '#f472b6', desc: 'Listening, sound recognition' },
 ];
 
 const STATS = [
-  { value: '31+', label: 'Learning Games', icon: 'https://cdn-icons-png.flaticon.com/128/3176/3176298.png' },
-  { value: '30', label: 'Levels Per Game', icon: 'https://cdn-icons-png.flaticon.com/128/3222/3222683.png' },
-  { value: '8', label: 'Skill Categories', icon: 'https://cdn-icons-png.flaticon.com/128/2906/2906491.png' },
-  { value: '25+', label: 'Stickers & Badges', icon: 'https://cdn-icons-png.flaticon.com/128/3159/3159066.png' },
+  { value: '31+', label: 'Learning Games', icon: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4da.svg' },
+  { value: '30', label: 'Levels Per Game', icon: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4ca.svg' },
+  { value: '8', label: 'Skill Categories', icon: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f9e0.svg' },
+  { value: '25+', label: 'Stickers & Badges', icon: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3c5.svg' },
 ];
 
 const TESTIMONIALS = [
@@ -45,22 +45,22 @@ export default function Home() {
         {/* Animated floating elements */}
         <div className={styles.heroBg}>
           <div className={styles.floater} style={{ top: '8%', left: '3%', animationDelay: '0s' }}>
-            <img src="https://cdn-icons-png.flaticon.com/128/3222/3222683.png" alt="" className={styles.floaterImg} />
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4ca.svg" alt="" className={styles.floaterImg} />
           </div>
           <div className={styles.floater} style={{ top: '15%', right: '5%', animationDelay: '1.2s' }}>
-            <img src="https://cdn-icons-png.flaticon.com/128/3031/3031702.png" alt="" className={styles.floaterImg} />
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/270f-fe0f.svg" alt="" className={styles.floaterImg} />
           </div>
           <div className={styles.floater} style={{ bottom: '20%', left: '8%', animationDelay: '2.4s' }}>
-            <img src="https://cdn-icons-png.flaticon.com/128/3069/3069186.png" alt="" className={styles.floaterImg} />
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3a8.svg" alt="" className={styles.floaterImg} />
           </div>
           <div className={styles.floater} style={{ bottom: '10%', right: '6%', animationDelay: '0.8s' }}>
-            <img src="https://cdn-icons-png.flaticon.com/128/3176/3176298.png" alt="" className={styles.floaterImg} />
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4da.svg" alt="" className={styles.floaterImg} />
           </div>
           <div className={styles.floater} style={{ top: '45%', left: '2%', animationDelay: '1.8s' }}>
-            <img src="https://cdn-icons-png.flaticon.com/128/3159/3159066.png" alt="" className={styles.floaterImg} />
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3c5.svg" alt="" className={styles.floaterImg} />
           </div>
           <div className={styles.floater} style={{ top: '40%', right: '3%', animationDelay: '3s' }}>
-            <img src="https://cdn-icons-png.flaticon.com/128/3940/3940403.png" alt="" className={styles.floaterImg} />
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f43b.svg" alt="" className={styles.floaterImg} />
           </div>
         </div>
 
@@ -71,7 +71,7 @@ export default function Home() {
           </div>
 
           <span className={styles.heroBadge}>
-            <img src="https://cdn-icons-png.flaticon.com/128/3222/3222683.png" alt="" className={styles.badgeIcon} />
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4ca.svg" alt="" className={styles.badgeIcon} />
             Ages 1-8 · Montessori-aligned · AI-Powered
           </span>
 
@@ -163,10 +163,10 @@ export default function Home() {
         <p className={styles.sectionSubtitle}>Getting started takes less than a minute</p>
         <div className={styles.stepsGrid}>
           {[
-            { num: '1', icon: 'https://cdn-icons-png.flaticon.com/128/3176/3176355.png', title: 'Create Account', desc: 'Sign up free and add your child\'s profile' },
-            { num: '2', icon: 'https://cdn-icons-png.flaticon.com/128/3176/3176298.png', title: 'Pick a Game', desc: 'Choose from 31+ learning games across 8 categories' },
-            { num: '3', icon: 'https://cdn-icons-png.flaticon.com/128/3222/3222683.png', title: 'Learn & Grow', desc: 'Progress through 30 levels, earn XP, coins, and stickers' },
-            { num: '4', icon: 'https://cdn-icons-png.flaticon.com/128/2906/2906206.png', title: 'Track Progress', desc: 'Parents get beautiful analytics and AI-powered tips' },
+            { num: '1', icon: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f9d1.svg', title: 'Create Account', desc: 'Sign up free and add your child\'s profile' },
+            { num: '2', icon: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4da.svg', title: 'Pick a Game', desc: 'Choose from 31+ learning games across 8 categories' },
+            { num: '3', icon: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4ca.svg', title: 'Learn & Grow', desc: 'Progress through 30 levels, earn XP, coins, and stickers' },
+            { num: '4', icon: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4ca.svg', title: 'Track Progress', desc: 'Parents get beautiful analytics and AI-powered tips' },
           ].map((step) => (
             <div key={step.num} className={styles.stepCard}>
               <span className={styles.stepNumber}>{step.num}</span>
@@ -203,12 +203,12 @@ export default function Home() {
         <h2 className={styles.sectionTitle}>Designed for Tiny Hands & Big Hearts</h2>
         <div className={styles.safetyGrid}>
           {[
-            { img: 'https://cdn-icons-png.flaticon.com/128/3176/3176355.png', title: 'Big Touch Targets', desc: 'All buttons 60-80px minimum for little fingers' },
-            { img: 'https://cdn-icons-png.flaticon.com/128/3069/3069186.png', title: 'Soft Pastel Colors', desc: 'Warm, calming palette gentle on young eyes' },
-            { img: 'https://cdn-icons-png.flaticon.com/128/833/833472.png', title: 'No Harsh Feedback', desc: 'Gentle encouragement, never punishment' },
-            { img: 'https://cdn-icons-png.flaticon.com/128/3039/3039386.png', title: 'Audio Instructions', desc: 'Voice-guided gameplay for pre-readers' },
-            { img: 'https://cdn-icons-png.flaticon.com/128/3064/3064155.png', title: 'Parent PIN Lock', desc: 'Settings protected behind a parent-only PIN' },
-            { img: 'https://cdn-icons-png.flaticon.com/128/854/854878.png', title: 'Mobile First', desc: 'Built for tablets and phones kids actually use' },
+            { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f44b.svg', title: 'Big Touch Targets', desc: 'All buttons 60-80px minimum for little fingers' },
+            { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3a8.svg', title: 'Soft Pastel Colors', desc: 'Warm, calming palette gentle on young eyes' },
+            { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2764-fe0f.svg', title: 'No Harsh Feedback', desc: 'Gentle encouragement, never punishment' },
+            { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3b5.svg', title: 'Audio Instructions', desc: 'Voice-guided gameplay for pre-readers' },
+            { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f512.svg', title: 'Parent PIN Lock', desc: 'Settings protected behind a parent-only PIN' },
+            { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4f1.svg', title: 'Mobile First', desc: 'Built for tablets and phones kids actually use' },
           ].map((s) => (
             <div key={s.title} className={styles.safetyItem}>
               <img src={s.img} alt="" className={styles.safetyImg} />

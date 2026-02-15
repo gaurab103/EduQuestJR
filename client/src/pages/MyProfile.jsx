@@ -75,7 +75,7 @@ export default function MyProfile() {
           <div className={styles.avatarBig}>{child.avatarConfig?.emoji || '🐻'}</div>
           <h1 className={styles.heroName}>{child.name}</h1>
           <div className={styles.heroLevel}>
-            <img src="https://cdn-icons-png.flaticon.com/128/3222/3222683.png" alt="" className={styles.heroLevelImg} />
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3af.svg" alt="" className={styles.heroLevelImg} />
             Level {child.level}
           </div>
 
@@ -101,7 +101,7 @@ export default function MyProfile() {
       {/* AI Buddy Greeting */}
       {aiGreeting && (
         <div className={styles.buddyGreeting}>
-          <img src="https://cdn-icons-png.flaticon.com/128/3940/3940403.png" alt="Buddy" className={styles.buddyImg} />
+          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f43b.svg" alt="Buddy" className={styles.buddyImg} />
           <div className={styles.speechBubble}>
             <p>{aiGreeting}</p>
           </div>
@@ -111,22 +111,22 @@ export default function MyProfile() {
       {/* Fun Stats */}
       <div className={styles.statsRow}>
         <div className={styles.statBubble} style={{ background: 'rgba(74, 222, 128, 0.15)', borderColor: '#4ade80' }}>
-          <img src="https://cdn-icons-png.flaticon.com/128/3222/3222683.png" alt="" className={styles.statBubbleImg} />
+          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3af.svg" alt="" className={styles.statBubbleImg} />
           <span className={styles.statBubbleValue}>{child.xp || 0}</span>
           <span className={styles.statBubbleLabel}>XP</span>
         </div>
         <div className={styles.statBubble} style={{ background: 'rgba(251, 191, 36, 0.15)', borderColor: '#fbbf24' }}>
-          <img src="https://cdn-icons-png.flaticon.com/128/2489/2489756.png" alt="" className={styles.statBubbleImg} />
+          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4b0.svg" alt="" className={styles.statBubbleImg} />
           <span className={styles.statBubbleValue}>{child.coins || 0}</span>
           <span className={styles.statBubbleLabel}>Coins</span>
         </div>
         <div className={styles.statBubble} style={{ background: 'rgba(56, 189, 248, 0.15)', borderColor: '#38bdf8' }}>
-          <img src="https://cdn-icons-png.flaticon.com/128/3176/3176298.png" alt="" className={styles.statBubbleImg} />
+          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3c5.svg" alt="" className={styles.statBubbleImg} />
           <span className={styles.statBubbleValue}>{badgeCount}</span>
           <span className={styles.statBubbleLabel}>Badges</span>
         </div>
         <div className={styles.statBubble} style={{ background: 'rgba(167, 139, 250, 0.15)', borderColor: '#a78bfa' }}>
-          <img src="https://cdn-icons-png.flaticon.com/128/3159/3159066.png" alt="" className={styles.statBubbleImg} />
+          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f48e.svg" alt="" className={styles.statBubbleImg} />
           <span className={styles.statBubbleValue}>{ownedCount}</span>
           <span className={styles.statBubbleLabel}>Stickers</span>
         </div>
@@ -146,15 +146,15 @@ export default function MyProfile() {
       {/* Big Fun Action Buttons */}
       <div className={styles.actionsGrid}>
         <Link to={`/games?child=${child._id}`} className={styles.actionCard} style={{ background: 'linear-gradient(135deg, #4ade80, #22c55e)' }}>
-          <img src="https://cdn-icons-png.flaticon.com/128/3176/3176298.png" alt="" className={styles.actionImg} />
+          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3ae.svg" alt="" className={styles.actionImg} />
           <span>Play Games!</span>
         </Link>
         <Link to={`/shop?child=${child._id}`} className={styles.actionCard} style={{ background: 'linear-gradient(135deg, #fbbf24, #f59e0b)' }}>
-          <img src="https://cdn-icons-png.flaticon.com/128/3159/3159066.png" alt="" className={styles.actionImg} />
+          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f381.svg" alt="" className={styles.actionImg} />
           <span>Sticker Shop</span>
         </Link>
         <Link to={`/map?child=${child._id}`} className={styles.actionCard} style={{ background: 'linear-gradient(135deg, #38bdf8, #0ea5e9)' }}>
-          <img src="https://cdn-icons-png.flaticon.com/128/854/854878.png" alt="" className={styles.actionImg} />
+          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f30d.svg" alt="" className={styles.actionImg} />
           <span>Adventure Map</span>
         </Link>
         <button
@@ -163,7 +163,7 @@ export default function MyProfile() {
           className={styles.actionCard}
           style={{ background: 'linear-gradient(135deg, #a78bfa, #7c3aed)' }}
         >
-          <img src="https://cdn-icons-png.flaticon.com/128/3940/3940403.png" alt="" className={styles.actionImg} />
+          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f43b.svg" alt="" className={styles.actionImg} />
           <span>Talk to Buddy!</span>
         </button>
       </div>
@@ -201,7 +201,7 @@ export default function MyProfile() {
           onClick={() => setChatOpen(true)}
           className={styles.buddyFab}
         >
-          <img src="https://cdn-icons-png.flaticon.com/128/3940/3940403.png" alt="Talk to Buddy" className={styles.buddyFabImg} />
+          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f43b.svg" alt="Talk to Buddy" className={styles.buddyFabImg} />
         </button>
       )}
     </div>

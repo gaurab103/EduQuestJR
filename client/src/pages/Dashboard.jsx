@@ -9,14 +9,14 @@ import styles from './Dashboard.module.css';
 
 // Category images for game cards
 const CATEGORY_IMAGES = {
-  cognitive: 'https://cdn-icons-png.flaticon.com/128/2906/2906491.png',
-  literacy: 'https://cdn-icons-png.flaticon.com/128/3145/3145765.png',
-  numeracy: 'https://cdn-icons-png.flaticon.com/128/3946/3946069.png',
-  creativity: 'https://cdn-icons-png.flaticon.com/128/3069/3069186.png',
-  sel: 'https://cdn-icons-png.flaticon.com/128/833/833472.png',
-  future_skills: 'https://cdn-icons-png.flaticon.com/128/4712/4712031.png',
-  motor: 'https://cdn-icons-png.flaticon.com/128/3039/3039386.png',
-  auditory: 'https://cdn-icons-png.flaticon.com/128/3039/3039386.png',
+  cognitive: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f9e0.svg',
+  literacy: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4da.svg',
+  numeracy: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4ca.svg',
+  creativity: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3a8.svg',
+  sel: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2764-fe0f.svg',
+  future_skills: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4bb.svg',
+  motor: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/270f-fe0f.svg',
+  auditory: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3b5.svg',
 };
 
 export default function Dashboard() {
@@ -114,7 +114,7 @@ export default function Dashboard() {
           </p>
           {aiTip && (
             <div className={styles.aiTipBanner}>
-              <img src="https://cdn-icons-png.flaticon.com/128/3940/3940403.png" alt="Buddy" className={styles.aiTipImg} />
+              <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f43b.svg" alt="Buddy" className={styles.aiTipImg} />
               <span className={styles.aiTipText}>{aiTip}</span>
             </div>
           )}
@@ -122,9 +122,9 @@ export default function Dashboard() {
         <div className={styles.welcomeRight}>
           <div className={styles.planBadge}>
             {isPremium ? (
-              <img src="https://cdn-icons-png.flaticon.com/128/3064/3064197.png" alt="" className={styles.planImg} />
+              <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3c5.svg" alt="" className={styles.planImg} />
             ) : (
-              <img src="https://cdn-icons-png.flaticon.com/128/3222/3222683.png" alt="" className={styles.planImg} />
+              <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4ca.svg" alt="" className={styles.planImg} />
             )}
             <div>
               <strong>{isPremium ? 'Premium' : 'Free Plan'}</strong>
@@ -138,32 +138,32 @@ export default function Dashboard() {
       {childList.length > 0 && (
         <div className={styles.overviewGrid}>
           <div className={styles.overviewCard} style={{ '--card-accent': '#38bdf8' }}>
-            <img src="https://cdn-icons-png.flaticon.com/128/3940/3940407.png" alt="" className={styles.overviewImg} />
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f46a.svg" alt="" className={styles.overviewImg} />
             <span className={styles.overviewValue}>{childList.length}</span>
             <span className={styles.overviewLabel}>Children</span>
           </div>
           <div className={styles.overviewCard} style={{ '--card-accent': '#fbbf24' }}>
-            <img src="https://cdn-icons-png.flaticon.com/128/3222/3222683.png" alt="" className={styles.overviewImg} />
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3af.svg" alt="" className={styles.overviewImg} />
             <span className={styles.overviewValue}>{totalXp.toLocaleString()}</span>
             <span className={styles.overviewLabel}>Total XP</span>
           </div>
           <div className={styles.overviewCard} style={{ '--card-accent': '#fb923c' }}>
-            <img src="https://cdn-icons-png.flaticon.com/128/2489/2489756.png" alt="" className={styles.overviewImg} />
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4b0.svg" alt="" className={styles.overviewImg} />
             <span className={styles.overviewValue}>{totalCoins.toLocaleString()}</span>
             <span className={styles.overviewLabel}>Coins</span>
           </div>
           <div className={styles.overviewCard} style={{ '--card-accent': '#f472b6' }}>
-            <img src="https://cdn-icons-png.flaticon.com/128/785/785116.png" alt="" className={styles.overviewImg} />
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f525.svg" alt="" className={styles.overviewImg} />
             <span className={styles.overviewValue}>{bestStreak}</span>
             <span className={styles.overviewLabel}>Best Streak</span>
           </div>
           <div className={styles.overviewCard} style={{ '--card-accent': '#4ade80' }}>
-            <img src="https://cdn-icons-png.flaticon.com/128/3176/3176298.png" alt="" className={styles.overviewImg} />
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4da.svg" alt="" className={styles.overviewImg} />
             <span className={styles.overviewValue}>{avgAccuracy}%</span>
             <span className={styles.overviewLabel}>Accuracy</span>
           </div>
           <div className={styles.overviewCard} style={{ '--card-accent': '#a78bfa' }}>
-            <img src="https://cdn-icons-png.flaticon.com/128/3064/3064197.png" alt="" className={styles.overviewImg} />
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3c5.svg" alt="" className={styles.overviewImg} />
             <span className={styles.overviewValue}>Lv {highestLevel}</span>
             <span className={styles.overviewLabel}>Highest</span>
           </div>
@@ -227,23 +227,23 @@ export default function Dashboard() {
                       {/* Stats as icon bubbles */}
                       <div className={styles.childStatsRow}>
                         <div className={styles.childStatBubble}>
-                          <img src="https://cdn-icons-png.flaticon.com/128/3222/3222683.png" alt="" className={styles.statMiniImg} />
+                          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3af.svg" alt="" className={styles.statMiniImg} />
                           <span>{c.xp || 0}</span>
                         </div>
                         <div className={styles.childStatBubble}>
-                          <img src="https://cdn-icons-png.flaticon.com/128/2489/2489756.png" alt="" className={styles.statMiniImg} />
+                          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4b0.svg" alt="" className={styles.statMiniImg} />
                           <span>{c.coins || 0}</span>
                         </div>
                         <div className={styles.childStatBubble}>
-                          <img src="https://cdn-icons-png.flaticon.com/128/3176/3176298.png" alt="" className={styles.statMiniImg} />
+                          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4da.svg" alt="" className={styles.statMiniImg} />
                           <span>{achievements}</span>
                         </div>
                         <div className={styles.childStatBubble}>
-                          <img src="https://cdn-icons-png.flaticon.com/128/3159/3159066.png" alt="" className={styles.statMiniImg} />
+                          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f48e.svg" alt="" className={styles.statMiniImg} />
                           <span>{stickers}</span>
                         </div>
                         <div className={styles.childStatBubble}>
-                          <img src="https://cdn-icons-png.flaticon.com/128/3064/3064155.png" alt="" className={styles.statMiniImg} />
+                          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3c5.svg" alt="" className={styles.statMiniImg} />
                           <span>{levelsCompleted}</span>
                         </div>
                       </div>
@@ -256,14 +256,14 @@ export default function Dashboard() {
                     {/* Action buttons */}
                     <div className={styles.childActions}>
                       <Link to={`/games?child=${c._id}`} className={styles.childActionPrimary}>
-                        <img src="https://cdn-icons-png.flaticon.com/128/3176/3176298.png" alt="" className={styles.actionBtnImg} />
+                        <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3ae.svg" alt="" className={styles.actionBtnImg} />
                         Play
                       </Link>
                       <Link to={`/analytics/${c._id}`} className={styles.childActionBtn}>
                         📊
                       </Link>
                       <Link to={`/shop?child=${c._id}`} className={styles.childActionBtn}>
-                        <img src="https://cdn-icons-png.flaticon.com/128/3159/3159066.png" alt="" className={styles.actionBtnImg} />
+                        <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f48e.svg" alt="" className={styles.actionBtnImg} />
                       </Link>
                       <Link to={`/child/${c._id}`} className={styles.childActionBtn}>
                         👤
@@ -334,7 +334,7 @@ export default function Dashboard() {
             {/* Skill bars */}
             <div className={styles.skillsCard}>
               <h3 className={styles.skillsTitle}>
-                <img src="https://cdn-icons-png.flaticon.com/128/3176/3176298.png" alt="" className={styles.skillsTitleImg} />
+                <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4da.svg" alt="" className={styles.skillsTitleImg} />
                 Skills Breakdown
               </h3>
               {(() => {
@@ -380,7 +380,7 @@ export default function Dashboard() {
             {/* Weekly summary */}
             <div className={styles.weeklySummaryCard}>
               <h3 className={styles.skillsTitle}>
-                <img src="https://cdn-icons-png.flaticon.com/128/2906/2906491.png" alt="" className={styles.skillsTitleImg} />
+                <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f9e0.svg" alt="" className={styles.skillsTitleImg} />
                 This Week
               </h3>
               <div className={styles.weeklyStats}>
@@ -458,23 +458,23 @@ export default function Dashboard() {
         <h2 className={styles.sectionTitle}>Quick Actions</h2>
         <div className={styles.quickActions}>
           <Link to="/games" className={styles.actionCard} style={{ background: 'linear-gradient(135deg, #38bdf8, #818cf8)' }}>
-            <img src="https://cdn-icons-png.flaticon.com/128/3176/3176298.png" alt="" className={styles.actionCardImg} />
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3ae.svg" alt="" className={styles.actionCardImg} />
             <span className={styles.actionLabel}>Play Games</span>
           </Link>
           <Link to="/map" className={styles.actionCard} style={{ background: 'linear-gradient(135deg, #4ade80, #38bdf8)' }}>
-            <img src="https://cdn-icons-png.flaticon.com/128/854/854878.png" alt="" className={styles.actionCardImg} />
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f30d.svg" alt="" className={styles.actionCardImg} />
             <span className={styles.actionLabel}>Adventure Map</span>
           </Link>
           <Link to="/shop" className={styles.actionCard} style={{ background: 'linear-gradient(135deg, #fbbf24, #fb923c)' }}>
-            <img src="https://cdn-icons-png.flaticon.com/128/3159/3159066.png" alt="" className={styles.actionCardImg} />
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f381.svg" alt="" className={styles.actionCardImg} />
             <span className={styles.actionLabel}>Sticker Shop</span>
           </Link>
           <Link to="/subscription" className={styles.actionCard} style={{ background: 'linear-gradient(135deg, #a78bfa, #f472b6)' }}>
-            <img src="https://cdn-icons-png.flaticon.com/128/3064/3064197.png" alt="" className={styles.actionCardImg} />
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3c5.svg" alt="" className={styles.actionCardImg} />
             <span className={styles.actionLabel}>Premium</span>
           </Link>
           <Link to="/settings" className={styles.actionCard} style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}>
-            <img src="https://cdn-icons-png.flaticon.com/128/2906/2906206.png" alt="" className={styles.actionCardImg} />
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4ca.svg" alt="" className={styles.actionCardImg} />
             <span className={styles.actionLabel}>Settings</span>
           </Link>
         </div>

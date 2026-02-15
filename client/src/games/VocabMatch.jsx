@@ -9,14 +9,14 @@ import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import styles from './GameCommon.module.css';
 
 const VOCAB_EASY = [
-  { word: 'Big', def: 'Very large in size', img: 'https://cdn-icons-png.flaticon.com/128/3069/3069172.png' },
-  { word: 'Fast', def: 'Moves quickly', img: 'https://cdn-icons-png.flaticon.com/128/2961/2961950.png' },
-  { word: 'Happy', def: 'Feeling glad and joyful', img: 'https://cdn-icons-png.flaticon.com/128/742/742751.png' },
-  { word: 'Hot', def: 'Very warm temperature', img: 'https://cdn-icons-png.flaticon.com/128/869/869869.png' },
-  { word: 'Cold', def: 'Very low temperature', img: 'https://cdn-icons-png.flaticon.com/128/2469/2469350.png' },
-  { word: 'Small', def: 'Tiny in size', img: 'https://cdn-icons-png.flaticon.com/128/3069/3069186.png' },
-  { word: 'Loud', def: 'Makes a big sound', img: 'https://cdn-icons-png.flaticon.com/128/3039/3039386.png' },
-  { word: 'Soft', def: 'Gentle to touch', img: 'https://cdn-icons-png.flaticon.com/128/3159/3159066.png' },
+  { word: 'Big', def: 'Very large in size', img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f418.svg' },
+  { word: 'Fast', def: 'Moves quickly', img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f680.svg' },
+  { word: 'Happy', def: 'Feeling glad and joyful', img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f600.svg' },
+  { word: 'Hot', def: 'Very warm temperature', img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f525.svg' },
+  { word: 'Cold', def: 'Very low temperature', img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2744-fe0f.svg' },
+  { word: 'Small', def: 'Tiny in size', img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f42d.svg' },
+  { word: 'Loud', def: 'Makes a big sound', img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f941.svg' },
+  { word: 'Soft', def: 'Gentle to touch', img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2601-fe0f.svg' },
 ];
 
 const VOCAB_MEDIUM = [

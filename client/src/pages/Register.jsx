@@ -70,7 +70,7 @@ export default function Register() {
         <div className={styles.card}>
           <img src="/logo.png" alt="EduQuestJr" className={styles.authLogo} />
           <div className={styles.authMascot}>
-            <img src="https://cdn-icons-png.flaticon.com/128/3940/3940403.png" alt="Buddy" className={styles.authMascotImg} />
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f43b.svg" alt="Buddy" className={styles.authMascotImg} />
           </div>
           <h1 className={styles.title}>Check your email!</h1>
           <p className={styles.subtitle}>

@@ -77,7 +77,7 @@ export default function BuddyChat({ childId, childName, isOpen, onClose }) {
         onClick={() => setIsMinimized(false)}
       >
         <img
-          src="https://cdn-icons-png.flaticon.com/128/3940/3940403.png"
+          src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f43b.svg"
           alt="Buddy"
           className={styles.miniAvatar}
         />
@@ -92,7 +92,7 @@ export default function BuddyChat({ childId, childName, isOpen, onClose }) {
         {/* Header */}
         <div className={styles.header}>
           <img
-            src="https://cdn-icons-png.flaticon.com/128/3940/3940403.png"
+            src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f43b.svg"
             alt="Buddy"
             className={styles.headerAvatar}
           />
@@ -129,7 +129,7 @@ export default function BuddyChat({ childId, childName, isOpen, onClose }) {
             >
               {msg.role === 'assistant' && (
                 <img
-                  src="https://cdn-icons-png.flaticon.com/128/3940/3940403.png"
+                  src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f43b.svg"
                   alt=""
                   className={styles.msgAvatar}
                 />
@@ -142,7 +142,7 @@ export default function BuddyChat({ childId, childName, isOpen, onClose }) {
           {loading && (
             <div className={`${styles.message} ${styles.buddyMsg}`}>
               <img
-                src="https://cdn-icons-png.flaticon.com/128/3940/3940403.png"
+                src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f43b.svg"
                 alt=""
                 className={styles.msgAvatar}
               />

@@ -145,7 +145,7 @@ export default function ChildProfile() {
         {aiGreeting && (
           <div className={styles.aiGreeting}>
             <img
-              src="https://cdn-icons-png.flaticon.com/128/3940/3940403.png"
+              src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f43b.svg"
               alt="Buddy"
               className={styles.mascotImg}
             />
@@ -157,27 +157,27 @@ export default function ChildProfile() {
       {/* Stats */}
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
-          <img src="https://cdn-icons-png.flaticon.com/128/3222/3222683.png" alt="" className={styles.statImg} />
+          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3af.svg" alt="" className={styles.statImg} />
           <span className={styles.statValue}>{child.xp || 0}</span>
           <span className={styles.statLabel}>Total XP</span>
         </div>
         <div className={styles.statCard}>
-          <img src="https://cdn-icons-png.flaticon.com/128/2489/2489756.png" alt="" className={styles.statImg} />
+          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4b0.svg" alt="" className={styles.statImg} />
           <span className={styles.statValue}>{child.coins || 0}</span>
           <span className={styles.statLabel}>Coins</span>
         </div>
         <div className={styles.statCard}>
-          <img src="https://cdn-icons-png.flaticon.com/128/3176/3176298.png" alt="" className={styles.statImg} />
+          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3c5.svg" alt="" className={styles.statImg} />
           <span className={styles.statValue}>{earnedCount}</span>
           <span className={styles.statLabel}>Badges</span>
         </div>
         <div className={styles.statCard}>
-          <img src="https://cdn-icons-png.flaticon.com/128/3159/3159066.png" alt="" className={styles.statImg} />
+          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f48e.svg" alt="" className={styles.statImg} />
           <span className={styles.statValue}>{ownedStickerCount}</span>
           <span className={styles.statLabel}>Stickers</span>
         </div>
         <div className={styles.statCard}>
-          <img src="https://cdn-icons-png.flaticon.com/128/3064/3064155.png" alt="" className={styles.statImg} />
+          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3c5.svg" alt="" className={styles.statImg} />
           <span className={styles.statValue}>{completedLevelsCount}</span>
           <span className={styles.statLabel}>Levels Done</span>
         </div>
