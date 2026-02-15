@@ -1,0 +1,252 @@
+.page {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0.5rem 0;
+}
+
+.back {
+  font-weight: 700;
+  color: var(--primary);
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.summaryCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 0.5rem;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  text-align: center;
+}
+
+.summaryValue {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.summaryLabel {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.section {
+  margin-bottom: 2rem;
+}
+
+.sectionTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* Bar chart */
+.barChart {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 120px;
+  padding: 0.5rem 0;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  padding: 1rem 0.5rem 0.5rem;
+}
+
+.barCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.bar {
+  width: 100%;
+  max-width: 28px;
+  background: linear-gradient(180deg, var(--primary), var(--primary-soft));
+  border-radius: 4px 4px 0 0;
+  min-height: 2px;
+  position: relative;
+  transition: height 0.3s ease;
+}
+
+.barValue {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.barLabel {
+  font-size: 0.55rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  white-space: nowrap;
+}
+
+/* Category bars */
+.catList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.catItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.catLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.catBar {
+  height: 10px;
+  background: rgba(0,0,0,0.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.catFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--success), var(--primary));
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.catValue {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Top games */
+.topList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.topItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--card-bg);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-soft);
+}
+
+.topRank {
+  font-weight: 800;
+  color: var(--accent);
+  min-width: 28px;
+}
+
+.topName {
+  flex: 1;
+  font-weight: 700;
+}
+
+.topCount {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Accuracy trend */
+.trendChart {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  height: 100px;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  padding: 1rem;
+}
+
+.trendCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.trendBar {
+  width: 100%;
+  max-width: 32px;
+  background: linear-gradient(180deg, var(--success), var(--success-soft));
+  border-radius: 4px 4px 0 0;
+  min-height: 2px;
+  transition: height 0.3s ease;
+}
+
+.trendValue {
+  font-size: 0.65rem;
+  font-weight: 700;
+  margin-top: 4px;
+  color: var(--text-muted);
+}
+
+/* Recent games */
+.recentList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.recentItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1rem;
+  background: var(--card-bg);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-soft);
+}
+
+.recentTitle { flex: 1; font-weight: 700; font-size: 0.9rem; }
+.recentScore { font-size: 0.8rem; color: var(--text-muted); }
+.recentDate { font-size: 0.75rem; color: var(--text-muted); }
+
+@media (max-width: 480px) {
+  .summaryGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .barChart {
+    height: 80px;
+  }
+  .barLabel {
+    display: none;
+  }
+  .recentItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+  }
+}

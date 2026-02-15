@@ -1,0 +1,430 @@
+.page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0.5rem 0 2rem;
+  animation: fadeUp 0.4s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.back {
+  font-weight: 700;
+  color: var(--primary);
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+/* ── Profile Card ── */
+.profileCard {
+  background: var(--card-bg);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  border: 2px solid rgba(56, 189, 248, 0.1);
+}
+
+.profileTop {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.avatarWrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.avatar {
+  font-size: 3.5rem;
+  line-height: 1;
+  display: block;
+}
+
+.levelBadge {
+  position: absolute;
+  bottom: -4px;
+  right: -6px;
+  background: linear-gradient(135deg, var(--primary), #818cf8);
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 900;
+  padding: 0.15rem 0.4rem;
+  border-radius: 999px;
+  border: 2px solid white;
+}
+
+.profileInfo { flex: 1; }
+
+.name {
+  font-size: 1.5rem;
+  font-weight: 900;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.meta {
+  color: var(--text-muted);
+  margin: 0.1rem 0;
+  font-size: 0.9rem;
+}
+
+.equippedRow {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+  align-items: center;
+}
+
+.equippedSticker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s;
+}
+
+.equippedSticker:hover {
+  transform: scale(1.2);
+}
+
+.equippedImg {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.15));
+}
+
+.streakBadge {
+  padding: 0.4rem 0.75rem;
+  background: linear-gradient(135deg, rgba(251, 146, 60, 0.15), rgba(251, 191, 36, 0.1));
+  border: 2px solid rgba(251, 146, 60, 0.25);
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* ── AI greeting ── */
+.aiGreeting {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 1rem;
+  padding: 0.65rem 0.85rem;
+  background: linear-gradient(135deg, rgba(254, 243, 199, 0.6), rgba(253, 230, 138, 0.3));
+  border-radius: 14px;
+  border: 2px solid rgba(251, 191, 36, 0.2);
+}
+
+.mascotImg {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.mascotMini {
+  font-size: 1.75rem;
+  flex-shrink: 0;
+}
+
+.greetingText {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+  font-style: italic;
+}
+
+/* ── Stats ── */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.statCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.65rem 0.3rem;
+  background: var(--card-bg);
+  border-radius: 14px;
+  box-shadow: var(--shadow-soft);
+}
+
+.statImg {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.1));
+}
+
+.statIcon { font-size: 1.25rem; }
+.statValue { font-size: 1.1rem; font-weight: 900; }
+.statLabel { font-size: 0.6rem; color: var(--text-muted); font-weight: 700; text-align: center; }
+
+/* ── XP Bar ── */
+.xpBar {
+  position: relative;
+  height: 12px;
+  background: rgba(0,0,0,0.06);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+
+.xpFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border-radius: 999px;
+  transition: width 0.5s ease;
+}
+
+.xpLabel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: 800;
+}
+
+/* ── Actions ── */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.actionPrimary {
+  padding: 0.6rem 1.1rem;
+  background: linear-gradient(135deg, var(--primary), #818cf8);
+  color: white;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 0.88rem;
+  text-decoration: none;
+  transition: transform 0.15s;
+}
+
+.actionPrimary:hover { color: white; text-decoration: none; transform: scale(1.02); }
+
+.actionBtn {
+  padding: 0.6rem 0.9rem;
+  background: var(--card-bg);
+  border: 2px solid #e5e7eb;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--text);
+  text-decoration: none;
+  min-height: auto;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+}
+
+.actionBtn:hover {
+  border-color: var(--primary);
+  text-decoration: none;
+  color: var(--text);
+  transform: scale(1.02);
+}
+
+/* ── Edit Section ── */
+.editSection {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: var(--shadow);
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.editSection h3 { margin: 0; font-size: 1.1rem; }
+
+.editInput {
+  padding: 0.6rem 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.editActions { display: flex; gap: 0.5rem; }
+
+.saveBtn {
+  padding: 0.6rem 1.25rem;
+  background: var(--primary);
+  color: white;
+  font-weight: 700;
+  border-radius: 10px;
+  min-height: auto;
+}
+
+.deleteBtn {
+  padding: 0.6rem 1.25rem;
+  background: var(--coral-pink);
+  color: white;
+  font-weight: 700;
+  border-radius: 10px;
+  min-height: auto;
+}
+
+/* ── Section ── */
+.section {
+  margin-bottom: 2rem;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.sectionTitle {
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.emptySection {
+  text-align: center;
+  padding: 2rem;
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: var(--shadow-soft);
+  color: var(--text-muted);
+}
+
+.emptySection p { margin: 0.35rem 0; }
+
+/* ── Game List ── */
+.gameList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.gameItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
+}
+
+.gameItemLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.gameAccBadge {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: 0.72rem;
+  flex-shrink: 0;
+}
+
+.gameTitle {
+  display: block;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.gameMeta {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.gameDate {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* ======= PERFORMANCE OVERVIEW ======= */
+.perfGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.65rem;
+}
+
+.perfCard {
+  background: var(--card-bg);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.5rem;
+  text-align: center;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.15s;
+}
+
+.perfCard:hover {
+  transform: translateY(-2px);
+}
+
+.perfCategory {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+}
+
+.perfCircle {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 0.3rem;
+}
+
+.perfSvg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.perfPct {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: var(--text);
+}
+
+.perfCount {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+@media (max-width: 480px) {
+  .statsGrid { grid-template-columns: repeat(3, 1fr); }
+  .profileTop { flex-wrap: wrap; }
+  .actions { flex-direction: column; }
+  .actionPrimary, .actionBtn { width: 100%; text-align: center; }
+  .perfGrid { grid-template-columns: repeat(3, 1fr); }
+}

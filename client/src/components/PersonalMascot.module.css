@@ -1,0 +1,84 @@
+.mascot {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.06), rgba(139, 92, 246, 0.04));
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+  animation: slideIn 0.5s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.compact {
+  padding: 0.6rem 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+.mascotBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  flex-shrink: 0;
+}
+
+.mascotEmoji {
+  font-size: 2.5rem;
+  animation: mascotBob 3s ease-in-out infinite;
+}
+
+.compact .mascotEmoji {
+  font-size: 1.75rem;
+}
+
+@keyframes mascotBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.mascotName {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.speechBubble {
+  position: relative;
+  background: var(--card-bg);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.85rem;
+  box-shadow: var(--shadow-soft);
+  flex: 1;
+}
+
+.speechBubble::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 12px;
+  width: 12px;
+  height: 12px;
+  background: var(--card-bg);
+  transform: rotate(45deg);
+  box-shadow: -2px 2px 4px rgba(0,0,0,0.05);
+}
+
+.speechText {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+  position: relative;
+  z-index: 1;
+}
+
+.compact .speechText {
+  font-size: 0.82rem;
+}

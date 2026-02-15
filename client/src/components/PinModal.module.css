@@ -1,0 +1,75 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 2rem;
+  max-width: 320px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.input {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  font-size: 1.5rem;
+  letter-spacing: 0.5em;
+  text-align: center;
+  border: 3px solid var(--sky-blue);
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.5rem;
+}
+
+.error {
+  color: var(--coral-pink);
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.submit,
+.cancel {
+  flex: 1;
+  padding: 0.9rem 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.submit {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: white;
+}
+
+.cancel {
+  background: var(--card-bg);
+  border: 3px solid var(--sky-blue);
+  color: var(--text);
+}

@@ -1,0 +1,328 @@
+.page {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0 0 5rem;
+  animation: fadeUp 0.4s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Hero Card ── */
+.heroCard {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+}
+
+.heroBg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #fef3c7, #fce7f3, #e0e7ff);
+  z-index: 0;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem 1.5rem;
+  text-align: center;
+}
+
+.avatarBig {
+  font-size: 4.5rem;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+}
+
+.heroName {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--text);
+  margin: 0 0 0.25rem;
+}
+
+.heroLevel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255,255,255,0.8);
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 0.9rem;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.heroLevelImg {
+  width: 20px;
+  height: 20px;
+}
+
+.equippedRow {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0.5rem 0;
+}
+
+.equippedSticker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.equippedImg {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+
+.streakBadge {
+  display: inline-block;
+  padding: 0.35rem 0.85rem;
+  background: rgba(255,255,255,0.85);
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #f59e0b;
+}
+
+/* ── Buddy Greeting ── */
+.buddyGreeting {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+  padding: 0 0.25rem;
+}
+
+.buddyImg {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.1));
+}
+
+.speechBubble {
+  background: white;
+  border: 2px solid rgba(251, 191, 36, 0.3);
+  border-radius: 14px 14px 14px 4px;
+  padding: 0.65rem 0.85rem;
+  flex: 1;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.speechBubble p {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+/* ── Stats Row ── */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.statBubble {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  padding: 0.7rem 0.3rem;
+  border-radius: 16px;
+  border: 2px solid;
+  text-align: center;
+}
+
+.statBubbleImg {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.statBubbleValue {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: var(--text);
+}
+
+.statBubbleLabel {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* ── XP Section ── */
+.xpSection {
+  margin-bottom: 1.25rem;
+  padding: 0 0.25rem;
+}
+
+.xpInfo {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.xpTrack {
+  height: 14px;
+  background: rgba(0,0,0,0.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.xpFill {
+  height: 100%;
+  background: linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa);
+  border-radius: 999px;
+  transition: width 0.5s ease;
+}
+
+/* ── Actions Grid ── */
+.actionsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.65rem;
+  margin-bottom: 1.5rem;
+}
+
+.actionCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 1.1rem 0.5rem;
+  border-radius: 18px;
+  color: white;
+  font-weight: 900;
+  font-size: 0.9rem;
+  text-decoration: none;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  transition: transform 0.15s;
+  border: none;
+  cursor: pointer;
+  min-height: auto;
+}
+
+.actionCard:hover {
+  transform: scale(1.03);
+  color: white;
+  text-decoration: none;
+}
+
+.actionCard:active {
+  transform: scale(0.97);
+}
+
+.actionImg {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)) brightness(0) invert(1);
+}
+
+/* ── Recent Section ── */
+.recentSection {
+  background: white;
+  border-radius: 18px;
+  padding: 1rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 900;
+  margin: 0 0 0.6rem;
+}
+
+.recentItem {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+
+.recentItem:last-child { border-bottom: none; }
+
+.recentAcc {
+  font-size: 0.9rem;
+  font-weight: 900;
+  width: 42px;
+  text-align: right;
+}
+
+.recentTitle {
+  flex: 1;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.recentScore {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* ── Floating Buddy ── */
+.buddyFab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  border: 3px solid white;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  transition: transform 0.2s;
+  padding: 0;
+  min-height: auto;
+  animation: fabBounce 3s ease infinite;
+}
+
+.buddyFab:hover { transform: scale(1.1); }
+
+.buddyFabImg {
+  width: 32px;
+  height: 32px;
+}
+
+@keyframes fabBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@media (max-width: 480px) {
+  .statsRow { grid-template-columns: repeat(2, 1fr); }
+  .actionsGrid { grid-template-columns: repeat(2, 1fr); }
+  .heroName { font-size: 1.5rem; }
+  .avatarBig { font-size: 3.5rem; }
+}

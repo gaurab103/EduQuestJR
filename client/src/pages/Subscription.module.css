@@ -1,0 +1,441 @@
+.page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 1rem 0 3rem;
+  animation: fadeUp 0.4s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══ HEADER ═══ */
+.header {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.headerLogo {
+  height: 64px;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 0.75rem;
+  filter: drop-shadow(0 3px 10px rgba(0,0,0,0.1));
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 900;
+  margin-bottom: 0.3rem;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* ═══ FEATURES ═══ */
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem 1rem;
+  margin-bottom: 1.75rem;
+  padding: 1.25rem;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  border: 1px solid var(--card-border);
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.featureIcon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.featureText {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* ═══ PLAN GRID ═══ */
+.planGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.planCard {
+  position: relative;
+  padding: 1.25rem 0.75rem;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  text-align: center;
+}
+
+.planCard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.planSelected {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+}
+
+.planPopular {
+  border-color: var(--accent);
+}
+
+.planPopular.planSelected {
+  border-color: var(--primary);
+}
+
+.planSave {
+  position: absolute;
+  top: -10px;
+  right: 8px;
+  padding: 0.2rem 0.55rem;
+  background: linear-gradient(135deg, var(--accent), #f472b6);
+  color: white;
+  font-size: 0.68rem;
+  font-weight: 800;
+  border-radius: 999px;
+}
+
+.planPopularTag {
+  position: absolute;
+  top: -10px;
+  left: 8px;
+  padding: 0.2rem 0.55rem;
+  background: linear-gradient(135deg, var(--primary), #818cf8);
+  color: white;
+  font-size: 0.68rem;
+  font-weight: 800;
+  border-radius: 999px;
+}
+
+.planName {
+  font-size: 0.95rem;
+  font-weight: 800;
+  margin-bottom: 0.2rem;
+}
+
+.planPrice {
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+
+.planPeriod {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* ═══ CONTINUE BUTTON ═══ */
+.continueBtn {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--primary), #818cf8);
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 800;
+  border-radius: var(--radius-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-bottom: 1rem;
+}
+
+.continueBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(56, 189, 248, 0.35);
+}
+
+/* ═══ PAYMENT SECTION ═══ */
+.paymentSection {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  border: 1px solid var(--card-border);
+  margin-bottom: 1rem;
+}
+
+.paymentTitle {
+  font-size: 1.15rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 0.2rem;
+}
+
+.paymentSubtitle {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+}
+
+.buttonsWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.paymentOption {
+  padding: 0.75rem;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  background: var(--input-bg);
+}
+
+.paymentLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+
+.paymentLogo {
+  height: 22px;
+  width: auto;
+  object-fit: contain;
+}
+
+.cardIcons {
+  font-size: 1.2rem;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--card-border);
+}
+
+.loadingButtons {
+  text-align: center;
+  padding: 1.5rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.errorMsg {
+  text-align: center;
+  padding: 1rem;
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.backBtn {
+  width: 100%;
+  padding: 0.65rem;
+  background: transparent;
+  border: 1px solid var(--card-border);
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin-top: 0.75rem;
+  min-height: auto;
+}
+
+.backBtn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* ═══ ERROR ═══ */
+.errorBanner {
+  padding: 0.75rem 1rem;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #dc2626;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* ═══ SECURITY + GUARANTEE ═══ */
+.securityNote {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.guarantee {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  border: 1px solid var(--card-border);
+}
+
+.guaranteeImg {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.guarantee strong {
+  display: block;
+  font-size: 0.88rem;
+  margin-bottom: 0.1rem;
+}
+
+.guarantee p {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* ═══ PREMIUM CARD (already subscribed) ═══ */
+.premiumCard {
+  text-align: center;
+  padding: 2.5rem 2rem;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  border: 2px solid rgba(251, 191, 36, 0.3);
+}
+
+.premiumLogo {
+  height: 56px;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 0.75rem;
+  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.1));
+}
+
+.premiumBadge {
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  background: linear-gradient(135deg, #fbbf24, #fb923c);
+  color: white;
+  font-weight: 800;
+  border-radius: 999px;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.premiumCard h2 {
+  font-size: 1.4rem;
+  font-weight: 900;
+  margin-bottom: 0.3rem;
+}
+
+.premiumCard p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.expiry {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+}
+
+.playNowBtn {
+  margin-top: 1.25rem;
+  padding: 0.85rem 2rem;
+  background: linear-gradient(135deg, var(--primary), #818cf8);
+  color: white;
+  font-size: 1.05rem;
+  font-weight: 800;
+  border-radius: var(--radius-sm);
+}
+
+/* ═══ SUCCESS CARD ═══ */
+.successCard {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+}
+
+.successIcon {
+  font-size: 3.5rem;
+  margin-bottom: 0.5rem;
+  animation: bounce 0.6s ease;
+}
+
+@keyframes bounce {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.successCard h2 {
+  font-size: 1.5rem;
+  font-weight: 900;
+  margin-bottom: 0.3rem;
+}
+
+.successCard p {
+  color: var(--text-muted);
+}
+
+.successLogo {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+  margin: 1rem 0;
+  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.1));
+}
+
+.redirecting {
+  font-size: 0.82rem;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 600px) {
+  .planGrid {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+  .planCard {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    text-align: left;
+  }
+  .planName { margin-bottom: 0; }
+  .planPrice { font-size: 1.25rem; }
+  .featuresGrid { grid-template-columns: 1fr; }
+  .headerLogo { height: 48px; }
+}

@@ -1,0 +1,15 @@
+export function requirePremium(req, res, next) {
+  if (!req.user) {
+    return res.status(401).json({ message: 'Authentication required' });
+  }
+  const status = req.user.subscriptionStatus;
+  const expiry = req.user.subscriptionExpiry;
+  const isActive = status === 'active' && (!expiry || new Date(expiry) > new Date());
+  if (!isActive) {
+    return res.status(403).json({
+      message: 'Premium subscription required',
+      code: 'PREMIUM_REQUIRED',
+    });
+  }
+  next();
+}

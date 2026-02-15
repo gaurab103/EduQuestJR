@@ -1,0 +1,148 @@
+.wrapper {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 800;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.titleIcon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.allDone {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--success);
+  background: rgba(74, 222, 128, 0.12);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+
+.taskList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.task {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 0.75rem;
+  background: rgba(0,0,0,0.02);
+  border-radius: var(--radius-sm);
+  transition: opacity 0.15s;
+}
+
+.taskDone {
+  opacity: 0.6;
+}
+
+.taskIcon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.taskInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.taskTitle {
+  display: block;
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+
+.taskDesc {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.progressBar {
+  height: 5px;
+  background: rgba(0,0,0,0.06);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 0.35rem;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--success));
+  border-radius: 999px;
+  transition: width 0.3s;
+}
+
+.taskProgress {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.taskRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.taskReward {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.claimBtn {
+  padding: 0.3rem 0.7rem;
+  background: linear-gradient(135deg, var(--success), #4ade80);
+  color: white;
+  font-weight: 800;
+  font-size: 0.78rem;
+  min-height: auto;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% { transform: scale(1.05); }
+}
+
+.claimed {
+  font-size: 0.72rem;
+  color: var(--success);
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .task {
+    flex-wrap: wrap;
+  }
+  .taskRight {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 0.25rem;
+  }
+}

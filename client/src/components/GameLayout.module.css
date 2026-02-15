@@ -1,0 +1,142 @@
+.wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.back {
+  font-weight: 700;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.back:hover {
+  text-decoration: underline;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.childName {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.level,
+.xp,
+.coins {
+  padding: 0.25rem 0.5rem;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.levelBar {
+  width: 80px;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.levelBarFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.timeLeft {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.gameHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.gameHeaderTop {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.gameTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.hintBtn {
+  padding: 0.4rem 0.8rem;
+  background: rgba(139, 92, 246, 0.2);
+  color: var(--primary);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.hintBtn:hover:not(:disabled) {
+  background: rgba(139, 92, 246, 0.3);
+}
+
+.hintText {
+  text-align: center;
+  color: var(--primary);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Remove muteBtn styles since mute is in header now */
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+  .wrapper {
+    padding: 0.75rem;
+  }
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .meta {
+    gap: 0.5rem;
+    font-size: 0.85rem;
+  }
+  .gameTitle {
+    font-size: 1.25rem;
+  }
+  .hintBtn {
+    min-height: 48px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+}
