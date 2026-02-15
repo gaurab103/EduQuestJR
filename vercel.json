@@ -19,6 +19,18 @@
       "dest": "server/src/index.js"
     },
     {
+      "src": "/assets/(.*)",
+      "dest": "client/assets/$1"
+    },
+    {
+      "src": "/logo\\.png",
+      "dest": "client/logo.png"
+    },
+    {
+      "src": "/favicon\\.svg",
+      "dest": "client/favicon.svg"
+    },
+    {
       "handle": "filesystem"
     },
     {
