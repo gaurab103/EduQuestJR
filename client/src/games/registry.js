@@ -2,7 +2,6 @@ import ShapeMatchQuest from './ShapeMatchQuest';
 import CountingAdventure from './CountingAdventure';
 import PatternMaster from './PatternMaster';
 import MemoryFlipArena from './MemoryFlipArena';
-import AlphabetTracingWorld from './AlphabetTracingWorld';
 import AdditionIsland from './AdditionIsland';
 import EmotionDetective from './EmotionDetective';
 import OddOneOut from './OddOneOut';
@@ -37,6 +36,13 @@ import MoneyMath from './MoneyMath';
 import ScienceSort from './ScienceSort';
 import VocabMatch from './VocabMatch';
 import SpellingBee from './SpellingBee';
+// New games
+import AlphabetBubblePop from './AlphabetBubblePop';
+import LetterSoundMatch from './LetterSoundMatch';
+import ABCOrder from './ABCOrder';
+import StorySequence from './StorySequence';
+import AnimalQuiz from './AnimalQuiz';
+import ColorMixing from './ColorMixing';
 
 export const GAME_COMPONENTS = {
   'shape-match-quest': ShapeMatchQuest,
@@ -44,7 +50,6 @@ export const GAME_COMPONENTS = {
   'pattern-master': PatternMaster,
   'memory-flip-arena': MemoryFlipArena,
   'odd-one-out': OddOneOut,
-  'alphabet-tracing-world': AlphabetTracingWorld,
   'addition-island': AdditionIsland,
   'emotion-detective': EmotionDetective,
   'tap-the-color': TapTheColor,
@@ -67,11 +72,11 @@ export const GAME_COMPONENTS = {
   'color-inside-shape': ColorInsideShape,
   'stack-blocks': StackBlocks,
   'fill-missing-letter': FillMissingLetter,
-  // New motor & audio games
+  // Motor & audio games
   'drawing-canvas': DrawingCanvas,
   'handwriting-hero': HandwritingHero,
   'sound-safari': SoundSafari,
-  // New academic growth games
+  // Academic growth games
   'word-scramble': WordScramble,
   'sight-words': SightWords,
   'number-bonds': NumberBonds,
@@ -80,15 +85,23 @@ export const GAME_COMPONENTS = {
   'science-sort': ScienceSort,
   'vocab-match': VocabMatch,
   'spelling-bee': SpellingBee,
-  // Aliases for seeded games that reuse components
-  'phonics-blending-lab': CountingAdventure,
+  // New alphabet & learning games
+  'alphabet-bubble-pop': AlphabetBubblePop,
+  'letter-sound-match': LetterSoundMatch,
+  'abc-order': ABCOrder,
+  'story-sequence': StorySequence,
+  'animal-quiz': AnimalQuiz,
+  'color-mixing': ColorMixing,
+  // Aliases for seeded premium games that reuse components
+  'alphabet-tracing-world': LetterSoundMatch,  // redirected from old tracing game
+  'phonics-blending-lab': SpellingBee,
   'digital-coloring-book': DrawingCanvas,
   'logic-grid-junior': OddOneOut,
   'word-builder-pro': FillMissingLetter,
   'music-rhythm-tap': SoundSafari,
   'maze-explorer': SequenceBuilder,
   'shape-geometry-lab': ShapeMatchQuest,
-  'story-builder-studio': EmotionDetective,
-  'fraction-fun-land': CountingAdventure,
+  'story-builder-studio': StorySequence,
+  'fraction-fun-land': NumberBonds,
   'multiplication-treasure': AdditionIsland,
 };

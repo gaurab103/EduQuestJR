@@ -1,29 +1,24 @@
 /**
- * World-class kid-friendly level selector with:
- * - Lock system (must complete previous level)
- * - Premium gates (levels 16+ need subscription)
- * - Beautiful cartoon-style world map
- * - AI suggested level
- * - Visual progress tracking with stars
+ * Kid-friendly level selector — simple, colorful, one-tap to play!
+ * Big buttons, clear stars, gentle lock indicators.
  */
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { ai as aiApi } from '../api/client';
-import { WORLDS, getDifficultyLabel, getDifficultyColor } from '../games/levelConfig';
 import { useAudio } from '../context/AudioContext';
 import styles from './LevelSelector.module.css';
 
 const PREMIUM_LEVEL = 16;
+const TOTAL_LEVELS = 30;
 
-// World theme images from free CDN
-const WORLD_IMAGES = {
-  1: 'https://cdn-icons-png.flaticon.com/128/3069/3069186.png', // meadow
-  2: 'https://cdn-icons-png.flaticon.com/128/2906/2906206.png', // forest
-  3: 'https://cdn-icons-png.flaticon.com/128/2906/2906491.png', // mountain
-  4: 'https://cdn-icons-png.flaticon.com/128/1146/1146869.png', // sky
-  5: 'https://cdn-icons-png.flaticon.com/128/3222/3222683.png', // stars
-  6: 'https://cdn-icons-png.flaticon.com/128/3031/3031702.png', // cosmos
-};
+const LEVEL_COLORS = [
+  '#4ade80','#38bdf8','#a78bfa','#fb923c','#f472b6',
+  '#34d399','#60a5fa','#c084fc','#fbbf24','#f87171',
+  '#2dd4bf','#818cf8','#e879f9','#facc15','#fb7185',
+  '#fbbf24','#f59e0b','#eab308','#d97706','#b45309',
+  '#a78bfa','#8b5cf6','#7c3aed','#6d28d9','#5b21b6',
+  '#f472b6','#ec4899','#db2777','#be185d','#9d174d',
+];
 
 function getStarsForAccuracy(acc) {
   if (acc >= 90) return 3;
@@ -37,245 +32,120 @@ export default function LevelSelector({ gameTitle, gameSlug, onSelect, completed
   const navigate = useNavigate();
   const childId = searchParams.get('child');
   const { playClick, speak } = useAudio();
-  const [expandedWorld, setExpandedWorld] = useState(1);
   const [suggestedLevel, setSuggestedLevel] = useState(null);
-  const [suggestReason, setSuggestReason] = useState('');
   const [premiumPopup, setPremiumPopup] = useState(false);
 
-  // Build completed level lookup
   const completedMap = {};
-  (completedLevels || []).forEach(cl => {
-    completedMap[cl.level] = cl;
-  });
-
-  // Highest completed level for unlocking
+  (completedLevels || []).forEach(cl => { completedMap[cl.level] = cl; });
   const highestCompleted = completedLevels.length > 0
     ? Math.max(...completedLevels.map(cl => cl.level))
     : 0;
+  const nextLevel = highestCompleted + 1;
+  const completedCount = completedLevels.length;
+  const progressPct = Math.round((completedCount / TOTAL_LEVELS) * 100);
 
   useEffect(() => {
     if (!childId || !gameSlug) return;
     aiApi.suggestedLevel(childId, gameSlug)
-      .then(res => {
-        if (res.suggestedLevel) {
-          setSuggestedLevel(res.suggestedLevel);
-          setSuggestReason(res.reason || '');
-          const world = WORLDS.find(w => res.suggestedLevel >= w.levels[0] && res.suggestedLevel <= w.levels[w.levels.length - 1]);
-          if (world) setExpandedWorld(world.id);
-        }
-      })
+      .then(res => { if (res.suggestedLevel) setSuggestedLevel(res.suggestedLevel); })
       .catch(() => {});
   }, [childId, gameSlug]);
 
-  // Auto-expand the world with the next unlocked level
-  useEffect(() => {
-    const nextLevel = highestCompleted + 1;
-    const world = WORLDS.find(w => nextLevel >= w.levels[0] && nextLevel <= w.levels[w.levels.length - 1]);
-    if (world && !suggestedLevel) setExpandedWorld(world.id);
-  }, [highestCompleted, suggestedLevel]);
+  useEffect(() => { speak(`Pick a level!`); }, []);
 
-  useEffect(() => {
-    speak(`Choose your level for ${gameTitle}!`);
-  }, []);
+  function isUnlocked(lvl) { return lvl === 1 || completedMap[lvl - 1] !== undefined; }
+  function isPremLocked(lvl) { return lvl >= PREMIUM_LEVEL && !isPremium; }
 
-  function isLevelUnlocked(lvl) {
-    if (lvl === 1) return true;
-    return completedMap[lvl - 1] !== undefined;
-  }
-
-  function isLevelPremiumLocked(lvl) {
-    return lvl >= PREMIUM_LEVEL && !isPremium;
-  }
-
-  function handleLevelClick(lvl) {
+  function handleClick(lvl) {
     playClick();
-    if (isLevelPremiumLocked(lvl)) {
-      setPremiumPopup(true);
-      return;
-    }
-    if (!isLevelUnlocked(lvl)) {
-      speak(`Complete level ${lvl - 1} first!`);
-      return;
-    }
+    if (isPremLocked(lvl)) { setPremiumPopup(true); return; }
+    if (!isUnlocked(lvl)) { speak(`Finish level ${lvl - 1} first!`); return; }
     onSelect(lvl);
   }
 
-  // Overall progress
-  const totalLevels = 30;
-  const completedCount = completedLevels.length;
-  const progressPct = Math.round((completedCount / totalLevels) * 100);
+  // Quick-play: start the next unlocked level
+  function handleQuickPlay() {
+    playClick();
+    const lvl = suggestedLevel && isUnlocked(suggestedLevel) && !isPremLocked(suggestedLevel)
+      ? suggestedLevel : nextLevel;
+    if (isPremLocked(lvl)) { setPremiumPopup(true); return; }
+    if (isUnlocked(lvl)) onSelect(lvl);
+  }
 
   return (
-    <div className={styles.wrapper}>
-      {/* Game title with cartoon banner */}
-      <div className={styles.banner}>
-        <img src="https://cdn-icons-png.flaticon.com/128/3176/3176298.png" alt="" className={styles.bannerIcon} />
-        <div>
-          <h2 className={styles.title}>{gameTitle}</h2>
-          <p className={styles.subtitle}>Choose your adventure level!</p>
-        </div>
-      </div>
-
-      {/* Progress bar */}
-      <div className={styles.progressSection}>
-        <div className={styles.progressInfo}>
-          <span>🏆 {completedCount}/{totalLevels} levels</span>
-          <span className={styles.progressPct}>{progressPct}%</span>
-        </div>
-        <div className={styles.progressBar}>
-          <div className={styles.progressFill} style={{ width: `${progressPct}%` }} />
-        </div>
-      </div>
-
-      {/* AI suggestion */}
-      {suggestedLevel && isLevelUnlocked(suggestedLevel) && !isLevelPremiumLocked(suggestedLevel) && (
-        <button
-          type="button"
-          onClick={() => handleLevelClick(suggestedLevel)}
-          className={styles.suggestedBtn}
-        >
-          <img src="https://cdn-icons-png.flaticon.com/128/3940/3940403.png" alt="Buddy" className={styles.suggestedImg} />
-          <div className={styles.suggestedInfo}>
-            <span className={styles.suggestedLabel}>Buddy says: Try Level {suggestedLevel}!</span>
-            <span className={styles.suggestedReason}>{suggestReason}</span>
+    <div className={styles.wrap}>
+      {/* Header */}
+      <div className={styles.header}>
+        <h2 className={styles.gameTitle}>{gameTitle}</h2>
+        <div className={styles.progressRow}>
+          <div className={styles.progressTrack}>
+            <div className={styles.progressFill} style={{ width: `${progressPct}%` }} />
           </div>
-          <span className={styles.suggestedArrow}>▶</span>
-        </button>
-      )}
-
-      {/* Reward hint */}
-      <div className={styles.rewardInfo}>
-        <span className={styles.rewardHint}>
-          💡 Higher levels = more XP & coins! First daily game = 2× bonus!
-        </span>
+          <span className={styles.progressLabel}>{completedCount}/{TOTAL_LEVELS}</span>
+        </div>
       </div>
 
-      {/* World sections */}
-      <div className={styles.worlds}>
-        {WORLDS.map((world) => {
-          const isExpanded = expandedWorld === world.id;
-          const worldCompleted = world.levels.filter(l => completedMap[l]).length;
-          const allPremiumLocked = world.levels[0] >= PREMIUM_LEVEL && !isPremium;
+      {/* Big Play Button */}
+      <button type="button" onClick={handleQuickPlay} className={styles.playBtn}>
+        <span className={styles.playIcon}>▶</span>
+        <span className={styles.playText}>
+          {completedCount === 0 ? 'Start Playing!' : `Play Level ${Math.min(nextLevel, TOTAL_LEVELS)}`}
+        </span>
+      </button>
+
+      {/* Level Grid */}
+      <div className={styles.gridTitle}>Or pick a level:</div>
+      <div className={styles.grid}>
+        {Array.from({ length: TOTAL_LEVELS }, (_, i) => i + 1).map(lvl => {
+          const done = completedMap[lvl];
+          const unlocked = isUnlocked(lvl);
+          const premLocked = isPremLocked(lvl);
+          const isNext = lvl === nextLevel && !premLocked;
+          const stars = done ? getStarsForAccuracy(done.bestAccuracy) : 0;
+          const color = LEVEL_COLORS[lvl - 1] || '#a78bfa';
+
+          let cls = styles.lvl;
+          if (done) cls += ` ${styles.lvlDone}`;
+          if (!unlocked && !premLocked) cls += ` ${styles.lvlLocked}`;
+          if (premLocked) cls += ` ${styles.lvlPrem}`;
+          if (isNext) cls += ` ${styles.lvlNext}`;
 
           return (
-            <div key={world.id} className={`${styles.worldSection} ${allPremiumLocked ? styles.worldPremium : ''}`}>
-              <button
-                type="button"
-                onClick={() => {
-                  playClick();
-                  setExpandedWorld(isExpanded ? null : world.id);
-                }}
-                className={styles.worldHeader}
-                style={{ '--world-color': world.color }}
-              >
-                <img src={WORLD_IMAGES[world.id]} alt="" className={styles.worldImg} />
-                <div className={styles.worldInfo}>
-                  <span className={styles.worldName}>{world.name}</span>
-                  <span className={styles.worldMeta}>
-                    {worldCompleted}/{world.levels.length} ⭐
-                    {' · '}
-                    <span style={{ color: getDifficultyColor(world.levels[0]) }}>
-                      {getDifficultyLabel(world.levels[0])}
-                    </span>
-                  </span>
-                </div>
-                {allPremiumLocked && (
-                  <span className={styles.premiumTag}>
-                    <img src="https://cdn-icons-png.flaticon.com/128/3064/3064197.png" alt="" className={styles.crownIcon} />
-                    PRO
-                  </span>
-                )}
-                <span className={styles.worldArrow}>{isExpanded ? '▼' : '▶'}</span>
-              </button>
-
-              {isExpanded && (
-                <div className={styles.levelGrid}>
-                  {world.levels.map((lvl) => {
-                    const completed = completedMap[lvl];
-                    const unlocked = isLevelUnlocked(lvl);
-                    const premLocked = isLevelPremiumLocked(lvl);
-                    const isSuggested = lvl === suggestedLevel;
-                    const stars = completed ? getStarsForAccuracy(completed.bestAccuracy) : 0;
-
-                    let btnClass = styles.levelBtn;
-                    if (completed) btnClass += ` ${styles.levelCompleted}`;
-                    if (!unlocked) btnClass += ` ${styles.levelLocked}`;
-                    if (premLocked) btnClass += ` ${styles.levelPremiumLocked}`;
-                    if (isSuggested && unlocked) btnClass += ` ${styles.levelSuggested}`;
-
-                    return (
-                      <button
-                        key={lvl}
-                        type="button"
-                        onClick={() => handleLevelClick(lvl)}
-                        className={btnClass}
-                        style={{ '--level-color': world.color }}
-                        disabled={false}
-                      >
-                        {/* Lock / Premium overlay */}
-                        {(!unlocked || premLocked) && (
-                          <span className={styles.lockOverlay}>
-                            {premLocked
-                              ? <img src="https://cdn-icons-png.flaticon.com/128/3064/3064197.png" alt="Premium" className={styles.lockIcon} />
-                              : <img src="https://cdn-icons-png.flaticon.com/128/3064/3064155.png" alt="Locked" className={styles.lockIcon} />
-                            }
-                          </span>
-                        )}
-
-                        {/* Level number */}
-                        <span className={styles.levelNum}>{lvl}</span>
-
-                        {/* Stars for completed */}
-                        {completed && (
-                          <div className={styles.starRow}>
-                            {[1, 2, 3].map(s => (
-                              <span key={s} className={s <= stars ? styles.starFull : styles.starEmpty}>
-                                {s <= stars ? '⭐' : '☆'}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* Suggested badge */}
-                        {isSuggested && unlocked && !premLocked && (
-                          <span className={styles.suggestedDot}>🐻</span>
-                        )}
-
-                        {/* Replay badge */}
-                        {completed && (
-                          <span className={styles.replayBadge}>✓</span>
-                        )}
-                      </button>
-                    );
-                  })}
+            <button
+              key={lvl}
+              type="button"
+              onClick={() => handleClick(lvl)}
+              className={cls}
+              style={{ '--lc': color }}
+            >
+              {(!unlocked || premLocked) && (
+                <span className={styles.lock}>{premLocked ? '👑' : '🔒'}</span>
+              )}
+              <span className={styles.num}>{lvl}</span>
+              {done && (
+                <div className={styles.stars}>
+                  {'★'.repeat(stars)}{'☆'.repeat(3 - stars)}
                 </div>
               )}
-            </div>
+              {isNext && <span className={styles.nextDot} />}
+            </button>
           );
         })}
       </div>
 
       {/* Premium popup */}
       {premiumPopup && (
-        <div className={styles.premiumOverlay} onClick={() => setPremiumPopup(false)}>
-          <div className={styles.premiumModal} onClick={e => e.stopPropagation()}>
-            <img src="https://cdn-icons-png.flaticon.com/128/3064/3064197.png" alt="" className={styles.premiumCrown} />
-            <h3 className={styles.premiumTitle}>Premium Adventure!</h3>
-            <p className={styles.premiumText}>
-              Levels 16 and above are for Premium members! Unlock all 30 levels, unlimited play time, and exclusive games!
+        <div className={styles.overlay} onClick={() => setPremiumPopup(false)}>
+          <div className={styles.modal} onClick={e => e.stopPropagation()}>
+            <div className={styles.modalIcon}>👑</div>
+            <h3 className={styles.modalTitle}>Premium Levels!</h3>
+            <p className={styles.modalText}>
+              Levels 16–30 are for Premium members! Get unlimited play, all games, and more!
             </p>
-            <button
-              type="button"
-              onClick={() => navigate('/subscription')}
-              className={styles.premiumBtn}
-            >
-              🌟 Upgrade to Premium
+            <button type="button" onClick={() => navigate('/subscription')} className={styles.upgradeBtn}>
+              Upgrade to Premium
             </button>
-            <button
-              type="button"
-              onClick={() => setPremiumPopup(false)}
-              className={styles.premiumClose}
-            >
+            <button type="button" onClick={() => setPremiumPopup(false)} className={styles.laterBtn}>
               Maybe later
             </button>
           </div>

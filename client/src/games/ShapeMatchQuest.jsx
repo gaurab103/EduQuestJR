@@ -2,17 +2,18 @@ import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { ai as aiApi } from '../api/client';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
+import { GameImage, SHAPE_IMAGES, OBJECT_IMAGES } from './gameImages';
 import styles from './GameCommon.module.css';
 
 const SHAPES = [
-  { id: 'circle', label: 'Circle', emoji: '⭕' },
-  { id: 'square', label: 'Square', emoji: '🟦' },
-  { id: 'triangle', label: 'Triangle', emoji: '🔺' },
-  { id: 'star', label: 'Star', emoji: '⭐' },
-  { id: 'heart', label: 'Heart', emoji: '❤️' },
-  { id: 'diamond', label: 'Diamond', emoji: '💎' },
-  { id: 'moon', label: 'Moon', emoji: '🌙' },
-  { id: 'sun', label: 'Sun', emoji: '☀️' },
+  { id: 'circle', label: 'Circle', emoji: '⭕', img: SHAPE_IMAGES.circle },
+  { id: 'square', label: 'Square', emoji: '🟦', img: SHAPE_IMAGES.square },
+  { id: 'triangle', label: 'Triangle', emoji: '🔺', img: SHAPE_IMAGES.triangle },
+  { id: 'star', label: 'Star', emoji: '⭐', img: SHAPE_IMAGES.star },
+  { id: 'heart', label: 'Heart', emoji: '❤️', img: SHAPE_IMAGES.heart },
+  { id: 'diamond', label: 'Diamond', emoji: '💎', img: SHAPE_IMAGES.diamond },
+  { id: 'moon', label: 'Moon', emoji: '🌙', img: OBJECT_IMAGES.moon },
+  { id: 'sun', label: 'Sun', emoji: '☀️', img: OBJECT_IMAGES.sun },
 ];
 
 export default function ShapeMatchQuest({ onComplete, level = 1, childName, childAge }) {
@@ -92,7 +93,7 @@ export default function ShapeMatchQuest({ onComplete, level = 1, childName, chil
 
       <div className={styles.targetArea}>
         <span className={styles.targetEmoji} aria-label={target?.label}>
-          {target?.emoji}
+          {target?.img ? <GameImage src={target.img} alt={target.label} size={72} /> : target?.emoji}
         </span>
       </div>
 
@@ -145,7 +146,9 @@ export default function ShapeMatchQuest({ onComplete, level = 1, childName, chil
             }`}
             disabled={feedback !== null}
           >
-            <span className={styles.choiceEmoji}>{c.emoji}</span>
+            <span className={styles.choiceEmoji}>
+              {c.img ? <GameImage src={c.img} alt={c.label} size={48} /> : c.emoji}
+            </span>
           </button>
         ))}
       </div>
