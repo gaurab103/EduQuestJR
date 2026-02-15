@@ -5,6 +5,7 @@
  */
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useTeaching } from './useTeaching';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import styles from './GameCommon.module.css';
 
@@ -13,10 +14,10 @@ const VOCAB_EASY = [
   { word: 'Fast', def: 'Moves quickly', img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f680.svg' },
   { word: 'Happy', def: 'Feeling glad and joyful', img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f600.svg' },
   { word: 'Hot', def: 'Very warm temperature', img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f525.svg' },
-  { word: 'Cold', def: 'Very low temperature', img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2744-fe0f.svg' },
+  { word: 'Cold', def: 'Very low temperature', img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2744.svg' },
   { word: 'Small', def: 'Tiny in size', img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f42d.svg' },
   { word: 'Loud', def: 'Makes a big sound', img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f941.svg' },
-  { word: 'Soft', def: 'Gentle to touch', img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2601-fe0f.svg' },
+  { word: 'Soft', def: 'Gentle to touch', img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2601.svg' },
 ];
 
 const VOCAB_MEDIUM = [
@@ -49,6 +50,7 @@ function getPool(level) {
 
 export default function VocabMatch({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(null);
   const [options, setOptions] = useState([]);
@@ -79,8 +81,8 @@ export default function VocabMatch({ onComplete, level = 1, childName }) {
     setOptions([...opts].sort(() => Math.random() - 0.5));
     setFeedback(null);
     setSelected(null);
-    speak(`Which word means: ${t.def}`);
-  }, [round]);
+    readQuestion('Which word means: ' + t.def + '?');
+  }, [round, readQuestion]);
 
   function handleChoice(word) {
     if (feedback) return;
@@ -92,10 +94,12 @@ export default function VocabMatch({ onComplete, level = 1, childName }) {
       setCorrect(c => c + 1);
       setFeedback({ type: 'correct', text: `Correct! "${target.word}" means ${target.def}` });
       playSuccess();
+      teachAfterAnswer(true, { type: 'word', answer: word, correctAnswer: target.word, extra: '"' + target.word + '" means ' + target.def });
     } else {
       setWrong(w => w + 1);
       setFeedback({ type: 'wrong', text: `Wrong! The answer is "${target.word}".` });
       playWrong();
+      teachAfterAnswer(false, { type: 'word', answer: word, correctAnswer: target.word, extra: '"' + target.word + '" means ' + target.def });
     }
     setTimeout(() => setRound(r => r + 1), delay);
   }

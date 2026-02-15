@@ -43,6 +43,15 @@ import ABCOrder from './ABCOrder';
 import StorySequence from './StorySequence';
 import AnimalQuiz from './AnimalQuiz';
 import ColorMixing from './ColorMixing';
+// EduQuestJr 8 new games
+import MazeRunner from './MazeRunner';
+import BodyParts from './BodyParts';
+import WeatherLearn from './WeatherLearn';
+import MusicalNotes from './MusicalNotes';
+import DotConnect from './DotConnect';
+import EmotionMatch from './EmotionMatch';
+import TimeSorter from './TimeSorter';
+import PlantGrower from './PlantGrower';
 
 export const GAME_COMPONENTS = {
   'shape-match-quest': ShapeMatchQuest,
@@ -92,6 +101,15 @@ export const GAME_COMPONENTS = {
   'story-sequence': StorySequence,
   'animal-quiz': AnimalQuiz,
   'color-mixing': ColorMixing,
+  // EduQuestJr 8 new games
+  'maze-runner': MazeRunner,
+  'body-parts': BodyParts,
+  'weather-learn': WeatherLearn,
+  'musical-notes': MusicalNotes,
+  'dot-connect': DotConnect,
+  'emotion-match': EmotionMatch,
+  'time-sorter': TimeSorter,
+  'plant-grower': PlantGrower,
   // Aliases for seeded premium games that reuse components
   'alphabet-tracing-world': LetterSoundMatch,  // redirected from old tracing game
   'phonics-blending-lab': SpellingBee,

@@ -6,6 +6,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { getRounds, getFeedbackDelay } from './levelConfig';
+import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
 
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -26,7 +27,8 @@ function getMinPoints(level) {
 }
 
 export default function TraceLetters({ onComplete, level = 1, childName }) {
-  const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
+  const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [letter, setLetter] = useState('');
   const [score, setScore] = useState(0);
@@ -92,9 +94,9 @@ export default function TraceLetters({ onComplete, level = 1, childName }) {
 
   useEffect(() => {
     if (letter) {
-      speak(`Trace the letter ${letter}!`);
+      readQuestion(`Trace the letter ${letter}!`);
     }
-  }, [letter]);
+  }, [letter, readQuestion]);
 
   const handleStart = (e) => {
     if (feedback !== null) return;
@@ -169,7 +171,7 @@ export default function TraceLetters({ onComplete, level = 1, childName }) {
       setStreak(s => s + 1);
       setFeedback({ type: 'correct', coverage, points });
       playSuccess();
-      speak(streak >= 2 ? 'Amazing streak!' : 'Great tracing!');
+      teachAfterAnswer(true, { type: 'letter', correctAnswer: letter });
     } else {
       setWrong(w => w + 1);
       setStreak(0);
@@ -178,7 +180,7 @@ export default function TraceLetters({ onComplete, level = 1, childName }) {
         : `Only ${coverage}% coverage — need at least ${threshold}%.`;
       setFeedback({ type: 'wrong', reason, coverage, points });
       playWrong();
-      speak('Not quite right, try again next time!');
+      teachAfterAnswer(false, { type: 'letter', correctAnswer: letter });
     }
     setTimeout(() => setRound(r => r + 1), delay + 300);
   };

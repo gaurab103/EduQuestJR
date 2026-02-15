@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useTeaching } from './useTeaching';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import styles from './GameCommon.module.css';
 
@@ -16,6 +17,7 @@ const EMOTIONS = [
 
 export default function EmotionDetective({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick, speak } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(null);
   const [options, setOptions] = useState([]);
@@ -44,8 +46,8 @@ export default function EmotionDetective({ onComplete, level = 1 }) {
     setShowHint(false);
 
     // Speak the question
-    setTimeout(() => speak(`How does this face feel?`), 300);
-  }, [round, score, ROUNDS, CHOICE_COUNT, level, speak]);
+    setTimeout(() => readQuestion('How does this face feel?'), 300);
+  }, [round, score, ROUNDS, CHOICE_COUNT, level, readQuestion]);
 
   function handleChoice(word) {
     if (feedback !== null) return;
@@ -55,9 +57,11 @@ export default function EmotionDetective({ onComplete, level = 1 }) {
       setScore((s) => s + 1);
       setStreak(s => s + 1);
       playSuccess();
+      teachAfterAnswer(true, { type: 'word', correctAnswer: target?.word, extra: target?.tip || 'This face is ' + target?.word + '!' });
     } else {
       setStreak(0);
       playWrong();
+      teachAfterAnswer(false, { type: 'word', answer: word, correctAnswer: target?.word, extra: 'This face is ' + (target?.word || '') + '. ' + (target?.tip || '') });
     }
     setFeedback(correct ? 'correct' : 'wrong');
     setTimeout(() => setRound((r) => r + 1), feedbackDelay);

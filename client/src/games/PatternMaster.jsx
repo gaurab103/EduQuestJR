@@ -5,6 +5,7 @@
  */
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useTeaching } from './useTeaching';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import styles from './GameCommon.module.css';
 
@@ -39,6 +40,7 @@ function buildPattern(level) {
 
 export default function PatternMaster({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [pattern, setPattern] = useState([]);
   const [answer, setAnswer] = useState(null);
@@ -74,8 +76,8 @@ export default function PatternMaster({ onComplete, level = 1, childName }) {
     setOptions([...opts].sort(() => Math.random() - 0.5));
     setFeedback(null);
     setSelected(null);
-    speak('What comes next in the pattern?');
-  }, [round, ROUNDS, CHOICE_COUNT, level]);
+    readQuestion('What comes next in the pattern?');
+  }, [round, ROUNDS, CHOICE_COUNT, level, readQuestion]);
 
   function handleChoice(choice) {
     if (feedback !== null) return;
@@ -92,12 +94,14 @@ export default function PatternMaster({ onComplete, level = 1, childName }) {
       setFeedback({ type: 'correct', points });
       playSuccess();
       speak(streak >= 2 ? 'Amazing streak!' : 'Correct!');
+      teachAfterAnswer(true, { type: 'math', correctAnswer: answer, extra: 'The pattern continues with ' + answer + '! Patterns repeat in a sequence.' });
     } else {
       setWrong(w => w + 1);
       setStreak(0);
       setFeedback({ type: 'wrong', answer });
       playWrong();
       speak(`Not quite! The answer was ${answer}.`);
+      teachAfterAnswer(false, { type: 'math', answer: choice, correctAnswer: answer, extra: 'The answer was ' + answer + '. Patterns repeat in a sequence!' });
     }
 
     setTimeout(() => setRound(r => r + 1), delay);

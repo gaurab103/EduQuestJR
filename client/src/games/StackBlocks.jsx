@@ -6,6 +6,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { getRounds, getFeedbackDelay } from './levelConfig';
+import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
 
 const COLORS = [
@@ -30,6 +31,7 @@ function generatePattern(count, level) {
 
 export default function StackBlocks({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [stack, setStack] = useState([]);
   const [target, setTarget] = useState(3);
@@ -56,7 +58,8 @@ export default function StackBlocks({ onComplete, level = 1 }) {
     setPattern(generatePattern(t, level));
     setStack([]);
     setFeedback(null);
-  }, [round, level]);
+    readQuestion(`Stack ${t} blocks${level > 5 ? ' matching the pattern!' : '!'}`);
+  }, [round, level, readQuestion]);
 
   function handleAdd() {
     if (feedback !== null || stack.length >= target) return;
@@ -81,10 +84,12 @@ export default function StackBlocks({ onComplete, level = 1 }) {
         setCorrect(c => c + 1);
         setFeedback('correct');
         playSuccess();
+        teachAfterAnswer(true, { type: 'math', extra: 'Stacking blocks helps us learn patterns and counting!' });
       } else {
         setWrong(w => w + 1);
         setFeedback('wrong');
         playWrong();
+        teachAfterAnswer(false, { type: 'math', extra: 'Stacking blocks helps us learn patterns and counting!' });
       }
       setTimeout(() => setRound(r => r + 1), delay + 300);
     }

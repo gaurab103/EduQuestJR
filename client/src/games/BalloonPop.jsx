@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { getRounds, getFeedbackDelay } from './levelConfig';
+import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
 
 const BALLOONS = ['🔴', '🔵', '🟢', '🟡', '🟣', '🟠'];
+const BALLOON_TO_COLOR = { '🔴': 'red', '🔵': 'blue', '🟢': 'green', '🟡': 'yellow', '🟣': 'purple', '🟠': 'orange' };
 
 export default function BalloonPop({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState('');
   const [items, setItems] = useState([]);
@@ -31,7 +34,8 @@ export default function BalloonPop({ onComplete, level = 1 }) {
     setTarget(t);
     setItems(arr);
     setFeedback(null);
-  }, [round, score, ROUNDS]);
+    readQuestion(`Pop this one: ${t}`);
+  }, [round, score, ROUNDS, readQuestion]);
 
   function handlePop(emoji) {
     if (feedback !== null) return;
@@ -39,6 +43,7 @@ export default function BalloonPop({ onComplete, level = 1 }) {
     const correct = emoji === target;
     if (correct) { setScore((s) => s + 1); setStreak((s) => s + 1); playSuccess(); }
     else { setStreak(0); playWrong(); }
+    teachAfterAnswer(correct, { type: 'color', correctAnswer: BALLOON_TO_COLOR[target] || target });
     setFeedback(correct ? 'correct' : 'wrong');
     setTimeout(() => setRound((r) => r + 1), delay);
   }

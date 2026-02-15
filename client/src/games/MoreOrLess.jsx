@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useTeaching } from './useTeaching';
 import { getRounds, getMaxNumber, getFeedbackDelay } from './levelConfig';
 import { FRUIT_IMAGES, GameImage } from './gameImages';
 import styles from './GameCommon.module.css';
@@ -8,6 +9,7 @@ const ITEM_POOL = Object.entries(FRUIT_IMAGES).map(([name, img]) => ({ name, img
 
 export default function MoreOrLess({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [left, setLeft] = useState(0);
   const [right, setRight] = useState(0);
@@ -32,10 +34,13 @@ export default function MoreOrLess({ onComplete, level = 1 }) {
     while (b === a) b = Math.floor(Math.random() * MAX_NUM) + 1;
     setLeft(a);
     setRight(b);
-    setAsk(Math.random() > 0.5 ? 'more' : 'less');
-    setCurrentItem(ITEM_POOL[Math.floor(Math.random() * ITEM_POOL.length)]);
+    const q = Math.random() > 0.5 ? 'more' : 'less';
+    setAsk(q);
+    const item = ITEM_POOL[Math.floor(Math.random() * ITEM_POOL.length)];
+    setCurrentItem(item);
     setFeedback(null);
-  }, [round, score, ROUNDS, MAX_NUM]);
+    readQuestion('Tap the group with ' + q + ' ' + item.name + 's:');
+  }, [round, score, ROUNDS, MAX_NUM, readQuestion]);
 
   function handlePick(choice) {
     if (feedback !== null) return;
@@ -48,6 +53,9 @@ export default function MoreOrLess({ onComplete, level = 1 }) {
     if (correct) { setScore(s => s + 1); setStreak(s => s + 1); playSuccess(); }
     else { setStreak(0); playWrong(); }
     setFeedback(correct ? 'correct' : 'wrong');
+    const correctSide = (ask === 'more' && left > right) || (ask === 'less' && left < right) ? 'left' : 'right';
+    const correctCount = correctSide === 'left' ? left : right;
+    teachAfterAnswer(correct, { type: 'math', extra: 'The side with ' + correctCount + ' had ' + ask + '!' });
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

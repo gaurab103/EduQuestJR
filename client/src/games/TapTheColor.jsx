@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useTeaching } from './useTeaching';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import styles from './GameCommon.module.css';
 
@@ -14,6 +15,7 @@ const COLORS = [
 
 export default function TapTheColor({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(null);
   const [options, setOptions] = useState([]);
@@ -38,7 +40,8 @@ export default function TapTheColor({ onComplete, level = 1 }) {
     setTarget(targetColor);
     setOptions(opts.sort(() => Math.random() - 0.5));
     setFeedback(null);
-  }, [round, score, ROUNDS, CHOICE_COUNT]);
+    readQuestion('Tap the color: ' + targetColor.name);
+  }, [round, score, ROUNDS, CHOICE_COUNT, readQuestion]);
 
   function handleChoice(c) {
     if (feedback !== null) return;
@@ -53,6 +56,7 @@ export default function TapTheColor({ onComplete, level = 1 }) {
       playWrong();
     }
     setFeedback(correct ? 'correct' : 'wrong');
+    teachAfterAnswer(correct, { type: 'color', answer: c.name, correctAnswer: target?.name });
     setTimeout(() => setRound((r) => r + 1), feedbackDelay);
   }
 

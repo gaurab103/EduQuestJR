@@ -274,7 +274,7 @@ export default function Subscription() {
 
         {/* Guarantee */}
         <div className={styles.guarantee}>
-          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f6e1-fe0f.svg" alt="" className={styles.guaranteeImg} />
+          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f6e1.svg" alt="" className={styles.guaranteeImg} />
           <div>
             <strong>30-Day Money-Back Guarantee</strong>
             <p>Not satisfied? Get a full refund within 30 days, no questions asked.</p>

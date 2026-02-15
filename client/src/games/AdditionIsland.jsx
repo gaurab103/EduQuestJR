@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useTeaching } from './useTeaching';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import styles from './GameCommon.module.css';
 
@@ -26,6 +27,7 @@ function getProblem(level) {
 
 export default function AdditionIsland({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [problem, setProblem] = useState(null);
   const [score, setScore] = useState(0);
@@ -42,9 +44,11 @@ export default function AdditionIsland({ onComplete, level = 1 }) {
       onComplete(score, accuracy);
       return;
     }
-    setProblem(getProblem(level));
+    const p = getProblem(level);
+    setProblem(p);
     setFeedback(null);
-  }, [round, score, ROUNDS, level]);
+    if (p) readQuestion('What is ' + p.a + ' plus ' + p.b + '?');
+  }, [round, score, ROUNDS, level, readQuestion]);
 
   function handleAnswer(num) {
     if (feedback !== null || !problem) return;
@@ -59,6 +63,7 @@ export default function AdditionIsland({ onComplete, level = 1 }) {
       playWrong();
     }
     setFeedback(correct ? 'correct' : 'wrong');
+    teachAfterAnswer(correct, { type: 'math', answer: num, correctAnswer: problem.sum, extra: `${problem.a} plus ${problem.b} equals ${problem.a + problem.b}!` });
     setTimeout(() => setRound((r) => r + 1), feedbackDelay);
   }
 

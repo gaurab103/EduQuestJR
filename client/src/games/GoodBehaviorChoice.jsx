@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
-import { getRounds, getFeedbackDelay } from './levelConfig';
+import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
+import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
 
 const SCENARIOS = [
@@ -13,6 +14,7 @@ const SCENARIOS = [
 
 export default function GoodBehaviorChoice({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [item, setItem] = useState(null);
   const [options, setOptions] = useState([]);
@@ -41,7 +43,8 @@ export default function GoodBehaviorChoice({ onComplete, level = 1 }) {
     setItem(i);
     setOptions(allOptions.sort(() => Math.random() - 0.5));
     setFeedback(null);
-  }, [round, score, ROUNDS, CHOICES]);
+    readQuestion(i.scenario);
+  }, [round, score, ROUNDS, CHOICES, readQuestion]);
 
   function handlePick(opt) {
     if (feedback !== null) return;
@@ -49,6 +52,7 @@ export default function GoodBehaviorChoice({ onComplete, level = 1 }) {
     const correct = opt === item?.good;
     if (correct) { setScore((s) => s + 1); setStreak((s) => s + 1); playSuccess(); }
     else { setStreak(0); playWrong(); }
+    teachAfterAnswer(correct, { type: 'word', correctAnswer: item?.good, extra: 'Making good choices makes everyone happy!' });
     setFeedback(correct ? 'correct' : 'wrong');
     setTimeout(() => setRound((r) => r + 1), delay);
   }

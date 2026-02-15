@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useTeaching } from './useTeaching';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import styles from './GameCommon.module.css';
 
@@ -44,6 +45,7 @@ function generateBubbles(correctLetter, count) {
 
 export default function AlphabetBubblePop({ level = 1, onComplete }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [targetLetter, setTargetLetter] = useState('');
   const [bubbles, setBubbles] = useState([]);
@@ -76,8 +78,8 @@ export default function AlphabetBubblePop({ level = 1, onComplete }) {
     setFeedback(null);
     setSelectedIndex(null);
     
-    // Speak the letter name
-    speak(`Find the letter ${letter}!`);
+    // Speak the question
+    readQuestion('Find the letter ' + letter + '!');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [round, ROUNDS, CHOICE_COUNT]);
 
@@ -94,12 +96,12 @@ export default function AlphabetBubblePop({ level = 1, onComplete }) {
       setCorrect(c => c + 1);
       setFeedback('correct');
       playSuccess();
-      speak('Correct! Great job!');
+      teachAfterAnswer(true, { type: 'letter', answer: bubble.letter, correctAnswer: bubble.letter });
     } else {
       setWrong(w => w + 1);
       setFeedback('wrong');
       playWrong();
-      speak('Try again!');
+      teachAfterAnswer(false, { type: 'letter', answer: bubble.letter, correctAnswer: targetLetter });
     }
     
     setTimeout(() => setRound(r => r + 1), delay);

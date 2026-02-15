@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
 import { getRounds, getChoiceCount, getFeedbackDelay, getMaxNumber } from './levelConfig';
 import { useAudio } from '../context/AudioContext';
@@ -18,6 +19,7 @@ function getProblem(level) {
 
 export default function MissingNumber({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [problem, setProblem] = useState(null);
   const [score, setScore] = useState(0);
@@ -34,9 +36,11 @@ export default function MissingNumber({ onComplete, level = 1 }) {
       onComplete(score, accuracy);
       return;
     }
-    setProblem(getProblem(level));
+    const p = getProblem(level);
+    setProblem(p);
     setFeedback(null);
-  }, [round, score, ROUNDS, level]);
+    if (p) readQuestion('What number goes in the blank?');
+  }, [round, score, ROUNDS, level, readQuestion]);
 
   function handleAnswer(n) {
     if (feedback !== null || !problem) return;
@@ -51,6 +55,7 @@ export default function MissingNumber({ onComplete, level = 1 }) {
       playWrong();
     }
     setFeedback(correct ? 'correct' : 'wrong');
+    teachAfterAnswer(correct, { type: 'math', answer: n, correctAnswer: problem.answer, extra: 'The sequence was: ' + problem.seq.join(', ') });
     setTimeout(() => setRound((r) => r + 1), feedbackDelay);
   }
 

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useTeaching } from './useTeaching';
 import { ai as aiApi } from '../api/client';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { GameImage, SHAPE_IMAGES, OBJECT_IMAGES } from './gameImages';
@@ -18,6 +19,7 @@ const SHAPES = [
 
 export default function ShapeMatchQuest({ onComplete, level = 1, childName, childAge }) {
   const { playSuccess, playWrong, playClick } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(null);
   const [choices, setChoices] = useState([]);
@@ -46,7 +48,8 @@ export default function ShapeMatchQuest({ onComplete, level = 1, childName, chil
     setFeedback(null);
     setShowHint(false);
     setHint('');
-  }, [round, score, ROUNDS, CHOICE_COUNT]);
+    readQuestion('Find the ' + targetShape.label + '!');
+  }, [round, score, ROUNDS, CHOICE_COUNT, readQuestion]);
 
   function handleChoice(choice) {
     if (feedback !== null) return;
@@ -61,6 +64,7 @@ export default function ShapeMatchQuest({ onComplete, level = 1, childName, chil
       playWrong();
     }
     setFeedback(correct ? 'correct' : 'wrong');
+    teachAfterAnswer(correct, { type: 'shape', answer: choice.id, correctAnswer: target?.id });
     setTimeout(() => setRound((r) => r + 1), feedbackDelay);
   }
 

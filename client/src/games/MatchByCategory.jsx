@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
+import { useTeaching } from './useTeaching';
 import { FRUIT_IMAGES, VEGGIE_IMAGES, GameImage } from './gameImages';
 import styles from './GameCommon.module.css';
 
@@ -9,6 +10,7 @@ const VEGGIES = Object.entries(VEGGIE_IMAGES).map(([name, img]) => ({ name, img,
 
 export default function MatchByCategory({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(null);
   const [options, setOptions] = useState([]);
@@ -39,7 +41,8 @@ export default function MatchByCategory({ onComplete, level = 1 }) {
     setTarget(targetItem);
     setOptions(opts.sort(() => Math.random() - 0.5));
     setFeedback(null);
-  }, [round, score, ROUNDS, CHOICES]);
+    readQuestion(`Tap the ${cat} that matches`);
+  }, [round, score, ROUNDS, CHOICES, readQuestion]);
 
   function handlePick(item) {
     if (feedback !== null) return;
@@ -47,6 +50,7 @@ export default function MatchByCategory({ onComplete, level = 1 }) {
     const correct = item.name === target?.name;
     if (correct) { setScore(s => s + 1); setStreak(s => s + 1); playSuccess(); }
     else { setStreak(0); playWrong(); }
+    teachAfterAnswer(correct, { type: 'word', correctAnswer: target?.name, extra: 'Things that are alike belong in the same category!' });
     setFeedback(correct ? 'correct' : 'wrong');
     setTimeout(() => setRound(r => r + 1), delay);
   }

@@ -6,6 +6,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { getRounds, getFeedbackDelay } from './levelConfig';
+import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
 
 const ACTIONS = [
@@ -36,6 +37,7 @@ function getItemPool(level) {
 
 export default function CauseEffectTap({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [item, setItem] = useState(null);
   const [tapped, setTapped] = useState(false);
@@ -77,9 +79,10 @@ export default function CauseEffectTap({ onComplete, level = 1, childName }) {
     }
 
     if (chosen) {
-      speak(mode === 'tap' ? `Tap the ${chosen.tap} and see what happens!` : `What happens when you tap ${chosen.tap}?`);
+      const questionText = mode === 'tap' ? `Tap the ${chosen.tap} and see what happens!` : `What happens when you tap ${chosen.tap}?`;
+      readQuestion(questionText);
     }
-  }, [round]);
+  }, [round, readQuestion]);
 
   // TAP MODE: just tap the item
   function handleTap() {
@@ -91,6 +94,7 @@ export default function CauseEffectTap({ onComplete, level = 1, childName }) {
     setFeedback({ type: 'correct', text: `${item.result} Great job!` });
     playSuccess();
     speak(item.result);
+    teachAfterAnswer(true, { type: 'word', extra: 'When we tap something, we cause an effect! That\'s cause and effect!' });
     setTimeout(() => setRound(r => r + 1), delay);
   }
 
@@ -107,11 +111,13 @@ export default function CauseEffectTap({ onComplete, level = 1, childName }) {
       setFeedback({ type: 'correct', text: `Correct! ${item.tap} makes ${item.result}` });
       playSuccess();
       speak(`Correct! ${item.result}`);
+      teachAfterAnswer(true, { type: 'word', correctAnswer: item.result, extra: 'Cause and effect: when we do something, something else happens!' });
     } else {
       setWrong(w => w + 1);
       setFeedback({ type: 'wrong', text: `Wrong! ${item.tap} makes ${item.result}, not ${choice}` });
       playWrong();
       speak(`Not quite! The answer was ${item.result}`);
+      teachAfterAnswer(false, { type: 'word', correctAnswer: item.result, extra: 'Cause and effect: when we do something, something else happens!' });
     }
     setTimeout(() => setRound(r => r + 1), delay + 300);
   }

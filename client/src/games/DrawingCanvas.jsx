@@ -7,6 +7,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { getRounds, getFeedbackDelay } from './levelConfig';
 import { useAudio } from '../context/AudioContext';
+import { useTeaching } from './useTeaching';
 import { DRAW_PROMPTS, GameImage } from './gameImages';
 import styles from './GameCommon.module.css';
 
@@ -48,7 +49,8 @@ export default function DrawingCanvas({ onComplete, level = 1, childName }) {
   const [feedback, setFeedback] = useState(null);
   const [done, setDone] = useState(false);
   const [strokes, setStrokes] = useState(0);
-  const { playSuccess, playCelebration, playClick, playWrong: playWrongSfx, speak } = useAudio();
+  const { playSuccess, playCelebration, playClick, playWrong: playWrongSfx } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
 
   const totalRounds = getRounds(level);
   const challenges = DRAW_PROMPTS.slice(0, Math.min(level + 2, DRAW_PROMPTS.length));
@@ -62,9 +64,9 @@ export default function DrawingCanvas({ onComplete, level = 1, childName }) {
 
   useEffect(() => {
     if (currentChallenge) {
-      speak(`${childName ? childName + ', ' : ''}${currentChallenge.prompt}!`);
+      readQuestion(`${childName ? childName + ', ' : ''}${currentChallenge.prompt}!`);
     }
-  }, [round]);
+  }, [round, readQuestion, childName, currentChallenge]);
 
   const getCtx = useCallback(() => {
     const canvas = canvasRef.current;
@@ -218,7 +220,7 @@ export default function DrawingCanvas({ onComplete, level = 1, childName }) {
         correct: true,
       });
       playSuccess();
-      speak(`Wonderful drawing!`);
+      teachAfterAnswer(true, { type: 'shape', correctAnswer: currentChallenge?.shape, extra: 'Drawing shapes helps us learn!' });
     } else {
       setWrong(w => w + 1);
       const reason = strokes < minStrokes
@@ -229,7 +231,7 @@ export default function DrawingCanvas({ onComplete, level = 1, childName }) {
         correct: false,
       });
       playWrongSfx();
-      speak(`Not quite right, try harder next time!`);
+      teachAfterAnswer(false, { type: 'shape', correctAnswer: currentChallenge?.shape, extra: 'Drawing shapes helps us learn!' });
     }
 
     setTimeout(() => {

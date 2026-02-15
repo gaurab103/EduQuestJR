@@ -5,6 +5,7 @@
  */
 import { useState, useEffect, useCallback } from 'react';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
+import { useTeaching } from './useTeaching';
 import { useAudio } from '../context/AudioContext';
 import styles from './GameCommon.module.css';
 
@@ -26,7 +27,7 @@ const SOUND_SETS = {
     { word: 'Moon', image: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f319.svg' },
     { word: 'Fish', image: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f41f.svg' },
     { word: 'Tree', image: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f333.svg' },
-    { word: 'Sun', image: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2600-fe0f.svg' },
+    { word: 'Sun', image: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2600.svg' },
     { word: 'Apple', image: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f34e.svg' },
   ],
   colors: [
@@ -66,6 +67,7 @@ export default function SoundSafari({ onComplete, level = 1, childName }) {
   const [options, setOptions] = useState([]);
   const [spoken, setSpoken] = useState(false);
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
 
   const totalRounds = getRounds(level);
   const choiceCount = getChoiceCount(level);
@@ -85,15 +87,15 @@ export default function SoundSafari({ onComplete, level = 1, childName }) {
     generateRound();
   }, [round]);
 
-  // Auto-speak the target word
+  // Auto-speak the question
   useEffect(() => {
     if (target && !spoken) {
       setTimeout(() => {
-        speak(`${childName ? childName + '! ' : ''}Find the ${target.word}!`);
+        readQuestion((childName ? childName + '! ' : '') + 'Find the ' + target.word + '!');
         setSpoken(true);
       }, 400);
     }
-  }, [target, spoken]);
+  }, [target, spoken, readQuestion]);
 
   function handleRepeat() {
     playClick();
@@ -113,10 +115,14 @@ export default function SoundSafari({ onComplete, level = 1, childName }) {
       setFeedback({ text: `Yes! That's ${target.word}! 🎉`, correct: true });
       playSuccess();
       speak(`Great job! That's ${target.word}!`);
+      const type = SOUND_SETS.animals.some(a => a.word === target.word) ? 'animal' : SOUND_SETS.colors.some(c => c.word === target.word) ? 'color' : 'word';
+      teachAfterAnswer(true, { type, answer: item.word, correctAnswer: target.word });
     } else {
       setStreak(0);
       setFeedback({ text: `That's ${item.word}. Let's try another!`, correct: false });
       playWrong();
+      const type = SOUND_SETS.animals.some(a => a.word === target.word) ? 'animal' : SOUND_SETS.colors.some(c => c.word === target.word) ? 'color' : 'word';
+      teachAfterAnswer(false, { type, answer: item.word, correctAnswer: target.word });
     }
 
     setTimeout(() => {

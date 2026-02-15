@@ -55,6 +55,11 @@ const GAMES = [
   { title: 'Story Sequence', slug: 'story-sequence', category: 'cognitive', difficulty: 'easy', isPremium: false },
   { title: 'Animal Quiz', slug: 'animal-quiz', category: 'cognitive', difficulty: 'easy', isPremium: false },
   { title: 'Color Mixing', slug: 'color-mixing', category: 'cognitive', difficulty: 'easy', isPremium: false },
+  { title: 'Body Parts', slug: 'body-parts', category: 'cognitive', difficulty: 'easy', isPremium: false },
+  { title: 'Weather Learn', slug: 'weather-learn', category: 'cognitive', difficulty: 'easy', isPremium: false },
+  { title: 'Dot Connect', slug: 'dot-connect', category: 'motor', difficulty: 'easy', isPremium: false },
+  { title: 'Emotion Match', slug: 'emotion-match', category: 'sel', difficulty: 'easy', isPremium: false },
+  { title: 'Plant Grower', slug: 'plant-grower', category: 'cognitive', difficulty: 'easy', isPremium: false },
 
   // ── Premium Games ──
   { title: 'Blockly Coding Lab', slug: 'blockly-coding-lab', category: 'future_skills', difficulty: 'medium', isPremium: true },
@@ -70,6 +75,9 @@ const GAMES = [
   { title: 'Story Builder Studio', slug: 'story-builder-studio', category: 'literacy', difficulty: 'medium', isPremium: true },
   { title: 'Fraction Fun Land', slug: 'fraction-fun-land', category: 'numeracy', difficulty: 'medium', isPremium: true },
   { title: 'Multiplication Treasure', slug: 'multiplication-treasure', category: 'numeracy', difficulty: 'medium', isPremium: true },
+  { title: 'Maze Runner', slug: 'maze-runner', category: 'motor', difficulty: 'medium', isPremium: true },
+  { title: 'Musical Notes', slug: 'musical-notes', category: 'auditory', difficulty: 'medium', isPremium: true },
+  { title: 'Time Sorter', slug: 'time-sorter', category: 'cognitive', difficulty: 'medium', isPremium: true },
 ];
 
 export async function seedGames() {

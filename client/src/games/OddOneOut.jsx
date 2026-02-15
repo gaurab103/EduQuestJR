@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useTeaching } from './useTeaching';
 import { getRounds, getFeedbackDelay } from './levelConfig';
 import { ODD_ONE_OUT_SETS, GameImage } from './gameImages';
 import styles from './GameCommon.module.css';
 
 export default function OddOneOut({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [items, setItems] = useState([]);
   const [oddIndex, setOddIndex] = useState(0);
@@ -32,17 +34,21 @@ export default function OddOneOut({ onComplete, level = 1 }) {
       [arr[i], arr[j]] = [arr[j], arr[i]];
     }
     setItems(arr);
-    setOddIndex(arr.findIndex(a => a.isOdd));
+    const oddIdx = arr.findIndex(a => a.isOdd);
+    setOddIndex(oddIdx);
     setFeedback(null);
-  }, [round, score, ROUNDS, level]);
+    readQuestion('Which one is different?');
+  }, [round, score, ROUNDS, level, readQuestion]);
 
   function handleChoice(idx) {
     if (feedback !== null) return;
     playClick();
     const correct = idx === oddIndex;
+    const oddItem = items[oddIndex];
     if (correct) { setScore(s => s + 1); playSuccess(); }
     else { playWrong(); }
     setFeedback(correct ? 'correct' : 'wrong');
+    teachAfterAnswer(correct, { type: 'animal', answer: items[idx]?.name, correctAnswer: oddItem?.name, extra: 'The different one was the ' + (oddItem?.name || 'odd one') + '!' });
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

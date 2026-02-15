@@ -6,6 +6,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
+import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
 
 function generateTime(level) {
@@ -59,7 +60,8 @@ function ClockFace({ h, m, size = 160 }) {
 }
 
 export default function ClockTime({ onComplete, level = 1, childName }) {
-  const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
+  const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [time, setTime] = useState({ h: 12, m: 0 });
   const [options, setOptions] = useState([]);
@@ -93,8 +95,8 @@ export default function ClockTime({ onComplete, level = 1, childName }) {
     setOptions([...opts].sort(() => Math.random() - 0.5));
     setFeedback(null);
     setSelected(null);
-    speak('What time does the clock show?');
-  }, [round]);
+    readQuestion('What time does the clock show?');
+  }, [round, readQuestion]);
 
   function handleChoice(answer) {
     if (feedback) return;
@@ -107,10 +109,12 @@ export default function ClockTime({ onComplete, level = 1, childName }) {
       setCorrect(c => c + 1);
       setFeedback({ type: 'correct', text: `Correct! It's ${correctAnswer}!` });
       playSuccess();
+      teachAfterAnswer(true, { type: 'math', correctAnswer, extra: 'Clocks help us know what time it is!' });
     } else {
       setWrong(w => w + 1);
       setFeedback({ type: 'wrong', text: `Not quite! It's ${correctAnswer}.` });
       playWrong();
+      teachAfterAnswer(false, { type: 'math', correctAnswer, extra: 'Clocks help us know what time it is!' });
     }
     setTimeout(() => setRound(r => r + 1), delay);
   }

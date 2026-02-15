@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { getRounds, getFeedbackDelay } from './levelConfig';
+import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
 
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
@@ -25,6 +26,7 @@ function getLetterCount(level) {
 
 export default function ABCOrder({ level = 1, onComplete }) {
   const { playSuccess, playWrong, playClick } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [letters, setLetters] = useState([]);
   const [correctOrder, setCorrectOrder] = useState([]);
@@ -58,7 +60,8 @@ export default function ABCOrder({ level = 1, onComplete }) {
     setLetters(shuffled);
     setSelectedOrder([]);
     setFeedback(null);
-  }, [round, ROUNDS, letterCount, correct, score]);
+    readQuestion('Tap the letters in ABC order!');
+  }, [round, ROUNDS, letterCount, correct, score, readQuestion]);
 
   function handleLetterClick(letter) {
     if (feedback !== null) return;
@@ -80,12 +83,14 @@ export default function ABCOrder({ level = 1, onComplete }) {
         setStreak(s => s + 1);
         setFeedback('correct');
         playSuccess();
+        teachAfterAnswer(true, { type: 'letter', correctAnswer: correctLetters[0] });
         setTimeout(() => setRound(r => r + 1), delay);
       } else {
         setWrong(w => w + 1);
         setStreak(0);
         setFeedback('wrong');
         playWrong();
+        teachAfterAnswer(false, { type: 'letter', correctAnswer: correctLetters.join('') });
         // Reset after showing feedback
         setTimeout(() => {
           setSelectedOrder([]);

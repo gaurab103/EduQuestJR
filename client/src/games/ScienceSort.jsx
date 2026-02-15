@@ -6,6 +6,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { getRounds, getFeedbackDelay } from './levelConfig';
+import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
 
 const CATEGORIES = [
@@ -47,7 +48,8 @@ const CATEGORIES = [
 ];
 
 export default function ScienceSort({ onComplete, level = 1, childName }) {
-  const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
+  const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [category, setCategory] = useState(null);
   const [currentItem, setCurrentItem] = useState(null);
@@ -78,8 +80,8 @@ export default function ScienceSort({ onComplete, level = 1, childName }) {
     setCurrentItem(item);
     setCorrectGroup(groupIdx);
     setFeedback(null);
-    speak(`Is ${item} ${cat.groups[0].label} or ${cat.groups[1].label}?`);
-  }, [round]);
+    readQuestion(`Is ${item} ${cat.groups[0].label} or ${cat.groups[1].label}?`);
+  }, [round, readQuestion]);
 
   function handleChoice(idx) {
     if (feedback) return;
@@ -90,10 +92,12 @@ export default function ScienceSort({ onComplete, level = 1, childName }) {
       setCorrect(c => c + 1);
       setFeedback({ type: 'correct', text: `Yes! ${currentItem} is ${category.groups[correctGroup].label}!` });
       playSuccess();
+      teachAfterAnswer(true, { type: 'word', correctAnswer: category.groups[correctGroup].label, extra: 'Scientists sort things into groups to learn about them!' });
     } else {
       setWrong(w => w + 1);
       setFeedback({ type: 'wrong', text: `Wrong! ${currentItem} is ${category.groups[correctGroup].label}.` });
       playWrong();
+      teachAfterAnswer(false, { type: 'word', correctAnswer: category.groups[correctGroup].label, extra: 'Scientists sort things into groups to learn about them!' });
     }
     setTimeout(() => setRound(r => r + 1), delay);
   }

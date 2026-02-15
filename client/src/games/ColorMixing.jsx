@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useTeaching } from './useTeaching';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import styles from './GameCommon.module.css';
 
@@ -31,6 +32,7 @@ const SIMPLE_COLORS = ['Red', 'Blue', 'Yellow', 'Green', 'Orange', 'Purple', 'Pi
 
 export default function ColorMixing({ level = 1, onComplete }) {
   const { playSuccess, playWrong, playClick, speak } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [currentChallenge, setCurrentChallenge] = useState(null);
   const [options, setOptions] = useState([]);
@@ -108,7 +110,8 @@ export default function ColorMixing({ level = 1, onComplete }) {
     }
     
     setFeedback(null);
-  }, [round, ROUNDS, CHOICES, isMixingLevel]);
+    readQuestion(isMixingLevel ? 'What color do you get when you mix these colors?' : 'What color is this?');
+  }, [round, ROUNDS, CHOICES, isMixingLevel, readQuestion]);
 
   function handleAnswer(selected) {
     if (feedback !== null) return;
@@ -122,10 +125,12 @@ export default function ColorMixing({ level = 1, onComplete }) {
       playSuccess();
       speak(currentChallenge.answer);
       setFeedback('correct');
+      teachAfterAnswer(true, { type: 'color', answer: selected, correctAnswer: currentChallenge.answer });
     } else {
       setWrong(w => w + 1);
       playWrong();
       setFeedback('wrong');
+      teachAfterAnswer(false, { type: 'color', answer: selected, correctAnswer: currentChallenge.answer });
     }
     
     setTimeout(() => setRound(r => r + 1), delay);

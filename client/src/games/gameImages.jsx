@@ -4,7 +4,7 @@
  * Every image is guaranteed to match its name (an apple image IS an apple).
  */
 
-const T = (code) => `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/${code}.svg`;
+const T = (code) => `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/${code.replace(/-fe0f/g, '')}.svg`;
 
 // ═══ FRUITS ═══
 export const FRUIT_IMAGES = {

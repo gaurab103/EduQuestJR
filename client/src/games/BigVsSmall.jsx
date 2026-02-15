@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useTeaching } from './useTeaching';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { BIG_SMALL_PAIRS, GameImage } from './gameImages';
 import styles from './GameCommon.module.css';
@@ -21,6 +22,7 @@ function getQuestionTypes(level) {
 
 export default function BigVsSmall({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [ask, setAsk] = useState('big');
   const [pair, setPair] = useState(null);
@@ -46,7 +48,8 @@ export default function BigVsSmall({ onComplete, level = 1 }) {
     setAsk(q);
     setSwapped(Math.random() > 0.5);
     setFeedback(null);
-  }, [round, ROUNDS, level]);
+    readQuestion('Tap the ' + (q === 'big' ? 'bigger' : 'smaller') + ' one!');
+  }, [round, ROUNDS, level, readQuestion]);
 
   function handlePick(choice) {
     if (feedback !== null) return;
@@ -55,6 +58,9 @@ export default function BigVsSmall({ onComplete, level = 1 }) {
     if (correct) { setScore(s => s + 1); setStreak(s => s + 1); playSuccess(); }
     else { setStreak(0); playWrong(); }
     setFeedback(correct ? 'correct' : 'wrong');
+    const correctItem = ask === 'big' ? pair.big : pair.small;
+    const selectedItem = choice === 'left' ? (swapped ? pair.small : pair.big) : (swapped ? pair.big : pair.small);
+    teachAfterAnswer(correct, { type: 'animal', answer: selectedItem.name, correctAnswer: correctItem.name });
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

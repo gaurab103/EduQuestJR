@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { useAudio } from '../context/AudioContext';
@@ -23,6 +24,7 @@ function getOptionsForLevel(item, count) {
 
 export default function RhymingMatch({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [item, setItem] = useState(null);
   const [options, setOptions] = useState([]);
@@ -44,7 +46,8 @@ export default function RhymingMatch({ onComplete, level = 1 }) {
     setItem(r);
     setOptions(getOptionsForLevel(r, choiceCount));
     setFeedback(null);
-  }, [round, score, ROUNDS, choiceCount]);
+    readQuestion('Which rhymes with "' + r.word + '"?');
+  }, [round, score, ROUNDS, choiceCount, readQuestion]);
 
   function handlePick(opt) {
     if (feedback !== null) return;
@@ -53,6 +56,7 @@ export default function RhymingMatch({ onComplete, level = 1 }) {
     if (correct) { setScore(s => s + 1); setStreak(s => s + 1); playSuccess(); }
     else { setStreak(0); playWrong(); }
     setFeedback(correct ? 'correct' : 'wrong');
+    teachAfterAnswer(correct, { type: 'word', answer: opt, correctAnswer: item?.options[0], extra: '"' + item?.word + '" and "' + item?.options[0] + '" rhyme! They sound the same at the end.' });
     setTimeout(() => setRound(r => r + 1), feedbackDelay);
   }
 

@@ -5,6 +5,7 @@
  */
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useTeaching } from './useTeaching';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import styles from './GameCommon.module.css';
 
@@ -17,6 +18,7 @@ function getTargetMax(level) {
 
 export default function NumberBonds({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(0);
   const [given, setGiven] = useState(0);
@@ -55,8 +57,8 @@ export default function NumberBonds({ onComplete, level = 1, childName }) {
     setOptions([...opts].sort(() => Math.random() - 0.5));
     setFeedback(null);
     setSelected(null);
-    speak(`${g} plus what equals ${t}?`);
-  }, [round]);
+    readQuestion(g + ' plus what equals ' + t + '?');
+  }, [round, readQuestion]);
 
   function handleChoice(n) {
     if (feedback) return;
@@ -71,11 +73,13 @@ export default function NumberBonds({ onComplete, level = 1, childName }) {
       setStreak(s => s + 1);
       setFeedback({ type: 'correct', text: `${given} + ${answer} = ${target}! +${pts}` });
       playSuccess();
+      teachAfterAnswer(true, { type: 'math', answer: n, correctAnswer: answer, extra: given + ' plus ' + answer + ' equals ' + target + '!' });
     } else {
       setWrong(w => w + 1);
       setStreak(0);
       setFeedback({ type: 'wrong', text: `Wrong! ${given} + ${answer} = ${target}` });
       playWrong();
+      teachAfterAnswer(false, { type: 'math', answer: n, correctAnswer: answer, extra: given + ' plus ' + answer + ' equals ' + target + '!' });
     }
     setTimeout(() => setRound(r => r + 1), delay);
   }

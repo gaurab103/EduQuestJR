@@ -5,6 +5,7 @@
  */
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useTeaching } from './useTeaching';
 import { getRounds, getFeedbackDelay } from './levelConfig';
 import styles from './GameCommon.module.css';
 
@@ -30,6 +31,7 @@ function scramble(word) {
 
 export default function WordScramble({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [word, setWord] = useState('');
   const [scrambled, setScrambled] = useState('');
@@ -60,8 +62,8 @@ export default function WordScramble({ onComplete, level = 1, childName }) {
     setAnswer([]);
     setAvailable(s.split('').map((ch, i) => ({ ch, id: i, used: false })));
     setFeedback(null);
-    speak('Unscramble the letters to make a word!');
-  }, [round]);
+    readQuestion('Unscramble the letters to make a word!');
+  }, [round, readQuestion]);
 
   function pickLetter(item) {
     if (feedback || item.used) return;
@@ -86,12 +88,12 @@ export default function WordScramble({ onComplete, level = 1, childName }) {
       setCorrect(c => c + 1);
       setFeedback({ type: 'correct', text: `Correct! "${word}" +${pts} points!` });
       playSuccess();
-      speak('Excellent spelling!');
+      teachAfterAnswer(true, { type: 'word', answer: attempt, correctAnswer: word, extra: 'Excellent! "' + word + '" is correct!' });
     } else {
       setWrong(w => w + 1);
       setFeedback({ type: 'wrong', text: `Not quite! The word was "${word}".` });
       playWrong();
-      speak(`The answer was ${word}`);
+      teachAfterAnswer(false, { type: 'word', answer: attempt, correctAnswer: word, extra: 'The answer was "' + word + '".' });
     }
     setTimeout(() => setRound(r => r + 1), delay + 200);
   }

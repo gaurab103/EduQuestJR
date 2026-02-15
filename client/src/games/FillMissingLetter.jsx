@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { useAudio } from '../context/AudioContext';
@@ -23,6 +24,7 @@ const WORDS = [
 
 export default function FillMissingLetter({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [item, setItem] = useState(null);
   const [options, setOptions] = useState([]);
@@ -48,7 +50,8 @@ export default function FillMissingLetter({ onComplete, level = 1 }) {
     setItem(w);
     setOptions([...opts].sort(() => Math.random() - 0.5));
     setFeedback(null);
-  }, [round, score, ROUNDS, choiceCount]);
+    readQuestion('What letter makes the word?');
+  }, [round, score, ROUNDS, choiceCount, readQuestion]);
 
   function handlePick(letter) {
     if (feedback !== null) return;
@@ -63,6 +66,7 @@ export default function FillMissingLetter({ onComplete, level = 1 }) {
       playWrong();
     }
     setFeedback(correct ? 'correct' : 'wrong');
+    teachAfterAnswer(correct, { type: 'letter', answer: letter, correctAnswer: item?.letter });
     setTimeout(() => setRound((r) => r + 1), feedbackDelay);
   }
 

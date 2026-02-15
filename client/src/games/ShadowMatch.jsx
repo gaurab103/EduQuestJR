@@ -6,6 +6,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { getRounds, getFeedbackDelay } from './levelConfig';
+import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
 
 const SHAPES = [
@@ -33,7 +34,8 @@ function getShapePool(level) {
 }
 
 export default function ShadowMatch({ onComplete, level = 1, childName }) {
-  const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
+  const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(null);
   const [choices, setChoices] = useState([]);
@@ -74,9 +76,9 @@ export default function ShadowMatch({ onComplete, level = 1, childName }) {
 
   useEffect(() => {
     if (target) {
-      speak(`Which shape matches this shadow?`);
+      readQuestion('Which shape matches this shadow?');
     }
-  }, [target]);
+  }, [target, readQuestion]);
 
   function handleChoice(c) {
     if (feedback !== null) return;
@@ -92,13 +94,13 @@ export default function ShadowMatch({ onComplete, level = 1, childName }) {
       setStreak(s => s + 1);
       setFeedback({ type: 'correct', shape: c.name, points });
       playSuccess();
-      speak(streak >= 2 ? 'Amazing streak!' : 'Correct!');
+      teachAfterAnswer(true, { type: 'shape', correctAnswer: target?.name?.toLowerCase() });
     } else {
       setWrong(w => w + 1);
       setStreak(0);
       setFeedback({ type: 'wrong', shape: c.name, answer: target.name });
       playWrong();
-      speak(`Not quite! That was ${c.name}, the answer is ${target.name}.`);
+      teachAfterAnswer(false, { type: 'shape', correctAnswer: target?.name?.toLowerCase() });
     }
 
     setTimeout(() => setRound(r => r + 1), delay);

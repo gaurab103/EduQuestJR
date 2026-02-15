@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useTeaching } from './useTeaching';
 import { ai as aiApi } from '../api/client';
 import { getRounds, getMaxNumber, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { COUNTING_THEMES, GameImage } from './gameImages';
@@ -7,6 +8,7 @@ import styles from './GameCommon.module.css';
 
 export default function CountingAdventure({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [count, setCount] = useState(0);
   const [options, setOptions] = useState([]);
@@ -37,13 +39,15 @@ export default function CountingAdventure({ onComplete, level = 1, childAge }) {
       const w = Math.floor(Math.random() * MAX_COUNT) + 1;
       if (w !== n) wrong.add(w);
     }
+    const obj = theme.objects[Math.floor(Math.random() * theme.objects.length)];
     setCount(n);
     setOptions([...wrong].sort(() => Math.random() - 0.5));
-    setCurrentObj(theme.objects[Math.floor(Math.random() * theme.objects.length)]);
+    setCurrentObj(obj);
     setFeedback(null);
     setShowHint(false);
     setHint('');
-  }, [round, ROUNDS, MAX_COUNT, CHOICES, theme]);
+    readQuestion('How many ' + (obj?.name || 'items') + ' do you see?');
+  }, [round, ROUNDS, MAX_COUNT, CHOICES, theme, readQuestion]);
 
   function handleAnswer(selected) {
     if (feedback !== null) return;
@@ -52,6 +56,7 @@ export default function CountingAdventure({ onComplete, level = 1, childAge }) {
     if (correct) { setScore(s => s + 1); setStreak(s => s + 1); playSuccess(); }
     else { setStreak(0); playWrong(); }
     setFeedback(correct ? 'correct' : 'wrong');
+    teachAfterAnswer(correct, { type: 'counting', answer: selected, correctAnswer: count });
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

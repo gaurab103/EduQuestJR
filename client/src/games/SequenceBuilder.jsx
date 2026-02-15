@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
+import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
 
 const SEQUENCES_3 = [
@@ -34,6 +35,7 @@ function getSequencesForLength(len) {
 
 export default function SequenceBuilder({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [correct, setCorrect] = useState([]);
   const [options, setOptions] = useState([]);
@@ -59,7 +61,8 @@ export default function SequenceBuilder({ onComplete, level = 1 }) {
     setOptions(shuffle([...seq]));
     setSelected([]);
     setFeedback(null);
-  }, [round, score, ROUNDS, sequences]);
+    readQuestion('Tap in the correct order');
+  }, [round, score, ROUNDS, sequences, readQuestion]);
 
   function handlePick(item) {
     if (feedback !== null) return;
@@ -74,6 +77,7 @@ export default function SequenceBuilder({ onComplete, level = 1 }) {
       const ok = newSel.every((v, i) => v === correct[i]);
       if (ok) { setScore((s) => s + 1); setStreak((s) => s + 1); playSuccess(); }
       else { setStreak(0); playWrong(); }
+      teachAfterAnswer(ok, { type: 'math', correctAnswer: correct.join(' '), extra: 'Sequences follow a pattern. What comes next?' });
       setFeedback(ok ? 'correct' : 'wrong');
       setTimeout(() => setRound((r) => r + 1), delay);
     }

@@ -1,6 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { getFeedbackDelay } from './levelConfig';
+import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
 
 const CODING_BLOCKS = [
@@ -20,11 +21,16 @@ function getMinBlocks(level) {
 
 export default function BlocklyCodingLab({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [sequence, setSequence] = useState([]);
   const [feedback, setFeedback] = useState(null);
   const completedRef = useRef(false);
   const minBlocks = getMinBlocks(level);
   const delay = getFeedbackDelay(level);
+
+  useEffect(() => {
+    readQuestion(`Add ${minBlocks} or more blocks, then click Run Code`);
+  }, [minBlocks, readQuestion]);
 
   const handleAdd = (block) => {
     if (completedRef.current || feedback) return;
@@ -37,6 +43,7 @@ export default function BlocklyCodingLab({ onComplete, level = 1 }) {
     const ok = sequence.length >= minBlocks;
     if (ok) playSuccess();
     else playWrong();
+    teachAfterAnswer(ok, { type: 'math', extra: 'Coding helps us tell computers what to do! Great job building your sequence!' });
     setFeedback(ok ? 'correct' : 'wrong');
     completedRef.current = true;
     setTimeout(() => onComplete(ok ? 100 : 30, ok ? 90 : 50), delay);

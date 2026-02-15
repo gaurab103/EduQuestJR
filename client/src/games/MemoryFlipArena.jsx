@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useTeaching } from './useTeaching';
 import { getFeedbackDelay } from './levelConfig';
 import { MEMORY_THEMES, GameImage } from './gameImages';
 import styles from './GameCommon.module.css';
@@ -14,6 +15,7 @@ function getPairs(level) {
 
 export default function MemoryFlipArena({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
+  const { teachAfterAnswer } = useTeaching();
   const [cards, setCards] = useState([]);
   const [flipped, setFlipped] = useState([]);
   const [matched, setMatched] = useState([]);
@@ -59,6 +61,7 @@ export default function MemoryFlipArena({ onComplete, level = 1 }) {
         setScore(s => s + 10);
         setMatchAnim([a, b]);
         playSuccess();
+        teachAfterAnswer(true, { type: 'animal', correctAnswer: cards[a].itemId, extra: 'You found the ' + cards[a].itemId + ' pair!' });
         setTimeout(() => setMatchAnim([]), 600);
       } else {
         playWrong();

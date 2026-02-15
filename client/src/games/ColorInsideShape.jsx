@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { getRounds, getFeedbackDelay } from './levelConfig';
+import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
 
 const COLORS = ['#ef4444', '#3b82f6', '#22c55e', '#eab308', '#a855f7'];
@@ -12,6 +13,7 @@ const SHAPES = [
 
 export default function ColorInsideShape({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [targetColor, setTargetColor] = useState(null);
   const [targetShape, setTargetShape] = useState(null);
@@ -29,10 +31,13 @@ export default function ColorInsideShape({ onComplete, level = 1 }) {
       onComplete(score, accuracy);
       return;
     }
-    setTargetColor(COLORS[Math.floor(Math.random() * COLORS.length)]);
-    setTargetShape(SHAPES[Math.floor(Math.random() * SHAPES.length)]);
+    const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+    const shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+    setTargetColor(color);
+    setTargetShape(shape);
     setFeedback(null);
-  }, [round, score, ROUNDS]);
+    readQuestion(`Color inside the ${shape.name}`);
+  }, [round, score, ROUNDS, readQuestion]);
 
   function handlePick(color) {
     if (feedback !== null) return;
@@ -40,6 +45,7 @@ export default function ColorInsideShape({ onComplete, level = 1 }) {
     const correct = color === targetColor;
     if (correct) { setScore((s) => s + 1); setStreak((s) => s + 1); playSuccess(); }
     else { setStreak(0); playWrong(); }
+    teachAfterAnswer(correct, { type: 'shape', correctAnswer: targetShape?.name });
     setFeedback(correct ? 'correct' : 'wrong');
     setTimeout(() => setRound((r) => r + 1), delay);
   }

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import styles from './GameCommon.module.css';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { useAudio } from '../context/AudioContext';
+import { useTeaching } from './useTeaching';
 
 const OPPOSITES = [
   { word: 'hot', correct: 'cold', wrong: ['warm', 'sun', 'fire', 'heat'] },
@@ -16,6 +17,7 @@ const OPPOSITES = [
 
 export default function OppositesMatch({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [item, setItem] = useState(null);
   const [options, setOptions] = useState([]);
@@ -41,7 +43,8 @@ export default function OppositesMatch({ onComplete, level = 1 }) {
     setItem(i);
     setOptions(opts);
     setFeedback(null);
-  }, [round, score, ROUNDS, choiceCount]);
+    readQuestion(`What is the opposite of "${i.word}"?`);
+  }, [round, score, ROUNDS, choiceCount, readQuestion]);
 
   function handlePick(opt) {
     if (feedback !== null) return;
@@ -55,6 +58,7 @@ export default function OppositesMatch({ onComplete, level = 1 }) {
       setStreak(0);
       playWrong();
     }
+    teachAfterAnswer(correct, { type: 'word', correctAnswer: item?.correct, extra: 'Opposites are words that mean the opposite of each other!' });
     setFeedback(correct ? 'correct' : 'wrong');
     setTimeout(() => setRound((r) => r + 1), feedbackDelay);
   }

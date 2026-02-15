@@ -5,6 +5,7 @@
  */
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useTeaching } from './useTeaching';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import styles from './GameCommon.module.css';
 
@@ -20,6 +21,7 @@ function getPool(level) {
 
 export default function SightWords({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState('');
   const [options, setOptions] = useState([]);
@@ -51,8 +53,8 @@ export default function SightWords({ onComplete, level = 1, childName }) {
     setOptions([...opts].sort(() => Math.random() - 0.5));
     setFeedback(null);
     setSelected(null);
-    speak(`Find the word: ${t}`);
-  }, [round]);
+    readQuestion('Find the word: ' + t);
+  }, [round, readQuestion]);
 
   function handleChoice(w) {
     if (feedback) return;
@@ -66,11 +68,13 @@ export default function SightWords({ onComplete, level = 1, childName }) {
       setStreak(s => s + 1);
       setFeedback({ type: 'correct', text: `Correct! "${target}" +${pts}` });
       playSuccess();
+      teachAfterAnswer(true, { type: 'word', answer: w, correctAnswer: target });
     } else {
       setWrong(wr => wr + 1);
       setStreak(0);
       setFeedback({ type: 'wrong', text: `Wrong! The word was "${target}".` });
       playWrong();
+      teachAfterAnswer(false, { type: 'word', answer: w, correctAnswer: target });
     }
     setTimeout(() => setRound(r => r + 1), delay);
   }

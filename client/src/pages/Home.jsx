@@ -8,7 +8,7 @@ const FEATURES = [
   { icon: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f43b.svg', title: 'AI Buddy Friend', desc: 'Buddy the Bear chats, encourages, and adapts to your child\'s level' },
   { icon: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3c5.svg', title: 'Achievements & Stickers', desc: '25+ real cartoon stickers and 15 badges to collect and display' },
   { icon: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4ca.svg', title: 'Parent Analytics', desc: 'Detailed progress tracking with visual charts and AI-powered insights' },
-  { icon: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/270f-fe0f.svg', title: 'Motor & Audio Games', desc: 'Drawing, handwriting, and sound recognition for holistic development' },
+  { icon: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/270f.svg', title: 'Motor & Audio Games', desc: 'Drawing, handwriting, and sound recognition for holistic development' },
 ];
 
 const CATEGORIES = [
@@ -16,9 +16,9 @@ const CATEGORIES = [
   { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4da.svg', name: 'Literacy', color: '#a78bfa', desc: 'Letters, phonics, rhyming, words' },
   { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4ca.svg', name: 'Numeracy', color: '#fb923c', desc: 'Counting, addition, subtraction' },
   { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3a8.svg', name: 'Creativity', color: '#f472b6', desc: 'Colors, drawing, imagination' },
-  { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2764-fe0f.svg', name: 'Social & Emotional', color: '#4ade80', desc: 'Emotions, behavior, breathing' },
+  { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2764.svg', name: 'Social & Emotional', color: '#4ade80', desc: 'Emotions, behavior, breathing' },
   { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4bb.svg', name: 'Future Skills', color: '#818cf8', desc: 'Coding basics and logic' },
-  { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/270f-fe0f.svg', name: 'Motor Skills', color: '#fbbf24', desc: 'Drawing, writing, motor' },
+  { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/270f.svg', name: 'Motor Skills', color: '#fbbf24', desc: 'Drawing, writing, motor' },
   { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3b5.svg', name: 'Auditory', color: '#f472b6', desc: 'Listening, sound recognition' },
 ];
 
@@ -48,7 +48,7 @@ export default function Home() {
             <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4ca.svg" alt="" className={styles.floaterImg} />
           </div>
           <div className={styles.floater} style={{ top: '15%', right: '5%', animationDelay: '1.2s' }}>
-            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/270f-fe0f.svg" alt="" className={styles.floaterImg} />
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/270f.svg" alt="" className={styles.floaterImg} />
           </div>
           <div className={styles.floater} style={{ bottom: '20%', left: '8%', animationDelay: '2.4s' }}>
             <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3a8.svg" alt="" className={styles.floaterImg} />
@@ -205,7 +205,7 @@ export default function Home() {
           {[
             { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f44b.svg', title: 'Big Touch Targets', desc: 'All buttons 60-80px minimum for little fingers' },
             { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3a8.svg', title: 'Soft Pastel Colors', desc: 'Warm, calming palette gentle on young eyes' },
-            { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2764-fe0f.svg', title: 'No Harsh Feedback', desc: 'Gentle encouragement, never punishment' },
+            { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2764.svg', title: 'No Harsh Feedback', desc: 'Gentle encouragement, never punishment' },
             { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3b5.svg', title: 'Audio Instructions', desc: 'Voice-guided gameplay for pre-readers' },
             { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f512.svg', title: 'Parent PIN Lock', desc: 'Settings protected behind a parent-only PIN' },
             { img: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4f1.svg', title: 'Mobile First', desc: 'Built for tablets and phones kids actually use' },

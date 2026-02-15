@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { getRounds, getFeedbackDelay } from './levelConfig';
+import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
 
 const STORIES = [
@@ -46,6 +47,7 @@ function getStoriesForLength(length) {
 
 export default function StorySequence({ level = 1, onComplete }) {
   const { playSuccess, playWrong, playClick } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [steps, setSteps] = useState([]);
   const [correctOrder, setCorrectOrder] = useState([]);
@@ -85,7 +87,8 @@ export default function StorySequence({ level = 1, onComplete }) {
 
     setSelectedOrder([]);
     setFeedback(null);
-  }, [round, ROUNDS, stepCount, correct, score]);
+    readQuestion('Put the story in the correct order!');
+  }, [round, ROUNDS, stepCount, correct, score, readQuestion]);
 
   function handleStepClick(step) {
     if (feedback !== null) return;
@@ -107,12 +110,14 @@ export default function StorySequence({ level = 1, onComplete }) {
         setStreak(s => s + 1);
         setFeedback('correct');
         playSuccess();
+        teachAfterAnswer(true, { type: 'word', extra: 'Stories happen in order. First, then, next!' });
         setTimeout(() => setRound(r => r + 1), delay);
       } else {
         setWrong(w => w + 1);
         setStreak(0);
         setFeedback('wrong');
         playWrong();
+        teachAfterAnswer(false, { type: 'word', extra: 'Stories happen in order. First, then, next!' });
         // Reset after showing feedback
         setTimeout(() => {
           setSelectedOrder([]);

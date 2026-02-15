@@ -13,9 +13,9 @@ const CATEGORY_IMAGES = {
   literacy: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4da.svg',
   numeracy: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4ca.svg',
   creativity: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3a8.svg',
-  sel: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2764-fe0f.svg',
+  sel: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2764.svg',
   future_skills: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4bb.svg',
-  motor: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/270f-fe0f.svg',
+  motor: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/270f.svg',
   auditory: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3b5.svg',
 };
 

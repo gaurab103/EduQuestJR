@@ -5,6 +5,7 @@
  */
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useTeaching } from './useTeaching';
 import { getRounds, getFeedbackDelay } from './levelConfig';
 import styles from './GameCommon.module.css';
 
@@ -24,6 +25,7 @@ const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
 export default function SpellingBee({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [word, setWord] = useState('');
   const [typed, setTyped] = useState([]);
@@ -51,8 +53,8 @@ export default function SpellingBee({ onComplete, level = 1, childName }) {
     setTyped([]);
     setFeedback(null);
     setRevealed(false);
-    setTimeout(() => speak(`Spell the word: ${w.toLowerCase()}`), 300);
-  }, [round]);
+    setTimeout(() => readQuestion('Spell the word: ' + w.toLowerCase()), 300);
+  }, [round, readQuestion]);
 
   function addLetter(ch) {
     if (feedback || typed.length >= word.length) return;
@@ -78,11 +80,13 @@ export default function SpellingBee({ onComplete, level = 1, childName }) {
       setCorrect(c => c + 1);
       setFeedback({ type: 'correct', text: `Correct! "${word}" +${pts} points!` });
       playSuccess();
+      teachAfterAnswer(true, { type: 'word', answer: attempt, correctAnswer: word, extra: 'Great spelling! "' + word.toLowerCase() + '"' });
     } else {
       setWrong(w => w + 1);
       setRevealed(true);
       setFeedback({ type: 'wrong', text: `Wrong! The spelling is "${word}".` });
       playWrong();
+      teachAfterAnswer(false, { type: 'word', answer: attempt, correctAnswer: word, extra: 'The correct spelling is "' + word.toLowerCase() + '".' });
     }
     setTimeout(() => setRound(r => r + 1), delay + 400);
   }

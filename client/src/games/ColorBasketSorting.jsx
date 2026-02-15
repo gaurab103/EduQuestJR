@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import styles from './GameCommon.module.css';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { useAudio } from '../context/AudioContext';
+import { useTeaching } from './useTeaching';
 
 const COLORS = [
   { name: 'Red', hex: '#ef4444', emoji: '🔴' },
@@ -12,6 +13,7 @@ const COLORS = [
 
 export default function ColorBasketSorting({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [targetColor, setTargetColor] = useState(null);
   const [items, setItems] = useState([]);
@@ -41,7 +43,8 @@ export default function ColorBasketSorting({ onComplete, level = 1 }) {
     setTargetColor(target);
     setItems(mix);
     setFeedback(null);
-  }, [round, score, ROUNDS, choiceCount]);
+    readQuestion(`Tap the ${target.name} colored item`);
+  }, [round, score, ROUNDS, choiceCount, readQuestion]);
 
   function handlePick(item) {
     if (feedback !== null) return;
@@ -55,6 +58,7 @@ export default function ColorBasketSorting({ onComplete, level = 1 }) {
       setStreak(0);
       playWrong();
     }
+    teachAfterAnswer(correct, { type: 'color', correctAnswer: targetColor?.name?.toLowerCase() });
     setFeedback(correct ? 'correct' : 'wrong');
     setTimeout(() => setRound((r) => r + 1), feedbackDelay);
   }

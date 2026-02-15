@@ -7,6 +7,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { getRounds, getFeedbackDelay } from './levelConfig';
 import { useAudio } from '../context/AudioContext';
+import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
 
 const UPPERCASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
@@ -53,7 +54,8 @@ export default function HandwritingHero({ onComplete, level = 1, childName }) {
   const [feedback, setFeedback] = useState(null);
   const [done, setDone] = useState(false);
   const [strokes, setStrokes] = useState(0);
-  const { playSuccess, playCelebration, playClick, playWrong, speak } = useAudio();
+  const { playSuccess, playCelebration, playClick, playWrong } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
 
   const totalRounds = getRounds(level);
   const passThreshold = getPassThreshold(level);
@@ -76,9 +78,9 @@ export default function HandwritingHero({ onComplete, level = 1, childName }) {
       const msg = isWord
         ? `${childName ? childName + ', write' : 'Write'} the word "${currentChar}"!`
         : `${childName ? childName + ', write' : 'Write'} the letter "${currentChar}"!`;
-      speak(msg);
+      readQuestion(msg);
     }
-  }, [round, chars.length]);
+  }, [round, chars.length, readQuestion, childName, currentChar, isWord]);
 
   const getCtx = useCallback(() => {
     const canvas = canvasRef.current;
@@ -213,7 +215,7 @@ export default function HandwritingHero({ onComplete, level = 1, childName }) {
         coverage,
       });
       playSuccess();
-      speak(`Wonderful! That looks great!`);
+      teachAfterAnswer(true, { type: 'letter', correctAnswer: currentChar });
     } else {
       setWrong(w => w + 1);
       setFeedback({
@@ -222,7 +224,7 @@ export default function HandwritingHero({ onComplete, level = 1, childName }) {
         coverage,
       });
       playWrong();
-      speak(`Oops, try to follow the letter shape more carefully next time!`);
+      teachAfterAnswer(false, { type: 'letter', correctAnswer: currentChar });
     }
 
     setTimeout(() => {
@@ -244,7 +246,7 @@ export default function HandwritingHero({ onComplete, level = 1, childName }) {
     playWrong();
     setWrong(w => w + 1);
     setFeedback({ text: `Skipped — that's okay! Let's try the next one.`, correct: false });
-    speak(`That's okay, let's try the next one!`);
+    teachAfterAnswer(false, { type: 'letter', correctAnswer: currentChar });
     setTimeout(() => {
       setFeedback(null);
       setStrokes(0);

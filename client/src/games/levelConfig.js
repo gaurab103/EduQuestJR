@@ -21,16 +21,15 @@ export function getWorldForLevel(level) {
 
 /**
  * Get number of rounds for a given level.
- * Starts at 3 rounds and gradually increases.
+ * Every level has at least 10 questions so kids get enough practice.
  */
 export function getRounds(level) {
-  if (level <= 3) return 3;
-  if (level <= 6) return 4;
-  if (level <= 10) return 5;
-  if (level <= 15) return 6;
-  if (level <= 20) return 7;
-  if (level <= 25) return 8;
-  return 10;
+  if (level <= 5) return 10;
+  if (level <= 10) return 12;
+  if (level <= 15) return 14;
+  if (level <= 20) return 16;
+  if (level <= 25) return 18;
+  return 20;
 }
 
 /**

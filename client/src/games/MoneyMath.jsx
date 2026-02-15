@@ -6,6 +6,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
+import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
 
 const COINS = [
@@ -33,7 +34,8 @@ function generateCountProblem(level) {
 }
 
 export default function MoneyMath({ onComplete, level = 1, childName }) {
-  const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
+  const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [problem, setProblem] = useState(null);
   const [options, setOptions] = useState([]);
@@ -64,7 +66,7 @@ export default function MoneyMath({ onComplete, level = 1, childName }) {
       while (opts.size < CHOICES) opts.add(COINS[Math.floor(Math.random() * COINS.length)].name);
       setProblem({ type: 'identify', coin });
       setOptions([...opts].sort(() => Math.random() - 0.5));
-      speak(`What coin is this? It says ${coin.symbol}`);
+      readQuestion(`What coin is this? It says ${coin.symbol}`);
     } else {
       const { coins, total } = generateCountProblem(level);
       const opts = new Set([total]);
@@ -74,12 +76,12 @@ export default function MoneyMath({ onComplete, level = 1, childName }) {
       }
       setProblem({ type: 'count', coins, total });
       setOptions([...opts].sort((a, b) => a - b));
-      speak('How much money is this?');
+      readQuestion('How much money is this?');
     }
 
     setFeedback(null);
     setSelected(null);
-  }, [round]);
+  }, [round, readQuestion, mode, level, CHOICES]);
 
   function handleChoice(answer) {
     if (feedback) return;
@@ -98,10 +100,12 @@ export default function MoneyMath({ onComplete, level = 1, childName }) {
       setCorrect(c => c + 1);
       setFeedback({ type: 'correct', text: problem.type === 'identify' ? `Correct! That's a ${problem.coin.name}!` : `Correct! ${problem.total}¢!` });
       playSuccess();
+      teachAfterAnswer(true, { type: 'math', correctAnswer: problem.type === 'identify' ? problem.coin.name : problem.total, extra: 'Learning about money helps us make smart choices!' });
     } else {
       setWrong(w => w + 1);
       setFeedback({ type: 'wrong', text: problem.type === 'identify' ? `Wrong! That's a ${problem.coin.name}.` : `Wrong! The answer is ${problem.total}¢.` });
       playWrong();
+      teachAfterAnswer(false, { type: 'math', correctAnswer: problem.type === 'identify' ? problem.coin.name : problem.total, extra: 'Learning about money helps us make smart choices!' });
     }
     setTimeout(() => setRound(r => r + 1), delay);
   }

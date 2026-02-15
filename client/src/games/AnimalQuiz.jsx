@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useTeaching } from './useTeaching';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { GameImage, ANIMAL_IMAGES } from './gameImages';
 import styles from './GameCommon.module.css';
@@ -34,6 +35,7 @@ const QUESTIONS = [
 
 export default function AnimalQuiz({ level = 1, onComplete }) {
   const { playSuccess, playWrong, playClick, speak } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
   const [round, setRound] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [options, setOptions] = useState([]);
@@ -85,7 +87,8 @@ export default function AnimalQuiz({ level = 1, onComplete }) {
     setCurrentQuestion(question);
     setOptions(shuffled);
     setFeedback(null);
-  }, [round, ROUNDS, CHOICES]);
+    readQuestion(question.q);
+  }, [round, ROUNDS, CHOICES, readQuestion]);
 
   function handleAnswer(selected) {
     if (feedback !== null) return;
@@ -99,10 +102,12 @@ export default function AnimalQuiz({ level = 1, onComplete }) {
       playSuccess();
       speak(currentQuestion.answer);
       setFeedback('correct');
+      teachAfterAnswer(true, { type: 'animal', answer: selected, correctAnswer: currentQuestion.answer });
     } else {
       setWrong(w => w + 1);
       playWrong();
       setFeedback('wrong');
+      teachAfterAnswer(false, { type: 'animal', answer: selected, correctAnswer: currentQuestion.answer });
     }
     
     setTimeout(() => setRound(r => r + 1), delay);
