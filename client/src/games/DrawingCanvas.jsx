@@ -53,7 +53,7 @@ export default function DrawingCanvas({ onComplete, level = 1, childName }) {
   const [strokes, setStrokes] = useState(0);
   const { playSuccess, playCelebration, playClick, playWrong: playWrongSfx } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
 
   const totalRounds = getRounds(level);
   const challenges = DRAW_PROMPTS.slice(0, Math.min(level + 2, DRAW_PROMPTS.length));

@@ -1,4 +1,7 @@
 import Child from '../models/Child.js';
+import User from '../models/User.js';
+
+const FREE_CHILD_LIMIT = 1;
 
 export async function list(req, res, next) {
   try {
@@ -14,6 +17,15 @@ export async function create(req, res, next) {
     const { name, age, avatarConfig } = req.body;
     if (!name || age == null) {
       return res.status(400).json({ message: 'Name and age are required' });
+    }
+    const user = await User.findById(req.user._id).select('subscriptionStatus');
+    const isPremium = user?.subscriptionStatus === 'active' || user?.subscriptionStatus === 'trial';
+    const childCount = await Child.countDocuments({ parentId: req.user._id });
+    if (!isPremium && childCount >= FREE_CHILD_LIMIT) {
+      return res.status(403).json({
+        message: `Free accounts can add up to ${FREE_CHILD_LIMIT} child. Upgrade to Premium for unlimited children.`,
+        code: 'CHILD_LIMIT_REACHED',
+      });
     }
     const child = await Child.create({
       parentId: req.user._id,

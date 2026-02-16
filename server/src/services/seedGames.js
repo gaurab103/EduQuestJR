@@ -10,7 +10,7 @@ const GAMES = [
   { title: 'Big vs Small', slug: 'big-vs-small', category: 'cognitive', difficulty: 'easy', isPremium: false },
   { title: 'Match by Category', slug: 'match-by-category', category: 'cognitive', difficulty: 'easy', isPremium: false },
   { title: 'Cause & Effect Tap', slug: 'cause-effect-tap', category: 'cognitive', difficulty: 'easy', isPremium: false },
-  { title: 'Shadow Match', slug: 'shadow-match', category: 'cognitive', difficulty: 'easy', isPremium: false },
+  { title: 'Shadow Match', slug: 'shadow-match', category: 'cognitive', difficulty: 'easy', isPremium: false },  // match-shadow uses same component
   { title: 'Science Sort', slug: 'science-sort', category: 'cognitive', difficulty: 'easy', isPremium: false },
 
   // ── Free Numeracy Games ──
@@ -85,11 +85,8 @@ const GAMES = [
   { title: 'Maze Runner', slug: 'maze-runner', category: 'motor', difficulty: 'medium', isPremium: true },
   { title: 'Musical Notes', slug: 'musical-notes', category: 'auditory', difficulty: 'medium', isPremium: true },
   { title: 'Time Sorter', slug: 'time-sorter', category: 'cognitive', difficulty: 'medium', isPremium: true },
-  { title: 'Match Shadow', slug: 'match-shadow', category: 'cognitive', difficulty: 'easy', isPremium: true },
   { title: 'Sort by Size', slug: 'sort-by-size', category: 'cognitive', difficulty: 'easy', isPremium: true },
-  { title: 'Finger Trace Path', slug: 'finger-trace-path', category: 'motor', difficulty: 'easy', isPremium: false },
-  { title: 'Connect the Stars', slug: 'connect-the-stars', category: 'motor', difficulty: 'easy', isPremium: false },
-  { title: 'Drag & Sort', slug: 'drag-sort-game', category: 'motor', difficulty: 'medium', isPremium: false },
+  { title: 'Alphabet Tracing World', slug: 'alphabet-tracing-world', category: 'literacy', difficulty: 'easy', isPremium: true },
 ];
 
 export async function seedGames() {
@@ -97,7 +94,5 @@ export async function seedGames() {
   for (const g of GAMES) {
     await Game.findOneAndUpdate({ slug: g.slug }, g, { upsert: true });
   }
-  // Remove old alphabet tracing game if it exists
-  await Game.deleteOne({ slug: 'alphabet-tracing-world' });
   if (existing === 0) console.log(`Games seeded (${GAMES.length} total)`);
 }

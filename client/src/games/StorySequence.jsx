@@ -49,7 +49,7 @@ function getStoriesForLength(length) {
 export default function StorySequence({ level = 1, onComplete }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [steps, setSteps] = useState([]);
   const [correctOrder, setCorrectOrder] = useState([]);

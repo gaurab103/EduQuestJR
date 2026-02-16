@@ -55,7 +55,7 @@ function getMode(level, round) {
 export default function TapTheColor({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(null);
   const [options, setOptions] = useState([]);

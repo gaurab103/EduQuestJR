@@ -81,7 +81,7 @@ function getProblem(level, round) {
 export default function AdditionIsland({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [problem, setProblem] = useState(null);
   const [score, setScore] = useState(0);

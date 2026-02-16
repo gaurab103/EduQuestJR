@@ -69,7 +69,7 @@ function getMode(level, round) {
 export default function CompareWeight({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [pair, setPair] = useState(null);
   const [orderSet, setOrderSet] = useState(null);

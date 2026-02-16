@@ -38,7 +38,7 @@ function getGridPositions(count) {
 export default function ConnectTheStars({ onComplete, level = 1, childName, childAge }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const containerRef = useRef(null);
   const [round, setRound] = useState(0);
   const [stars, setStars] = useState([]);

@@ -170,7 +170,7 @@ export default function HandwritingHero({ onComplete, level = 1, childName }) {
 
   const { playSuccess, playCelebration, playClick, playWrong } = useAudio();
   const { teachAfterAnswer, readQuestion, setChildName } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
 
   useEffect(() => { if (childName) setChildName(childName); }, [childName, setChildName]);
 

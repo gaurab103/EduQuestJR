@@ -73,7 +73,7 @@ function placeGems(grid, count) {
 export default function MazeExplorer({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [grid, setGrid] = useState(null);
   const [gems, setGems] = useState([]);

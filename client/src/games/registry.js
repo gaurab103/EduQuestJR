@@ -9,7 +9,6 @@ import TapTheColor from './TapTheColor';
 import BalloonPop from './BalloonPop';
 import BlocklyCodingLab from './BlocklyCodingLab';
 import SubtractionSafari from './SubtractionSafari';
-import ShadowMatch from './ShadowMatch';
 import SequenceBuilder from './SequenceBuilder';
 import ColorBasketSorting from './ColorBasketSorting';
 import BigVsSmall from './BigVsSmall';

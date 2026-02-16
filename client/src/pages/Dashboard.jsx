@@ -110,11 +110,14 @@ export default function Dashboard() {
       if (!selectedChildForTasks) setSelectedChildForTasks(child._id);
     } catch (err) {
       setAddError(err.message || 'Failed to add child. Please try again.');
+      if (err.code === 'CHILD_LIMIT_REACHED') setShowAdd(false);
     }
     setSubmitting(false);
   }
 
   const isPremium = user?.subscriptionStatus === 'active' || user?.subscriptionStatus === 'trial';
+  const FREE_CHILD_LIMIT = 1;
+  const canAddMoreChildren = isPremium || childList.length < FREE_CHILD_LIMIT;
 
   // Smart routing for child mode:
   // - While loading, show loading screen (don't redirect yet)
@@ -225,7 +228,12 @@ export default function Dashboard() {
             )}
             <div>
               <strong>{isPremium ? 'Premium' : 'Free Plan'}</strong>
-              {!isPremium && <Link to="/subscription" className={styles.upgradeLink}>Upgrade</Link>}
+              {!isPremium && (
+                <>
+                  <span className={styles.planLimit}>(1 child)</span>
+                  <Link to="/subscription" className={styles.upgradeLink}>Upgrade for unlimited</Link>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -319,10 +327,15 @@ export default function Dashboard() {
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Child Profiles</h2>
-          {!showAdd && childList.length > 0 && (
+          {!showAdd && childList.length > 0 && canAddMoreChildren && (
             <button type="button" onClick={() => setShowAdd(true)} className={styles.addBtn}>
               + Add Child
             </button>
+          )}
+          {!isPremium && childList.length >= FREE_CHILD_LIMIT && (
+            <Link to="/subscription" className={styles.upgradeChildLink}>
+              Upgrade for unlimited children
+            </Link>
           )}
         </div>
 

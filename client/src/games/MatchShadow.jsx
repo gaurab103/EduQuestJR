@@ -60,7 +60,7 @@ function getPool(level) {
 export default function MatchShadow({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(null);
   const [choices, setChoices] = useState([]);

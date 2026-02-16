@@ -21,7 +21,7 @@ function getQuestionType(level, round) {
 export default function NumberLine({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [qType, setQType] = useState('place');
   const [rangeMin, setRangeMin] = useState(0);

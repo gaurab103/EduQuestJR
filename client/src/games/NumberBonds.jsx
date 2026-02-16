@@ -20,7 +20,7 @@ function getTargetMax(level) {
 export default function NumberBonds({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(0);
   const [given, setGiven] = useState(0);

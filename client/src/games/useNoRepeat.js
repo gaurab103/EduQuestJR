@@ -1,6 +1,7 @@
 /**
  * Hook to ensure no question repeats within a game session/level.
  * Tracks used question "keys" and re-generates if duplicate found.
+ * Level-scoped: keys include level so L1 content never appears in L2+.
  *
  * IMPORTANT: The pool is NEVER cleared automatically. If all possible
  * questions are exhausted, it continues generating but accepts the
@@ -8,22 +9,26 @@
  */
 import { useRef, useCallback } from 'react';
 
-export function useNoRepeat() {
+export function useNoRepeat(level = 1) {
   const used = useRef(new Set());
   const history = useRef([]);
+  const levelRef = useRef(level);
+  if (levelRef.current !== level) {
+    levelRef.current = level;
+    used.current.clear();
+    history.current = [];
+  }
 
   /**
    * Generate a unique value. Takes a generator function and a key extractor.
+   * Keys are level-prefixed so no L1 content appears in L2+.
    * Will re-roll up to maxAttempts times to avoid duplicates.
-   *
-   * If all attempts produce duplicates (pool exhausted), removes the OLDEST
-   * entries from history (50% of them) so older questions can appear again,
-   * but recent questions are still blocked. This prevents immediate repeats.
    */
   const generate = useCallback((generatorFn, keyFn, maxAttempts = 80) => {
+    const levelKey = `L${levelRef.current}`;
     for (let i = 0; i < maxAttempts; i++) {
       const result = generatorFn();
-      const key = keyFn(result);
+      const key = `${levelKey}:${keyFn(result)}`;
       if (!used.current.has(key)) {
         used.current.add(key);
         history.current.push(key);
@@ -42,7 +47,7 @@ export function useNoRepeat() {
     // Try again with the refreshed pool
     for (let i = 0; i < maxAttempts; i++) {
       const result = generatorFn();
-      const key = keyFn(result);
+      const key = `${levelKey}:${keyFn(result)}`;
       if (!used.current.has(key)) {
         used.current.add(key);
         history.current.push(key);
@@ -52,7 +57,7 @@ export function useNoRepeat() {
 
     // Absolute fallback — generate and return (very rare)
     const result = generatorFn();
-    const key = keyFn(result);
+    const key = `${levelKey}:${keyFn(result)}`;
     used.current.add(key);
     history.current.push(key);
     return result;

@@ -93,7 +93,9 @@ export default function Games() {
   const isPremium = user?.subscriptionStatus === 'active' || user?.subscriptionStatus === 'trial';
 
   const filtered = useMemo(() => {
-    let list = allGames;
+    const bySlug = new Map();
+    allGames.forEach((g) => { if (g?.slug && !bySlug.has(g.slug)) bySlug.set(g.slug, g); });
+    let list = Array.from(bySlug.values());
     if (filter) list = list.filter((g) => g.category === filter);
     if (search.trim()) {
       const q = search.toLowerCase();

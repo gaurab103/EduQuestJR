@@ -37,7 +37,7 @@ function generateCountProblem(level) {
 export default function MoneyMath({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [problem, setProblem] = useState(null);
   const [options, setOptions] = useState([]);

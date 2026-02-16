@@ -42,7 +42,7 @@ function buildPattern(level) {
 export default function PatternMaster({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [pattern, setPattern] = useState([]);
   const [answer, setAnswer] = useState(null);

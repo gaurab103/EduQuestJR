@@ -148,3 +148,14 @@ export function getComplexityTier(level) {
   if (level <= 25) return 5;
   return 6;
 }
+
+/**
+ * Filter pool to exclude level-1-only content when level >= 2.
+ * Use: pool.filter((_, i) => i >= getLevelMinPoolIndex(level, pool.length))
+ * Ensures no "beginner" content appears at higher levels.
+ */
+export function getLevelMinPoolIndex(level, poolLength) {
+  if (level <= 1) return 0;
+  const skip = Math.min(Math.floor(poolLength * 0.15), Math.floor(poolLength / 3));
+  return skip;
+}

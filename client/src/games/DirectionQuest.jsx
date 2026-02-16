@@ -61,7 +61,7 @@ function getGridSize(level) {
 export default function DirectionQuest({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [scenario, setScenario] = useState(null);
   const [correctDir, setCorrectDir] = useState(null);

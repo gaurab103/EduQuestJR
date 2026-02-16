@@ -48,7 +48,7 @@ function getWordPool(level) {
 export default function SyllableClap({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [currentWord, setCurrentWord] = useState(null);
   const [options, setOptions] = useState([]);

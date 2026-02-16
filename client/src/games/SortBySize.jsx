@@ -58,7 +58,7 @@ function getMode(level, round) {
 export default function SortBySize({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [items, setItems] = useState([]);
   const [smallestFirst, setSmallestFirst] = useState(true);

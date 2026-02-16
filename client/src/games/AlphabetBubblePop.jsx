@@ -47,7 +47,7 @@ function generateBubbles(correctLetter, count) {
 export default function AlphabetBubblePop({ level = 1, onComplete }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [targetLetter, setTargetLetter] = useState('');
   const [bubbles, setBubbles] = useState([]);

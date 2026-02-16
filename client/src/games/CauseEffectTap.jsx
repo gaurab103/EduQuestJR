@@ -39,7 +39,7 @@ function getItemPool(level) {
 export default function CauseEffectTap({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [item, setItem] = useState(null);
   const [tapped, setTapped] = useState(false);

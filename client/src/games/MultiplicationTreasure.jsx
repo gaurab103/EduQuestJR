@@ -120,7 +120,7 @@ function generateQuestion(types, maxFactor, choiceCount) {
 export default function MultiplicationTreasure({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [question, setQuestion] = useState(null);
   const [score, setScore] = useState(0);

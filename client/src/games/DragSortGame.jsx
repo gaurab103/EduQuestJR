@@ -102,7 +102,7 @@ function getPromptText(level) {
 export default function DragSortGame({ onComplete, level = 1, childName, childAge }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [items, setItems] = useState([]);
   const [selectedIdx, setSelectedIdx] = useState(null);

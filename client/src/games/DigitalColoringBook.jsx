@@ -104,7 +104,7 @@ function getScenesForLevel(level) {
 export default function DigitalColoringBook({ onComplete, level = 1, childName }) {
   const { playSuccess, playClick, playCelebration } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [scene, setScene] = useState(null);
   const [regionColors, setRegionColors] = useState({});

@@ -45,7 +45,7 @@ function getMode(level, round) {
 export default function DotConnect({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [dots, setDots] = useState([]);
   const [nextNum, setNextNum] = useState(1);

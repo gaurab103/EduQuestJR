@@ -11,7 +11,7 @@ const ITEM_POOL = Object.entries(FRUIT_IMAGES).map(([name, img]) => ({ name, img
 export default function MoreOrLess({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [left, setLeft] = useState(0);
   const [right, setRight] = useState(0);

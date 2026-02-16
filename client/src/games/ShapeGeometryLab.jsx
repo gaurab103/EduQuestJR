@@ -29,7 +29,7 @@ function getMode(level) {
 export default function ShapeGeometryLab({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [mode, setMode] = useState('sides');
   const [question, setQuestion] = useState(null);

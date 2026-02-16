@@ -133,7 +133,7 @@ function generateQuestion(types, denominators, choiceCount) {
 export default function FractionFunLand({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [question, setQuestion] = useState(null);
   const [selectedSlices, setSelectedSlices] = useState(new Set());

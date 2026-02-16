@@ -23,7 +23,7 @@ function getPool(level) {
 export default function SightWords({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState('');
   const [options, setOptions] = useState([]);

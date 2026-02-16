@@ -149,7 +149,7 @@ function getPromptText(target, level) {
 export default function FingerTracePath({ onComplete, level = 1, childName, childAge }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const canvasRef = useRef(null);
   const guideRef = useRef(null);
   const isDrawingRef = useRef(false);

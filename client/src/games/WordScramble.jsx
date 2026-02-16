@@ -33,7 +33,7 @@ function scramble(word) {
 export default function WordScramble({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [word, setWord] = useState('');
   const [scrambled, setScrambled] = useState('');

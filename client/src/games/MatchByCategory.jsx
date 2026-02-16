@@ -12,7 +12,7 @@ const VEGGIES = Object.entries(VEGGIE_IMAGES).map(([name, img]) => ({ name, img,
 export default function MatchByCategory({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(null);
   const [options, setOptions] = useState([]);

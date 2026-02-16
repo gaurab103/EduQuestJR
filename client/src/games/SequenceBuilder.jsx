@@ -37,7 +37,7 @@ function getSequencesForLength(len) {
 export default function SequenceBuilder({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [correct, setCorrect] = useState([]);
   const [options, setOptions] = useState([]);

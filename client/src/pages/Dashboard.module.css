@@ -134,6 +134,7 @@
   object-fit: contain;
 }
 
+.planLimit { display: block; font-size: 0.7rem; color: var(--text-muted); font-weight: 600; }
 .upgradeLink { display: block; font-size: 0.78rem; color: var(--primary); font-weight: 700; }
 
 /* ======= OVERVIEW STATS (image-based) ======= */
@@ -198,6 +199,21 @@
   font-size: 0.82rem;
   font-family: inherit;
   font-weight: 600;
+}
+
+.upgradeChildLink {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-decoration: none;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-sm);
+  background: rgba(56, 189, 248, 0.12);
+  transition: background 0.2s;
+}
+.upgradeChildLink:hover {
+  background: rgba(56, 189, 248, 0.2);
+  color: var(--primary);
 }
 
 .addBtn {

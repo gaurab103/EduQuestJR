@@ -25,7 +25,7 @@ function getMode(level, round) {
 export default function BigVsSmall({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [ask, setAsk] = useState('big');
   const [pair, setPair] = useState(null);

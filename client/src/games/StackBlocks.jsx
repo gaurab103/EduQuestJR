@@ -33,7 +33,7 @@ function generatePattern(count, level) {
 export default function StackBlocks({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
-  const { generate } = useNoRepeat();
+  const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [stack, setStack] = useState([]);
   const [target, setTarget] = useState(3);
