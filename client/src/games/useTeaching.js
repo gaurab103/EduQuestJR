@@ -50,8 +50,10 @@ const ANIMAL_FACTS = {
   dinosaur:'Dinosaurs lived millions of years ago!',mouse:'Mice have excellent hearing!',
 };
 
-const CORRECT_SHORT = ['Great job!','Awesome!','Perfect!','Well done!','Fantastic!','Brilliant!','Superstar!','Amazing!'];
+const CORRECT_SHORT = ['Great job!','Awesome!','Perfect!','Well done!','Fantastic!','Brilliant!','Superstar!','Amazing!','Wonderful!','Nailed it!'];
+const CORRECT_NAMED = ['{name}, great job!','{name}, you\'re amazing!','Way to go, {name}!','Fantastic, {name}!','{name}, you\'re a superstar!'];
 const WRONG_EXPLAIN = ['Oops!','Not quite!','Almost!','Let me explain.','Let\'s learn this!','Good try!'];
+const WRONG_NAMED = ['Almost, {name}!','Good try, {name}!','{name}, let me help!','Not quite, {name}!'];
 
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 function getFact(type, key) {
@@ -110,17 +112,24 @@ export function useTeaching() {
    * If WRONG: clearly explains the correct answer and teaches why.
    * If CORRECT: brief praise + a fun fact.
    */
+  const childNameRef = useRef('');
+
+  const setChildName = useCallback((name) => {
+    childNameRef.current = name || '';
+  }, []);
+
   const teachAfterAnswer = useCallback((correct, context = {}) => {
     if (isMutedRef.current) return;
     const { type, answer, correctAnswer, extra } = context;
+    const name = childNameRef.current;
 
     let msg;
     if (correct) {
-      msg = pick(CORRECT_SHORT);
+      msg = name ? pick(CORRECT_NAMED).replace('{name}', name) : pick(CORRECT_SHORT);
       const fact = getFact(type, correctAnswer || answer) || extra || '';
       if (fact) msg += ' ' + fact;
     } else {
-      msg = pick(WRONG_EXPLAIN);
+      msg = name ? pick(WRONG_NAMED).replace('{name}', name) : pick(WRONG_EXPLAIN);
       if (answer !== undefined && correctAnswer !== undefined) {
         msg += ` You picked ${answer}, but the right answer is ${correctAnswer}.`;
       } else if (correctAnswer !== undefined) {
@@ -156,7 +165,7 @@ export function useTeaching() {
     speakText(text, { rate: 0.85, pitch: 1.15 });
   }, []);
 
-  return { teachAfterAnswer, readQuestion, teachFact };
+  return { teachAfterAnswer, readQuestion, teachFact, setChildName };
 }
 
 export { ANIMAL_FACTS, LETTER_FACTS, COLOR_FACTS, SHAPE_FACTS };

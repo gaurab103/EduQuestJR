@@ -58,6 +58,9 @@ const GAMES = [
   { title: 'Body Parts', slug: 'body-parts', category: 'cognitive', difficulty: 'easy', isPremium: false },
   { title: 'Weather Learn', slug: 'weather-learn', category: 'cognitive', difficulty: 'easy', isPremium: false },
   { title: 'Dot Connect', slug: 'dot-connect', category: 'motor', difficulty: 'easy', isPremium: false },
+  { title: 'Finger Trace Path', slug: 'finger-trace-path', category: 'motor', difficulty: 'easy', isPremium: false },
+  { title: 'Connect the Stars', slug: 'connect-the-stars', category: 'motor', difficulty: 'easy', isPremium: false },
+  { title: 'Drag & Sort', slug: 'drag-sort-game', category: 'motor', difficulty: 'easy', isPremium: false },
   { title: 'Emotion Match', slug: 'emotion-match', category: 'sel', difficulty: 'easy', isPremium: false },
   { title: 'Plant Grower', slug: 'plant-grower', category: 'cognitive', difficulty: 'easy', isPremium: false },
   { title: 'Compare Weight', slug: 'compare-weight', category: 'cognitive', difficulty: 'easy', isPremium: false },
@@ -84,6 +87,9 @@ const GAMES = [
   { title: 'Time Sorter', slug: 'time-sorter', category: 'cognitive', difficulty: 'medium', isPremium: true },
   { title: 'Match Shadow', slug: 'match-shadow', category: 'cognitive', difficulty: 'easy', isPremium: true },
   { title: 'Sort by Size', slug: 'sort-by-size', category: 'cognitive', difficulty: 'easy', isPremium: true },
+  { title: 'Finger Trace Path', slug: 'finger-trace-path', category: 'motor', difficulty: 'easy', isPremium: false },
+  { title: 'Connect the Stars', slug: 'connect-the-stars', category: 'motor', difficulty: 'easy', isPremium: false },
+  { title: 'Drag & Sort', slug: 'drag-sort-game', category: 'motor', difficulty: 'medium', isPremium: false },
 ];
 
 export async function seedGames() {

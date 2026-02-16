@@ -58,6 +58,9 @@ import MatchShadow from './MatchShadow';
 import NumberLine from './NumberLine';
 import SyllableClap from './SyllableClap';
 import SortBySize from './SortBySize';
+import FingerTracePath from './FingerTracePath';
+import ConnectTheStars from './ConnectTheStars';
+import DragSortGame from './DragSortGame';
 
 export const GAME_COMPONENTS = {
   'shape-match-quest': ShapeMatchQuest,
@@ -122,6 +125,9 @@ export const GAME_COMPONENTS = {
   'number-line': NumberLine,
   'syllable-clap': SyllableClap,
   'sort-by-size': SortBySize,
+  'finger-trace-path': FingerTracePath,
+  'connect-the-stars': ConnectTheStars,
+  'drag-sort-game': DragSortGame,
   // Aliases for seeded premium games that reuse components
   'alphabet-tracing-world': LetterSoundMatch,  // redirected from old tracing game
   'phonics-blending-lab': SpellingBee,

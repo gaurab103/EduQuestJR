@@ -14,9 +14,10 @@ function getMode(level, round) {
   return round % 5;
 }
 
-export default function CountingAdventure({ onComplete, level = 1, childAge }) {
+export default function CountingAdventure({ onComplete, level = 1, childName, childAge }) {
   const { playSuccess, playWrong, playClick } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, setChildName } = useTeaching();
+  useEffect(() => { if (childName) setChildName(childName); }, [childName, setChildName]);
   const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [questionData, setQuestionData] = useState(null);
