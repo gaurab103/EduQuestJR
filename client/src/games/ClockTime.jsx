@@ -5,6 +5,7 @@
  */
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
@@ -62,6 +63,7 @@ function ClockFace({ h, m, size = 160 }) {
 export default function ClockTime({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [time, setTime] = useState({ h: 12, m: 0 });
   const [options, setOptions] = useState([]);
@@ -84,7 +86,10 @@ export default function ClockTime({ onComplete, level = 1, childName }) {
       onComplete(score, ROUNDS > 0 ? Math.round((correct / ROUNDS) * 100) : 0);
       return;
     }
-    const t = generateTime(level);
+    const t = generate(
+      () => generateTime(level),
+      (r) => `${r.h}:${r.m}`
+    );
     const correctAnswer = formatTime(t.h, t.m);
     const opts = new Set([correctAnswer]);
     while (opts.size < CHOICES) {

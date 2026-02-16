@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import styles from './GameCommon.module.css';
 
@@ -46,6 +47,7 @@ function generateBubbles(correctLetter, count) {
 export default function AlphabetBubblePop({ level = 1, onComplete }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [targetLetter, setTargetLetter] = useState('');
   const [bubbles, setBubbles] = useState([]);
@@ -71,7 +73,10 @@ export default function AlphabetBubblePop({ level = 1, onComplete }) {
       return;
     }
     
-    const letter = getRandomLetter();
+    const letter = generate(
+      () => getRandomLetter(),
+      (r) => r
+    );
     const bubbleList = generateBubbles(letter, CHOICE_COUNT);
     setTargetLetter(letter);
     setBubbles(bubbleList);

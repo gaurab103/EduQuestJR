@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getFeedbackDelay } from './levelConfig';
 import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
@@ -10,6 +11,7 @@ const BALLOON_TO_COLOR = { '🔴': 'red', '🔵': 'blue', '🟢': 'green', '🟡
 export default function BalloonPop({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState('');
   const [items, setItems] = useState([]);
@@ -27,7 +29,10 @@ export default function BalloonPop({ onComplete, level = 1 }) {
       onComplete(score, accuracy);
       return;
     }
-    const t = BALLOONS[Math.floor(Math.random() * BALLOONS.length)];
+    const t = generate(
+      () => BALLOONS[Math.floor(Math.random() * BALLOONS.length)],
+      (r) => r
+    );
     const arr = [...Array(9)].map(() => BALLOONS[Math.floor(Math.random() * BALLOONS.length)]);
     const idx = Math.floor(Math.random() * 9);
     arr[idx] = t;

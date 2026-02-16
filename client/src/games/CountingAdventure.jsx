@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import { ai as aiApi } from '../api/client';
 import { getRounds, getMaxNumber, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { COUNTING_THEMES, GameImage } from './gameImages';
@@ -16,6 +17,7 @@ function getMode(level, round) {
 export default function CountingAdventure({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [count, setCount] = useState(0);
   const [count2, setCount2] = useState(0);
@@ -50,8 +52,14 @@ export default function CountingAdventure({ onComplete, level = 1, childAge }) {
 
     if (m === 0) {
       // How many X?
-      const n = Math.floor(Math.random() * MAX_COUNT) + 1;
-      const obj = objs[Math.floor(Math.random() * objs.length)];
+      const { n, obj } = generate(
+        () => {
+          const n = Math.floor(Math.random() * MAX_COUNT) + 1;
+          const obj = objs[Math.floor(Math.random() * objs.length)];
+          return { n, obj };
+        },
+        (r) => `${m}-${r.n}-${r.obj?.name}`
+      );
       const wrong = new Set([n]);
       while (wrong.size < CHOICES) {
         const w = Math.floor(Math.random() * MAX_COUNT) + 1;
@@ -69,12 +77,20 @@ export default function CountingAdventure({ onComplete, level = 1, childAge }) {
 
     if (m === 1) {
       // Which has more: A X or B Y?
-      const a = Math.floor(Math.random() * MAX_COUNT) + 1;
-      const b = Math.floor(Math.random() * MAX_COUNT) + 1;
-      if (a === b) { setRound(r => r); return; }
-      const obj1 = objs[Math.floor(Math.random() * objs.length)];
-      let obj2 = objs[Math.floor(Math.random() * objs.length)];
-      while (obj2?.name === obj1?.name && objs.length > 1) obj2 = objs[Math.floor(Math.random() * objs.length)];
+      const { a, b, obj1, obj2 } = generate(
+        () => {
+          let a, b;
+          do {
+            a = Math.floor(Math.random() * MAX_COUNT) + 1;
+            b = Math.floor(Math.random() * MAX_COUNT) + 1;
+          } while (a === b);
+          const obj1 = objs[Math.floor(Math.random() * objs.length)];
+          let obj2 = objs[Math.floor(Math.random() * objs.length)];
+          while (obj2?.name === obj1?.name && objs.length > 1) obj2 = objs[Math.floor(Math.random() * objs.length)];
+          return { a, b, obj1, obj2 };
+        },
+        (r) => `${m}-${r.a}-${r.b}-${r.obj1?.name}-${r.obj2?.name}`
+      );
       setWhichMorePair({ a, b, obj1, obj2 });
       const answer = a > b ? a : b;
       const wrong = new Set([answer]);
@@ -90,9 +106,15 @@ export default function CountingAdventure({ onComplete, level = 1, childAge }) {
 
     if (m === 2) {
       // What is 1 more than X?
-      const n = Math.min(Math.floor(Math.random() * (MAX_COUNT - 1)) + 1, MAX_COUNT - 1);
+      const { n, obj } = generate(
+        () => {
+          const n = Math.min(Math.floor(Math.random() * (MAX_COUNT - 1)) + 1, MAX_COUNT - 1);
+          const obj = objs[Math.floor(Math.random() * objs.length)];
+          return { n, obj };
+        },
+        (r) => `${m}-${r.n}-${r.obj?.name}`
+      );
       const answer = n + 1;
-      const obj = objs[Math.floor(Math.random() * objs.length)];
       const wrong = new Set([answer]);
       while (wrong.size < CHOICES) wrong.add(Math.max(1, answer + (Math.floor(Math.random() * 5) - 2)));
       setCount(n);
@@ -107,7 +129,10 @@ export default function CountingAdventure({ onComplete, level = 1, childAge }) {
 
     if (m === 3) {
       // Count backwards from N - what comes before?
-      const start = Math.min(Math.floor(Math.random() * (MAX_COUNT - 2)) + 3, MAX_COUNT);
+      const { start } = generate(
+        () => ({ start: Math.min(Math.floor(Math.random() * (MAX_COUNT - 2)) + 3, MAX_COUNT) }),
+        (r) => `${m}-${r.start}`
+      );
       const answer = start - 1;
       const wrong = new Set([answer]);
       while (wrong.size < CHOICES) wrong.add(Math.max(1, answer + (Math.floor(Math.random() * 5) - 2)));
@@ -122,12 +147,18 @@ export default function CountingAdventure({ onComplete, level = 1, childAge }) {
     }
 
     // m === 4: How many X AND Y together?
-    const n1 = Math.floor(Math.random() * Math.min(5, MAX_COUNT - 1)) + 1;
-    const n2 = Math.floor(Math.random() * Math.min(5, MAX_COUNT - n1)) + 1;
+    const { n1, n2, obj1, obj2 } = generate(
+      () => {
+        const n1 = Math.floor(Math.random() * Math.min(5, MAX_COUNT - 1)) + 1;
+        const n2 = Math.floor(Math.random() * Math.min(5, MAX_COUNT - n1)) + 1;
+        const obj1 = objs[Math.floor(Math.random() * objs.length)];
+        let obj2 = objs[Math.floor(Math.random() * objs.length)];
+        while (obj2?.name === obj1?.name && objs.length > 1) obj2 = objs[Math.floor(Math.random() * objs.length)];
+        return { n1, n2, obj1, obj2 };
+      },
+      (r) => `${m}-${r.n1}-${r.n2}-${r.obj1?.name}-${r.obj2?.name}`
+    );
     const answer = n1 + n2;
-    const obj1 = objs[Math.floor(Math.random() * objs.length)];
-    let obj2 = objs[Math.floor(Math.random() * objs.length)];
-    while (obj2?.name === obj1?.name && objs.length > 1) obj2 = objs[Math.floor(Math.random() * objs.length)];
     const wrong = new Set([answer]);
     while (wrong.size < CHOICES) wrong.add(Math.max(2, answer + (Math.floor(Math.random() * 7) - 3)));
     setCount(n1);

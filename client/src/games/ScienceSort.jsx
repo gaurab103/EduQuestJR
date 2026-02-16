@@ -5,6 +5,7 @@
  */
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getFeedbackDelay } from './levelConfig';
 import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
@@ -50,6 +51,7 @@ const CATEGORIES = [
 export default function ScienceSort({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [category, setCategory] = useState(null);
   const [currentItem, setCurrentItem] = useState(null);
@@ -72,10 +74,16 @@ export default function ScienceSort({ onComplete, level = 1, childName }) {
       return;
     }
     const catPool = level <= 5 ? CATEGORIES.slice(0, 2) : level <= 15 ? CATEGORIES.slice(0, 4) : CATEGORIES;
-    const cat = catPool[Math.floor(Math.random() * catPool.length)];
-    const groupIdx = Math.floor(Math.random() * cat.groups.length);
-    const group = cat.groups[groupIdx];
-    const item = group.items[Math.floor(Math.random() * group.items.length)];
+    const { cat, groupIdx, item } = generate(
+      () => {
+        const cat = catPool[Math.floor(Math.random() * catPool.length)];
+        const groupIdx = Math.floor(Math.random() * cat.groups.length);
+        const group = cat.groups[groupIdx];
+        const item = group.items[Math.floor(Math.random() * group.items.length)];
+        return { cat, groupIdx, item };
+      },
+      (r) => r.item
+    );
     setCategory(cat);
     setCurrentItem(item);
     setCorrectGroup(groupIdx);

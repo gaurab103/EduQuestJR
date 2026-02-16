@@ -5,6 +5,7 @@
  */
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getFeedbackDelay } from './levelConfig';
 import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
@@ -38,6 +39,7 @@ function getItemPool(level) {
 export default function CauseEffectTap({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [item, setItem] = useState(null);
   const [tapped, setTapped] = useState(false);
@@ -63,7 +65,10 @@ export default function CauseEffectTap({ onComplete, level = 1, childName }) {
       onComplete(score, accuracy);
       return;
     }
-    const chosen = pool[Math.floor(Math.random() * pool.length)];
+    const chosen = generate(
+      () => pool[Math.floor(Math.random() * pool.length)],
+      (r) => r.tap
+    );
     setItem(chosen);
     setTapped(false);
     setFeedback(null);

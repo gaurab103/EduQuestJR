@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getFeedbackDelay } from './levelConfig';
 import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
@@ -48,6 +49,7 @@ function getStoriesForLength(length) {
 export default function StorySequence({ level = 1, onComplete }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [steps, setSteps] = useState([]);
   const [correctOrder, setCorrectOrder] = useState([]);
@@ -80,7 +82,10 @@ export default function StorySequence({ level = 1, onComplete }) {
       setCorrectOrder(simpleStory);
       setSteps(shuffle([...simpleStory]));
     } else {
-      const story = availableStories[Math.floor(Math.random() * availableStories.length)];
+      const story = generate(
+        () => availableStories[Math.floor(Math.random() * availableStories.length)],
+        (r) => r.join('-')
+      );
       setCorrectOrder([...story]);
       setSteps(shuffle([...story]));
     }

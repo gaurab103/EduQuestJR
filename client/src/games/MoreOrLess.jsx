@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getMaxNumber, getFeedbackDelay } from './levelConfig';
 import { FRUIT_IMAGES, GameImage } from './gameImages';
 import styles from './GameCommon.module.css';
@@ -10,6 +11,7 @@ const ITEM_POOL = Object.entries(FRUIT_IMAGES).map(([name, img]) => ({ name, img
 export default function MoreOrLess({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [left, setLeft] = useState(0);
   const [right, setRight] = useState(0);
@@ -29,14 +31,20 @@ export default function MoreOrLess({ onComplete, level = 1 }) {
       onComplete(score, Math.round((score / ROUNDS) * 100));
       return;
     }
-    const a = Math.floor(Math.random() * MAX_NUM) + 1;
-    let b = Math.floor(Math.random() * MAX_NUM) + 1;
-    while (b === a) b = Math.floor(Math.random() * MAX_NUM) + 1;
+    const { a, b, q, item } = generate(
+      () => {
+        const a = Math.floor(Math.random() * MAX_NUM) + 1;
+        let b = Math.floor(Math.random() * MAX_NUM) + 1;
+        while (b === a) b = Math.floor(Math.random() * MAX_NUM) + 1;
+        const q = Math.random() > 0.5 ? 'more' : 'less';
+        const item = ITEM_POOL[Math.floor(Math.random() * ITEM_POOL.length)];
+        return { a, b, q, item };
+      },
+      (r) => `${r.a}-${r.b}-${r.q}`
+    );
     setLeft(a);
     setRight(b);
-    const q = Math.random() > 0.5 ? 'more' : 'less';
     setAsk(q);
-    const item = ITEM_POOL[Math.floor(Math.random() * ITEM_POOL.length)];
     setCurrentItem(item);
     setFeedback(null);
     const cancelRead = readQuestion('Tap the group with ' + q + ' ' + item.name + 's:');

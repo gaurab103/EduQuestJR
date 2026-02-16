@@ -27,6 +27,7 @@ function getLetterCount(level) {
 export default function ABCOrder({ level = 1, onComplete }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [letters, setLetters] = useState([]);
   const [correctOrder, setCorrectOrder] = useState([]);
@@ -52,8 +53,14 @@ export default function ABCOrder({ level = 1, onComplete }) {
     }
 
     // Generate consecutive letters starting from a random position
-    const startIdx = Math.floor(Math.random() * (26 - letterCount + 1));
-    const correctLetters = ALPHABET.slice(startIdx, startIdx + letterCount);
+    const { startIdx, correctLetters } = generate(
+      () => {
+        const startIdx = Math.floor(Math.random() * (26 - letterCount + 1));
+        const correctLetters = ALPHABET.slice(startIdx, startIdx + letterCount);
+        return { startIdx, correctLetters };
+      },
+      (r) => r.correctLetters.join('')
+    );
     const shuffled = shuffle([...correctLetters]);
 
     setCorrectOrder(correctLetters);

@@ -6,6 +6,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getFeedbackDelay } from './levelConfig';
 import styles from './GameCommon.module.css';
 
@@ -32,6 +33,7 @@ function scramble(word) {
 export default function WordScramble({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [word, setWord] = useState('');
   const [scrambled, setScrambled] = useState('');
@@ -55,7 +57,10 @@ export default function WordScramble({ onComplete, level = 1, childName }) {
       return;
     }
     const pool = getWordPool(level);
-    const w = pool[Math.floor(Math.random() * pool.length)];
+    const w = generate(
+      () => pool[Math.floor(Math.random() * pool.length)],
+      (r) => r
+    );
     setWord(w);
     const s = scramble(w);
     setScrambled(s);

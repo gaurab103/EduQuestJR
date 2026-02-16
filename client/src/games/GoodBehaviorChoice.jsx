@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
@@ -15,6 +16,7 @@ const SCENARIOS = [
 export default function GoodBehaviorChoice({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [item, setItem] = useState(null);
   const [options, setOptions] = useState([]);
@@ -33,7 +35,10 @@ export default function GoodBehaviorChoice({ onComplete, level = 1 }) {
       onComplete(score, accuracy);
       return;
     }
-    const i = SCENARIOS[Math.floor(Math.random() * SCENARIOS.length)];
+    const i = generate(
+      () => SCENARIOS[Math.floor(Math.random() * SCENARIOS.length)],
+      (r) => r.scenario
+    );
     const allOptions = [i.good, ...i.bad].slice(0, CHOICES);
     while (allOptions.length < CHOICES && i.bad.length > allOptions.length - 1) {
       const extra = i.bad.find(b => !allOptions.includes(b));

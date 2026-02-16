@@ -5,6 +5,7 @@
  */
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
@@ -54,6 +55,7 @@ const BODY_FACTS = {
 export default function BodyParts({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(null);
   const [options, setOptions] = useState([]);
@@ -77,7 +79,10 @@ export default function BodyParts({ onComplete, level = 1, childAge }) {
       return;
     }
     const pool = [...BODY_PARTS];
-    const t = pool[Math.floor(Math.random() * pool.length)];
+    const t = generate(
+      () => pool[Math.floor(Math.random() * pool.length)],
+      (r) => r.part
+    );
     const opts = new Set([t]);
     while (opts.size < Math.min(CHOICES, pool.length)) {
       opts.add(pool[Math.floor(Math.random() * pool.length)]);

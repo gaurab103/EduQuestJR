@@ -6,6 +6,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import styles from './GameCommon.module.css';
 
@@ -19,6 +20,7 @@ function getTargetMax(level) {
 export default function NumberBonds({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(0);
   const [given, setGiven] = useState(0);
@@ -44,8 +46,14 @@ export default function NumberBonds({ onComplete, level = 1, childName }) {
       return;
     }
     const maxT = getTargetMax(level);
-    const t = Math.floor(Math.random() * (maxT - 2)) + 3;
-    const g = Math.floor(Math.random() * t);
+    const { t, g } = generate(
+      () => {
+        const t = Math.floor(Math.random() * (maxT - 2)) + 3;
+        const g = Math.floor(Math.random() * t);
+        return { t, g };
+      },
+      (r) => `${r.t}-${r.g}`
+    );
     const answer = t - g;
     const opts = new Set([answer]);
     while (opts.size < CHOICES) {

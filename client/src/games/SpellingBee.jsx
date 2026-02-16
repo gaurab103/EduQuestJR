@@ -6,6 +6,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getFeedbackDelay } from './levelConfig';
 import styles from './GameCommon.module.css';
 
@@ -26,6 +27,7 @@ const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 export default function SpellingBee({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [word, setWord] = useState('');
   const [typed, setTyped] = useState([]);
@@ -48,7 +50,10 @@ export default function SpellingBee({ onComplete, level = 1, childName }) {
       return;
     }
     const pool = getPool(level);
-    const w = pool[Math.floor(Math.random() * pool.length)].toUpperCase();
+    const w = generate(
+      () => pool[Math.floor(Math.random() * pool.length)].toUpperCase(),
+      (r) => r.toLowerCase()
+    );
     setWord(w);
     setTyped([]);
     setFeedback(null);

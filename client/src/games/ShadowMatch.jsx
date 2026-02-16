@@ -5,6 +5,7 @@
  */
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getFeedbackDelay } from './levelConfig';
 import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
@@ -36,6 +37,7 @@ function getShapePool(level) {
 export default function ShadowMatch({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(null);
   const [choices, setChoices] = useState([]);
@@ -61,8 +63,14 @@ export default function ShadowMatch({ onComplete, level = 1, childName }) {
       return;
     }
     const pool = getShapePool(level);
-    const shuffled = [...pool].sort(() => Math.random() - 0.5);
-    const targetShape = shuffled[0];
+    const targetShape = generate(
+      () => {
+        const shuffled = [...pool].sort(() => Math.random() - 0.5);
+        return shuffled[0];
+      },
+      (r) => r.name
+    );
+    const shuffled = [targetShape, ...pool.filter(p => p.name !== targetShape.name)].sort(() => Math.random() - 0.5);
     const opts = shuffled.slice(0, choiceCount);
     // Make sure target is in the choices
     if (!opts.find(o => o.name === targetShape.name)) {

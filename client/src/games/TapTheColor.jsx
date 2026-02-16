@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import styles from './GameCommon.module.css';
 
@@ -54,6 +55,7 @@ function getMode(level, round) {
 export default function TapTheColor({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(null);
   const [options, setOptions] = useState([]);
@@ -80,8 +82,14 @@ export default function TapTheColor({ onComplete, level = 1 }) {
     setModeState(m);
 
     if (m === 0) {
-      const pool = [...COLORS].sort(() => Math.random() - 0.5);
-      const targetColor = pool[0];
+      const targetColor = generate(
+        () => {
+          const pool = [...COLORS].sort(() => Math.random() - 0.5);
+          return pool[0];
+        },
+        (r) => r.name
+      );
+      const pool = [targetColor, ...COLORS.filter(c => c.name !== targetColor.name)].sort(() => Math.random() - 0.5);
       const opts = pool.slice(0, CHOICE_COUNT);
       setTarget(targetColor);
       setOptions(opts.sort(() => Math.random() - 0.5));
@@ -94,7 +102,10 @@ export default function TapTheColor({ onComplete, level = 1 }) {
     }
 
     if (m === 1) {
-      const q = COLOR_OBJECTS[(round * 3 + level) % COLOR_OBJECTS.length];
+      const q = generate(
+        () => COLOR_OBJECTS[Math.floor(Math.random() * COLOR_OBJECTS.length)],
+        (r) => `${m}-${r.object}`
+      );
       const targetColor = COLORS.find(c => c.name === q.color) || COLORS[0];
       const pool = [...COLORS].sort(() => Math.random() - 0.5);
       const opts = pool.slice(0, CHOICE_COUNT);
@@ -110,7 +121,10 @@ export default function TapTheColor({ onComplete, level = 1 }) {
     }
 
     if (m === 2) {
-      const mix = COLOR_MIX[(round * 2 + level) % COLOR_MIX.length];
+      const mix = generate(
+        () => COLOR_MIX[Math.floor(Math.random() * COLOR_MIX.length)],
+        (r) => `${m}-${r.a}-${r.b}`
+      );
       const targetColor = COLORS.find(c => c.name === mix.result);
       const displayMix = mix.result.charAt(0).toUpperCase() + mix.result.slice(1);
       const pool = COLORS.filter(c => c.name !== mix.a && c.name !== mix.b);
@@ -135,8 +149,11 @@ export default function TapTheColor({ onComplete, level = 1 }) {
     }
 
     if (m === 3) {
-      const excludeColor = COLORS[Math.floor(Math.random() * COLORS.length)];
-      const others = COLORS.filter(c => c.name !== excludeColor);
+      const excludeColor = generate(
+        () => COLORS[Math.floor(Math.random() * COLORS.length)],
+        (r) => `${m}-${r.name}`
+      );
+      const others = COLORS.filter(c => c.name !== excludeColor.name);
       const opts = [excludeColor, ...others.slice(0, CHOICE_COUNT - 1)].sort(() => Math.random() - 0.5);
       setTarget(excludeColor);
       setOptions(opts);

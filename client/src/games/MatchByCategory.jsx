@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { useTeaching } from './useTeaching';
 import { FRUIT_IMAGES, VEGGIE_IMAGES, GameImage } from './gameImages';
@@ -11,6 +12,7 @@ const VEGGIES = Object.entries(VEGGIE_IMAGES).map(([name, img]) => ({ name, img,
 export default function MatchByCategory({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(null);
   const [options, setOptions] = useState([]);
@@ -28,10 +30,17 @@ export default function MatchByCategory({ onComplete, level = 1 }) {
       onComplete(score, Math.round((score / ROUNDS) * 100));
       return;
     }
-    const cat = Math.random() > 0.5 ? 'fruit' : 'veggie';
+    const { cat, targetItem } = generate(
+      () => {
+        const cat = Math.random() > 0.5 ? 'fruit' : 'veggie';
+        const pool = cat === 'fruit' ? FRUITS : VEGGIES;
+        const targetItem = pool[Math.floor(Math.random() * pool.length)];
+        return { cat, targetItem };
+      },
+      (r) => r.cat + '-' + r.targetItem.name
+    );
     const pool = cat === 'fruit' ? FRUITS : VEGGIES;
     const other = cat === 'fruit' ? VEGGIES : FRUITS;
-    const targetItem = pool[Math.floor(Math.random() * pool.length)];
     const opts = [targetItem];
     const used = new Set([targetItem.name]);
     while (opts.length < CHOICES) {

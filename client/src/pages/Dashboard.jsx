@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useChildMode } from '../context/ChildModeContext';
 import { children as childrenApi, progress as progressApi, challenges as challengesApi, ai as aiApi } from '../api/client';
 import AvatarPicker from '../components/AvatarPicker';
+import BuddyChat from '../components/BuddyChat';
 import DailyTasks from '../components/DailyTasks';
 import styles from './Dashboard.module.css';
 
@@ -33,6 +34,7 @@ export default function Dashboard() {
   const [recentActivity, setRecentActivity] = useState([]);
   const [selectedChildForTasks, setSelectedChildForTasks] = useState(null);
   const [aiTip, setAiTip] = useState('');
+  const [buddyChatOpen, setBuddyChatOpen] = useState(false);
 
   useEffect(() => {
     childrenApi

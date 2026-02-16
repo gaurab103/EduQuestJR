@@ -5,6 +5,7 @@
  */
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getFeedbackDelay } from './levelConfig';
 import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
@@ -29,6 +30,7 @@ function getMinPoints(level) {
 export default function TraceLetters({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [letter, setLetter] = useState('');
   const [score, setScore] = useState(0);
@@ -57,7 +59,10 @@ export default function TraceLetters({ onComplete, level = 1, childName }) {
       onComplete(score, accuracy);
       return;
     }
-    setLetter(LETTERS[Math.floor(Math.random() * LETTERS.length)]);
+    setLetter(generate(
+      () => LETTERS[Math.floor(Math.random() * LETTERS.length)],
+      (r) => r
+    ));
     setFeedback(null);
     pathRef.current = [];
     startedRef.current = false;

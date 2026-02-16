@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNoRepeat } from './useNoRepeat';
 import styles from './GameCommon.module.css';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { useAudio } from '../context/AudioContext';
@@ -14,6 +15,7 @@ const COLORS = [
 export default function ColorBasketSorting({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [targetColor, setTargetColor] = useState(null);
   const [items, setItems] = useState([]);
@@ -32,7 +34,10 @@ export default function ColorBasketSorting({ onComplete, level = 1 }) {
       onComplete(score, accuracy);
       return;
     }
-    const target = COLORS[Math.floor(Math.random() * COLORS.length)];
+    const target = generate(
+      () => COLORS[Math.floor(Math.random() * COLORS.length)],
+      (r) => r.name
+    );
     const others = COLORS.filter((c) => c.name !== target.name);
     const wrongCount = Math.max(1, choiceCount - 2);
     const wrongItems = others.slice(0, wrongCount);

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import styles from './GameCommon.module.css';
 
@@ -18,6 +19,7 @@ const EMOTIONS = [
 export default function EmotionDetective({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick, speak } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(null);
   const [options, setOptions] = useState([]);
@@ -37,8 +39,14 @@ export default function EmotionDetective({ onComplete, level = 1 }) {
       onComplete(score, accuracy);
       return;
     }
-    const pool = [...EMOTIONS].sort(() => Math.random() - 0.5);
-    const targetItem = pool[0];
+    const targetItem = generate(
+      () => {
+        const pool = [...EMOTIONS].sort(() => Math.random() - 0.5);
+        return pool[0];
+      },
+      (r) => r.word
+    );
+    const pool = [targetItem, ...EMOTIONS.filter(e => e.word !== targetItem.word)].sort(() => Math.random() - 0.5);
     const opts = pool.slice(0, CHOICE_COUNT).map((e) => e.word);
     setTarget(targetItem);
     setOptions(opts.sort(() => Math.random() - 0.5));

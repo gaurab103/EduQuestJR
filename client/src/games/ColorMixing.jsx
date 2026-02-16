@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import styles from './GameCommon.module.css';
 
@@ -33,6 +34,7 @@ const SIMPLE_COLORS = ['Red', 'Blue', 'Yellow', 'Green', 'Orange', 'Purple', 'Pi
 export default function ColorMixing({ level = 1, onComplete }) {
   const { playSuccess, playWrong, playClick, speak } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [currentChallenge, setCurrentChallenge] = useState(null);
   const [options, setOptions] = useState([]);
@@ -56,7 +58,10 @@ export default function ColorMixing({ level = 1, onComplete }) {
 
     if (isMixingLevel) {
       // Color mixing mode (level 11+)
-      const mix = COLOR_MIXES[Math.floor(Math.random() * COLOR_MIXES.length)];
+      const mix = generate(
+        () => COLOR_MIXES[Math.floor(Math.random() * COLOR_MIXES.length)],
+        (r) => r.result
+      );
       
       // Ensure we have enough options
       let availableOptions = [...mix.options];
@@ -88,7 +93,10 @@ export default function ColorMixing({ level = 1, onComplete }) {
       setOptions(shuffled);
     } else {
       // Simple color identification (level 1-10)
-      const answer = SIMPLE_COLORS[Math.floor(Math.random() * SIMPLE_COLORS.length)];
+      const answer = generate(
+        () => SIMPLE_COLORS[Math.floor(Math.random() * SIMPLE_COLORS.length)],
+        (r) => r
+      );
       const allColors = Object.keys(COLORS);
       const used = new Set([answer]);
       const wrongOptions = [];

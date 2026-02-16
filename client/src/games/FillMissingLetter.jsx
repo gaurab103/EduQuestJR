@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import styles from './GameCommon.module.css';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { useAudio } from '../context/AudioContext';
@@ -105,6 +106,7 @@ function getMode(level, round) {
 export default function FillMissingLetter({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [item, setItem] = useState(null);
   const [options, setOptions] = useState([]);
@@ -127,11 +129,11 @@ export default function FillMissingLetter({ onComplete, level = 1 }) {
     const m = getMode(level, round);
     setModeState(m);
 
-    let w;
-    if (m === 0) w = WORDS_FIRST[(round * 2 + level) % WORDS_FIRST.length];
-    else if (m === 1) w = WORDS_LAST[(round * 2 + level) % WORDS_LAST.length];
-    else if (m === 2) w = WORDS_MIDDLE[(round * 2 + level) % WORDS_MIDDLE.length];
-    else w = WORDS_TWO[(round * 2 + level) % WORDS_TWO.length];
+    const pools = [WORDS_FIRST, WORDS_LAST, WORDS_MIDDLE, WORDS_TWO];
+    const w = generate(
+      () => pools[m][Math.floor(Math.random() * pools[m].length)],
+      (r) => `${m}-${r.word}`
+    );
 
     const letter = w.letter;
     const opts = new Set([letter]);

@@ -6,6 +6,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import styles from './GameCommon.module.css';
 
@@ -22,6 +23,7 @@ function getPool(level) {
 export default function SightWords({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState('');
   const [options, setOptions] = useState([]);
@@ -46,7 +48,10 @@ export default function SightWords({ onComplete, level = 1, childName }) {
       return;
     }
     const pool = getPool(level);
-    const t = pool[Math.floor(Math.random() * pool.length)];
+    const t = generate(
+      () => pool[Math.floor(Math.random() * pool.length)],
+      (r) => r
+    );
     const opts = new Set([t]);
     while (opts.size < CHOICES) opts.add(pool[Math.floor(Math.random() * pool.length)]);
     setTarget(t);

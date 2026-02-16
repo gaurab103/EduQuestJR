@@ -5,6 +5,7 @@
  */
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
@@ -43,6 +44,7 @@ const WEATHER_FACTS = {
 export default function WeatherLearn({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [question, setQuestion] = useState(null);
   const [options, setOptions] = useState([]);
@@ -65,7 +67,10 @@ export default function WeatherLearn({ onComplete, level = 1, childAge }) {
       onComplete(score, accuracy);
       return;
     }
-    const q = WEATHER_QUESTIONS[Math.floor(Math.random() * WEATHER_QUESTIONS.length)];
+    const q = generate(
+      () => WEATHER_QUESTIONS[Math.floor(Math.random() * WEATHER_QUESTIONS.length)],
+      (r) => r.q
+    );
     let opts = [...q.options];
     if (opts.length > CHOICES) {
       const ansIdx = opts.indexOf(q.answer);

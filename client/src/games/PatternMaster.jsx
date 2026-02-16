@@ -6,6 +6,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import styles from './GameCommon.module.css';
 
@@ -41,6 +42,7 @@ function buildPattern(level) {
 export default function PatternMaster({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [pattern, setPattern] = useState([]);
   const [answer, setAnswer] = useState(null);
@@ -66,7 +68,10 @@ export default function PatternMaster({ onComplete, level = 1, childName }) {
       onComplete(score, accuracy);
       return;
     }
-    const { pattern: p, answer: a } = buildPattern(level);
+    const { pattern: p, answer: a } = generate(
+      () => buildPattern(level),
+      (r) => r.pattern.join('')
+    );
     const opts = new Set([a]);
     while (opts.size < CHOICE_COUNT) {
       opts.add(ITEMS[Math.floor(Math.random() * ITEMS.length)]);

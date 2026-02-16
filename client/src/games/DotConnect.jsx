@@ -5,6 +5,7 @@
  */
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getFeedbackDelay, getMaxNumber } from './levelConfig';
 import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
@@ -38,6 +39,7 @@ const COUNTING_FACTS = [
 export default function DotConnect({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [dots, setDots] = useState([]);
   const [nextNum, setNextNum] = useState(1);
@@ -52,13 +54,17 @@ export default function DotConnect({ onComplete, level = 1, childAge }) {
   const dotCount = Math.min(Math.max(3, Math.floor(maxNum * 0.6)), 12);
 
   const loadRound = useCallback(() => {
-    const shape = DOT_SHAPES.find(s => s.length >= dotCount) || DOT_SHAPES[DOT_SHAPES.length - 1];
-    const positions = shape.slice(0, dotCount);
+    const shapePool = DOT_SHAPES.filter(s => s.length >= dotCount);
+    const shape = generate(
+      () => (shapePool.length ? shapePool[Math.floor(Math.random() * shapePool.length)] : DOT_SHAPES[DOT_SHAPES.length - 1]).slice(0, dotCount),
+      (r) => r.map(p => p.join(',')).join('|')
+    );
+    const positions = shape;
     const shuffled = positions.map((pos, i) => ({ pos, num: i + 1 })).sort(() => Math.random() - 0.5);
     setDots(shuffled);
     setNextNum(1);
     setFeedback(null);
-  }, [dotCount]);
+  }, [dotCount, generate]);
 
   useEffect(() => {
     if (round >= ROUNDS && !completedRef.current) {

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getFeedbackDelay } from './levelConfig';
 import { ODD_ONE_OUT_SETS, ANIMAL_IMAGES, FRUIT_IMAGES, VEGGIE_IMAGES, GameImage } from './gameImages';
 import styles from './GameCommon.module.css';
@@ -21,6 +22,7 @@ function getMode(level, round) {
 export default function OddOneOut({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [items, setItems] = useState([]);
   const [oddIndices, setOddIndices] = useState([]);
@@ -44,7 +46,10 @@ export default function OddOneOut({ onComplete, level = 1 }) {
     setSelected([]);
 
     if (m <= 1) {
-      const set = ODD_ONE_OUT_SETS[Math.floor(Math.random() * ODD_ONE_OUT_SETS.length)];
+      const set = generate(
+        () => ODD_ONE_OUT_SETS[Math.floor(Math.random() * ODD_ONE_OUT_SETS.length)],
+        (r) => r.odd?.name
+      );
       const count = level <= 5 ? 3 : level <= 15 ? 4 : 5;
       const arr = [];
       for (let i = 0; i < count - 1; i++) arr.push({ ...set.same, isOdd: false });
@@ -62,7 +67,10 @@ export default function OddOneOut({ onComplete, level = 1 }) {
     }
 
     if (m === 2) {
-      const set = ODD_ONE_OUT_SETS[Math.floor(Math.random() * ODD_ONE_OUT_SETS.length)];
+      const set = generate(
+        () => ODD_ONE_OUT_SETS[Math.floor(Math.random() * ODD_ONE_OUT_SETS.length)],
+        (r) => `${m}-${r.odd?.name}`
+      );
       const arr = [
         { ...set.same, isOdd: false },
         { ...set.same, isOdd: false },
@@ -83,7 +91,10 @@ export default function OddOneOut({ onComplete, level = 1 }) {
     }
 
     if (m === 3) {
-      const set = SUBTLE_SETS[Math.floor(Math.random() * SUBTLE_SETS.length)];
+      const set = generate(
+        () => SUBTLE_SETS[Math.floor(Math.random() * SUBTLE_SETS.length)],
+        (r) => r.odd?.name
+      );
       const arr = set.same.map(s => ({ ...s, isOdd: false }));
       arr.push({ ...set.odd, isOdd: true });
       for (let i = arr.length - 1; i > 0; i--) {

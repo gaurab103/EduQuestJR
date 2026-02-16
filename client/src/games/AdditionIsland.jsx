@@ -80,6 +80,7 @@ function getProblem(level, round) {
 export default function AdditionIsland({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [problem, setProblem] = useState(null);
   const [score, setScore] = useState(0);
@@ -101,7 +102,10 @@ export default function AdditionIsland({ onComplete, level = 1 }) {
       onComplete(score, accuracy);
       return;
     }
-    const p = getProblem(level, round);
+    const p = generate(
+      () => getProblem(level, round),
+      (r) => `${r.mode}-${r.a}-${r.b}`
+    );
     setProblem(p);
     setFeedback(null);
     const readText = p.mode === 3 ? p.question : 'What is ' + (p.mode === 0 ? p.a + ' plus ' + p.b : p.mode === 1 ? 'the missing number' : p.a + ' plus ' + p.b + ' plus ' + p.c) + '?';

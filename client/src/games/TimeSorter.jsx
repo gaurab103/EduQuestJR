@@ -5,6 +5,7 @@
  */
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getFeedbackDelay } from './levelConfig';
 import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
@@ -66,6 +67,7 @@ function getStepCount(level) {
 export default function TimeSorter({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [correctOrder, setCorrectOrder] = useState([]);
   const [cards, setCards] = useState([]);
@@ -89,7 +91,10 @@ export default function TimeSorter({ onComplete, level = 1, childAge }) {
       return;
     }
     const sets = ROUTINE_SETS.filter(s => s.length === stepCount);
-    const ids = sets.length ? sets[Math.floor(Math.random() * sets.length)] : ROUTINE_SETS[0].slice(0, stepCount);
+    const ids = generate(
+      () => sets.length ? sets[Math.floor(Math.random() * sets.length)] : ROUTINE_SETS[0].slice(0, stepCount),
+      (r) => r.join('-')
+    );
     const ordered = ids.map(id => ACTIVITIES.find(a => a.id === id)).filter(Boolean);
     const shuffled = [...ordered].sort(() => Math.random() - 0.5);
     setCorrectOrder(ordered);

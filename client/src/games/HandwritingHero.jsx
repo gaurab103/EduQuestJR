@@ -5,6 +5,7 @@
  * Clear right/wrong feedback with encouragement.
  */
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getFeedbackDelay } from './levelConfig';
 import { useAudio } from '../context/AudioContext';
 import { useTeaching } from './useTeaching';
@@ -56,6 +57,7 @@ export default function HandwritingHero({ onComplete, level = 1, childName }) {
   const [strokes, setStrokes] = useState(0);
   const { playSuccess, playCelebration, playClick, playWrong } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
 
   const totalRounds = getRounds(level);
   const passThreshold = getPassThreshold(level);
@@ -65,10 +67,10 @@ export default function HandwritingHero({ onComplete, level = 1, childName }) {
   useEffect(() => {
     const picked = [];
     for (let i = 0; i < totalRounds; i++) {
-      picked.push(pool[Math.floor(Math.random() * pool.length)]);
+      picked.push(generate(() => pool[Math.floor(Math.random() * pool.length)], (r) => String(r)));
     }
     setChars(picked);
-  }, [level]);
+  }, [level, totalRounds, pool, generate]);
 
   const currentChar = chars[round] || 'A';
   const isWord = currentChar.length > 1;

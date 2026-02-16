@@ -5,6 +5,7 @@
  */
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getFeedbackDelay } from './levelConfig';
 import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
@@ -32,6 +33,7 @@ function generatePattern(count, level) {
 export default function StackBlocks({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [stack, setStack] = useState([]);
   const [target, setTarget] = useState(3);
@@ -53,9 +55,16 @@ export default function StackBlocks({ onComplete, level = 1 }) {
       onComplete(score, accuracy);
       return;
     }
-    const t = getTarget(level, round);
+    const { t, pat } = generate(
+      () => {
+        const t = getTarget(level, round);
+        const pat = generatePattern(t, level);
+        return { t, pat };
+      },
+      (r) => `${r.t}-${r.pat.map(p=>p.name).join('')}`
+    );
     setTarget(t);
-    setPattern(generatePattern(t, level));
+    setPattern(pat);
     setStack([]);
     setFeedback(null);
     const cancelRead = readQuestion(`Stack ${t} blocks${level > 5 ? ' matching the pattern!' : '!'}`);

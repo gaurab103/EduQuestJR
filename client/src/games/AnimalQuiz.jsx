@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { GameImage, ANIMAL_IMAGES } from './gameImages';
 import styles from './GameCommon.module.css';
@@ -36,6 +37,7 @@ const QUESTIONS = [
 export default function AnimalQuiz({ level = 1, onComplete }) {
   const { playSuccess, playWrong, playClick, speak } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [options, setOptions] = useState([]);
@@ -57,7 +59,10 @@ export default function AnimalQuiz({ level = 1, onComplete }) {
     }
 
     // Select a random question
-    const question = QUESTIONS[Math.floor(Math.random() * QUESTIONS.length)];
+    const question = generate(
+      () => QUESTIONS[Math.floor(Math.random() * QUESTIONS.length)],
+      (r) => r.q
+    );
     
     // Filter options to match CHOICES count
     let availableOptions = [...question.options];

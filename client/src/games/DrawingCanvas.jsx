@@ -5,6 +5,7 @@
  * Clear pass/fail feedback with criteria shown.
  */
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getFeedbackDelay } from './levelConfig';
 import { useAudio } from '../context/AudioContext';
 import { useTeaching } from './useTeaching';
@@ -51,10 +52,22 @@ export default function DrawingCanvas({ onComplete, level = 1, childName }) {
   const [strokes, setStrokes] = useState(0);
   const { playSuccess, playCelebration, playClick, playWrong: playWrongSfx } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
 
   const totalRounds = getRounds(level);
   const challenges = DRAW_PROMPTS.slice(0, Math.min(level + 2, DRAW_PROMPTS.length));
-  const currentChallenge = challenges[round % challenges.length];
+  const [currentChallenge, setCurrentChallenge] = useState(null);
+
+  useEffect(() => {
+    if (round >= totalRounds) return;
+    const c = generate(
+      () => challenges[Math.floor(Math.random() * challenges.length)],
+      (r) => r.prompt
+    );
+    setCurrentChallenge(c);
+  }, [round, totalRounds, challenges, generate]);
+
+  const displayChallenge = currentChallenge ?? challenges[0];
   const minStrokes = getPassThreshold(level);
   const minCoverage = getMinCoverage(level);
 
@@ -63,11 +76,11 @@ export default function DrawingCanvas({ onComplete, level = 1, childName }) {
   }, [level]);
 
   useEffect(() => {
-    if (currentChallenge) {
-      const cancelRead = readQuestion(`${childName ? childName + ', ' : ''}${currentChallenge.prompt}!`);
+    if (displayChallenge) {
+      const cancelRead = readQuestion(`${childName ? childName + ', ' : ''}${displayChallenge.prompt}!`);
       return cancelRead;
     }
-  }, [round, childName, currentChallenge]);
+  }, [round, childName, displayChallenge]);
 
   const getCtx = useCallback(() => {
     const canvas = canvasRef.current;
@@ -83,8 +96,8 @@ export default function DrawingCanvas({ onComplete, level = 1, childName }) {
     ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
 
     // Draw guide shape for levels <= 15
-    if (level <= 15 && currentChallenge) {
-      drawGuide(ctx, canvas.offsetWidth, canvas.offsetHeight, currentChallenge.shape);
+    if (level <= 15 && displayChallenge) {
+      drawGuide(ctx, canvas.offsetWidth, canvas.offsetHeight, displayChallenge.shape);
     }
 
     // Capture guide pixels for scoring
@@ -221,7 +234,7 @@ export default function DrawingCanvas({ onComplete, level = 1, childName }) {
         correct: true,
       });
       playSuccess();
-      teachAfterAnswer(true, { type: 'shape', correctAnswer: currentChallenge?.shape, extra: 'Drawing shapes helps us learn!' });
+      teachAfterAnswer(true, { type: 'shape', correctAnswer: displayChallenge?.shape, extra: 'Drawing shapes helps us learn!' });
     } else {
       setWrong(w => w + 1);
       const reason = strokes < minStrokes
@@ -232,7 +245,7 @@ export default function DrawingCanvas({ onComplete, level = 1, childName }) {
         correct: false,
       });
       playWrongSfx();
-      teachAfterAnswer(false, { type: 'shape', correctAnswer: currentChallenge?.shape, extra: 'Drawing shapes helps us learn!' });
+      teachAfterAnswer(false, { type: 'shape', correctAnswer: displayChallenge?.shape, extra: 'Drawing shapes helps us learn!' });
     }
 
     setTimeout(() => {
@@ -285,8 +298,8 @@ export default function DrawingCanvas({ onComplete, level = 1, childName }) {
         justifyContent: 'center',
         gap: '0.5rem',
       }}>
-        <GameImage src={currentChallenge.img} alt={currentChallenge.prompt} size={48} />
-        {currentChallenge.prompt}
+        <GameImage src={displayChallenge.img} alt={displayChallenge.prompt} size={48} />
+        {displayChallenge.prompt}
       </div>
 
       {/* Criteria */}

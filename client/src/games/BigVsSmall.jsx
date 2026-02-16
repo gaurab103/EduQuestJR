@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { BIG_SMALL_PAIRS, GameImage } from './gameImages';
 import styles from './GameCommon.module.css';
@@ -24,6 +25,7 @@ function getMode(level, round) {
 export default function BigVsSmall({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [ask, setAsk] = useState('big');
   const [pair, setPair] = useState(null);
@@ -48,7 +50,10 @@ export default function BigVsSmall({ onComplete, level = 1 }) {
     setModeState(m);
 
     if (m <= 1) {
-      const p = BIG_SMALL_PAIRS[Math.floor(Math.random() * BIG_SMALL_PAIRS.length)];
+      const p = generate(
+        () => BIG_SMALL_PAIRS[Math.floor(Math.random() * BIG_SMALL_PAIRS.length)],
+        (r) => `${m}-${r.big?.name}-${r.small?.name}`
+      );
       setPair(p);
       setTriple(null);
       const q = m === 0 ? 'big' : 'small';
@@ -60,7 +65,10 @@ export default function BigVsSmall({ onComplete, level = 1 }) {
     }
 
     if (m === 2) {
-      const pool = [...BIG_SMALL_PAIRS].sort(() => Math.random() - 0.5).slice(0, 6);
+      const pool = generate(
+        () => [...BIG_SMALL_PAIRS].sort(() => Math.random() - 0.5).slice(0, 6),
+        (r) => `${m}-${r.map(x => x.big?.name).join('-')}`
+      );
       const three = [
         { ...pool[0].big, size: 72, order: 2 },
         { ...pool[1].small, size: 48, order: 0 },
@@ -75,7 +83,10 @@ export default function BigVsSmall({ onComplete, level = 1 }) {
     }
 
     if (m === 3) {
-      const pool = [...BIG_SMALL_PAIRS].sort(() => Math.random() - 0.5).slice(0, 4);
+      const pool = generate(
+        () => [...BIG_SMALL_PAIRS].sort(() => Math.random() - 0.5).slice(0, 4),
+        (r) => `${m}-${r.map(x => x.big?.name).join('-')}`
+      );
       const three = [
         { ...pool[0].big, size: 84, order: 2 },
         { ...pool[1].small, size: 44, order: 0 },
@@ -92,7 +103,10 @@ export default function BigVsSmall({ onComplete, level = 1 }) {
     if (m >= 4) {
       const heavyLight = BIG_SMALL_PAIRS.filter((_, i) => [0, 5, 10].includes(i));
       const tallShort = BIG_SMALL_PAIRS.filter((_, i) => [1, 7, 11].includes(i));
-      const pool = (m <= 5 ? heavyLight : tallShort)[Math.floor(Math.random() * 3)];
+      const pool = generate(
+        () => (m <= 5 ? heavyLight : tallShort)[Math.floor(Math.random() * 3)],
+        (r) => `${m}-${r.big?.name}-${r.small?.name}`
+      );
       const q = m === 4 ? 'heavier' : m === 5 ? 'lighter' : m === 6 ? 'taller' : 'shorter';
       setPair(pool);
       setTriple(null);

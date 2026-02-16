@@ -110,6 +110,12 @@ export const GAME_COMPONENTS = {
   'emotion-match': EmotionMatch,
   'time-sorter': TimeSorter,
   'plant-grower': PlantGrower,
+  'compare-weight': CompareWeight,
+  'direction-quest': DirectionQuest,
+  'match-shadow': MatchShadow,
+  'number-line': NumberLine,
+  'syllable-clap': SyllableClap,
+  'sort-by-size': SortBySize,
   // Aliases for seeded premium games that reuse components
   'alphabet-tracing-world': LetterSoundMatch,  // redirected from old tracing game
   'phonics-blending-lab': SpellingBee,

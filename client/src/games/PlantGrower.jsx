@@ -5,6 +5,7 @@
  */
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
@@ -74,6 +75,7 @@ const PLANT_FACTS = {
 export default function PlantGrower({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [mode, setMode] = useState('order');
   const [question, setQuestion] = useState(null);
@@ -105,7 +107,10 @@ export default function PlantGrower({ onComplete, level = 1, childAge }) {
     setSelected([]);
     if (isOrder) {
       const seqs = GROWTH_SEQUENCES.filter(s => s.length >= 3 && s.length <= Math.min(5, 3 + Math.floor(level / 5)));
-      const ids = seqs.length ? seqs[Math.floor(Math.random() * seqs.length)] : ['seed', 'sprout', 'plant', 'flower'];
+      const ids = generate(
+        () => seqs.length ? seqs[Math.floor(Math.random() * seqs.length)] : ['seed', 'sprout', 'plant', 'flower'],
+        (r) => r.join('-')
+      );
       const ordered = ids.map(id => GROWTH_STAGES.find(s => s.id === id)).filter(Boolean);
       const shuffled = [...ordered].sort(() => Math.random() - 0.5);
       setCorrectOrder(ordered);
@@ -113,7 +118,10 @@ export default function PlantGrower({ onComplete, level = 1, childAge }) {
       setQuestion(null);
       setOptions([]);
     } else {
-      const q = PLANT_NEEDS_QUESTIONS[Math.floor(Math.random() * PLANT_NEEDS_QUESTIONS.length)];
+      const q = generate(
+        () => PLANT_NEEDS_QUESTIONS[Math.floor(Math.random() * PLANT_NEEDS_QUESTIONS.length)],
+        (r) => r.q
+      );
       let opts = q.options.slice();
       if (opts.length > CHOICES) opts = opts.slice(0, CHOICES);
       setQuestion(q);

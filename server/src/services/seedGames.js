@@ -60,6 +60,10 @@ const GAMES = [
   { title: 'Dot Connect', slug: 'dot-connect', category: 'motor', difficulty: 'easy', isPremium: false },
   { title: 'Emotion Match', slug: 'emotion-match', category: 'sel', difficulty: 'easy', isPremium: false },
   { title: 'Plant Grower', slug: 'plant-grower', category: 'cognitive', difficulty: 'easy', isPremium: false },
+  { title: 'Compare Weight', slug: 'compare-weight', category: 'cognitive', difficulty: 'easy', isPremium: false },
+  { title: 'Direction Quest', slug: 'direction-quest', category: 'motor', difficulty: 'easy', isPremium: false },
+  { title: 'Number Line', slug: 'number-line', category: 'numeracy', difficulty: 'easy', isPremium: false },
+  { title: 'Syllable Clap', slug: 'syllable-clap', category: 'literacy', difficulty: 'easy', isPremium: false },
 
   // ── Premium Games ──
   { title: 'Blockly Coding Lab', slug: 'blockly-coding-lab', category: 'future_skills', difficulty: 'medium', isPremium: true },
@@ -78,6 +82,8 @@ const GAMES = [
   { title: 'Maze Runner', slug: 'maze-runner', category: 'motor', difficulty: 'medium', isPremium: true },
   { title: 'Musical Notes', slug: 'musical-notes', category: 'auditory', difficulty: 'medium', isPremium: true },
   { title: 'Time Sorter', slug: 'time-sorter', category: 'cognitive', difficulty: 'medium', isPremium: true },
+  { title: 'Match Shadow', slug: 'match-shadow', category: 'cognitive', difficulty: 'easy', isPremium: true },
+  { title: 'Sort by Size', slug: 'sort-by-size', category: 'cognitive', difficulty: 'easy', isPremium: true },
 ];
 
 export async function seedGames() {

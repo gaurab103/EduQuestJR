@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import styles from './GameCommon.module.css';
 import { getRounds, getChoiceCount, getFeedbackDelay, getMaxNumber } from './levelConfig';
 import { useAudio } from '../context/AudioContext';
@@ -77,6 +78,7 @@ function getProblem(level, round) {
 export default function MissingNumber({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [problem, setProblem] = useState(null);
   const [score, setScore] = useState(0);
@@ -96,7 +98,10 @@ export default function MissingNumber({ onComplete, level = 1 }) {
     }
     const m = getMode(level, round);
     setModeState(m);
-    const p = getProblem(level, round);
+    const p = generate(
+      () => getProblem(level, round),
+      (r) => r?.seq?.join('-') || String(Date.now())
+    );
     setProblem(p);
     setFeedback(null);
     const prompts = [

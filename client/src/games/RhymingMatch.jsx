@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import styles from './GameCommon.module.css';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { useAudio } from '../context/AudioContext';
@@ -57,6 +58,7 @@ function getOptionsForLevel(item, count) {
 export default function RhymingMatch({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [item, setItem] = useState(null);
   const [options, setOptions] = useState([]);
@@ -83,7 +85,10 @@ export default function RhymingMatch({ onComplete, level = 1 }) {
     setModeState(m);
 
     if (m === 0) {
-      const r = RHYMES[(round * 2 + level) % RHYMES.length];
+      const r = generate(
+        () => RHYMES[Math.floor(Math.random() * RHYMES.length)],
+        (x) => x.word
+      );
       setItem(r);
       setOptions(getOptionsForLevel(r, choiceCount));
       setRhymePair(null);
@@ -95,7 +100,10 @@ export default function RhymingMatch({ onComplete, level = 1 }) {
     }
 
     if (m === 1) {
-      const pair = RHYME_PAIRS[(round * 3 + level) % RHYME_PAIRS.length];
+      const pair = generate(
+        () => RHYME_PAIRS[Math.floor(Math.random() * RHYME_PAIRS.length)],
+        (x) => `${x.w1}-${x.w2}`
+      );
       setRhymePair(pair);
       setItem(null);
       setOptions(['Yes', 'No']);
@@ -107,7 +115,10 @@ export default function RhymingMatch({ onComplete, level = 1 }) {
     }
 
     if (m === 2) {
-      const r = RHYMES[(round * 2 + level + 1) % RHYMES.length];
+      const r = generate(
+        () => RHYMES[Math.floor(Math.random() * RHYMES.length)],
+        (x) => `not-${x.word}`
+      );
       const rhymeWord = r.options[0];
       const nonRhymes = r.options.slice(1, 5).filter(Boolean);
       const opts = [rhymeWord, nonRhymes[0], nonRhymes[1]].sort(() => Math.random() - 0.5);
@@ -122,8 +133,14 @@ export default function RhymingMatch({ onComplete, level = 1 }) {
     }
 
     if (m === 3) {
-      const r1 = RHYMES[Math.floor(Math.random() * RHYMES.length)];
-      const r2 = RHYMES[Math.floor(Math.random() * RHYMES.length)];
+      const { r1, r2 } = generate(
+        () => {
+          const r1 = RHYMES[Math.floor(Math.random() * RHYMES.length)];
+          const r2 = RHYMES[Math.floor(Math.random() * RHYMES.length)];
+          return { r1, r2 };
+        },
+        (x) => `${x.r1.word}-${x.r2.word}`
+      );
       const words = [r1.word, r1.options[0], r2.word, r2.options[0], RHYMES[2].word, RHYMES[2].options[1]];
       const shuffled = words.sort(() => Math.random() - 0.5);
       setMakePairWords(shuffled);

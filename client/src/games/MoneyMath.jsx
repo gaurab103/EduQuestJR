@@ -5,6 +5,7 @@
  */
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
@@ -36,6 +37,7 @@ function generateCountProblem(level) {
 export default function MoneyMath({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [problem, setProblem] = useState(null);
   const [options, setOptions] = useState([]);
@@ -62,14 +64,21 @@ export default function MoneyMath({ onComplete, level = 1, childName }) {
 
     let cancelRead;
     if (mode === 'identify') {
-      const coin = COINS[Math.floor(Math.random() * Math.min(COINS.length, level <= 3 ? 2 : 4))];
+      const coinPool = COINS.slice(0, level <= 3 ? 2 : 4);
+      const coin = generate(
+        () => coinPool[Math.floor(Math.random() * coinPool.length)],
+        (r) => r.name
+      );
       const opts = new Set([coin.name]);
       while (opts.size < CHOICES) opts.add(COINS[Math.floor(Math.random() * COINS.length)].name);
       setProblem({ type: 'identify', coin });
       setOptions([...opts].sort(() => Math.random() - 0.5));
       cancelRead = readQuestion(`What coin is this? It says ${coin.symbol}`);
     } else {
-      const { coins, total } = generateCountProblem(level);
+      const { coins, total } = generate(
+        () => generateCountProblem(level),
+        (r) => String(r.total)
+      );
       const opts = new Set([total]);
       while (opts.size < CHOICES) {
         const fake = total + (Math.floor(Math.random() * 20) - 10);

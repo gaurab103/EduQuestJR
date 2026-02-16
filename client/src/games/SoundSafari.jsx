@@ -4,6 +4,7 @@
  * Progressive levels: simple animals → instruments → words → phrases.
  */
 import { useState, useEffect, useCallback } from 'react';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { useTeaching } from './useTeaching';
 import { useAudio } from '../context/AudioContext';
@@ -68,20 +69,24 @@ export default function SoundSafari({ onComplete, level = 1, childName }) {
   const [spoken, setSpoken] = useState(false);
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
 
   const totalRounds = getRounds(level);
   const choiceCount = getChoiceCount(level);
   const pool = getPool(level);
 
   const generateRound = useCallback(() => {
-    const shuffled = shuffle(pool);
-    const correct = shuffled[0];
-    const others = shuffled.slice(1, choiceCount);
+    const correct = generate(
+      () => shuffle(pool)[0],
+      (r) => r.word
+    );
+    const rest = pool.filter(p => p.word !== correct.word);
+    const others = shuffle(rest).slice(0, choiceCount - 1);
     const allOptions = shuffle([correct, ...others]);
     setTarget(correct);
     setOptions(allOptions);
     setSpoken(false);
-  }, [pool, choiceCount]);
+  }, [pool, choiceCount, generate]);
 
   useEffect(() => {
     generateRound();

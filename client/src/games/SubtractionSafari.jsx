@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import styles from './GameCommon.module.css';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { useAudio } from '../context/AudioContext';
@@ -28,6 +29,7 @@ function getProblem(level) {
 export default function SubtractionSafari({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [problem, setProblem] = useState(null);
   const [score, setScore] = useState(0);
@@ -44,7 +46,10 @@ export default function SubtractionSafari({ onComplete, level = 1 }) {
       onComplete(score, accuracy);
       return;
     }
-    const p = getProblem(level);
+    const p = generate(
+      () => getProblem(level),
+      (r) => `${r.a}-${r.b}`
+    );
     setProblem(p);
     setFeedback(null);
     const cancelRead = p ? readQuestion('What is ' + p.a + ' minus ' + p.b + '?') : undefined;

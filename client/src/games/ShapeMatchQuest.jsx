@@ -27,6 +27,7 @@ function getMode(level, round) {
 export default function ShapeMatchQuest({ onComplete, level = 1, childName, childAge }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(null);
   const [choices, setChoices] = useState([]);
@@ -53,8 +54,14 @@ export default function ShapeMatchQuest({ onComplete, level = 1, childName, chil
     setModeState(m);
 
     if (m === 0) {
-      const pool = [...SHAPES].sort(() => Math.random() - 0.5);
-      const targetShape = pool[0];
+      const targetShape = generate(
+        () => {
+          const pool = [...SHAPES].sort(() => Math.random() - 0.5);
+          return pool[0];
+        },
+        (r) => r.label
+      );
+      const pool = [targetShape, ...SHAPES.filter(s => s.id !== targetShape.id)].sort(() => Math.random() - 0.5);
       const options = pool.slice(0, CHOICE_COUNT).sort(() => Math.random() - 0.5);
       setTarget(targetShape);
       setChoices(options);
@@ -68,7 +75,10 @@ export default function ShapeMatchQuest({ onComplete, level = 1, childName, chil
 
     if (m === 1) {
       const withSides = SHAPES.filter(s => s.sides > 0);
-      const shape = withSides[Math.floor(Math.random() * withSides.length)];
+      const shape = generate(
+        () => withSides[Math.floor(Math.random() * withSides.length)],
+        (r) => `${m}-${r.label}`
+      );
       const answerNum = shape.sides;
       const wrong = new Set([answerNum]);
       const allNums = [3, 4, 5, 6];
@@ -84,7 +94,10 @@ export default function ShapeMatchQuest({ onComplete, level = 1, childName, chil
 
     if (m === 2) {
       const withSides = SHAPES.filter(s => s.sides > 0);
-      const targetShape = withSides[Math.floor(Math.random() * withSides.length)];
+      const targetShape = generate(
+        () => withSides[Math.floor(Math.random() * withSides.length)],
+        (r) => `${m}-${r.id}`
+      );
       const pool = [...withSides].sort(() => Math.random() - 0.5);
       const options = pool.slice(0, CHOICE_COUNT).sort(() => Math.random() - 0.5);
       setTarget({ ...targetShape, correctAnswer: targetShape.id });
@@ -96,11 +109,17 @@ export default function ShapeMatchQuest({ onComplete, level = 1, childName, chil
     }
 
     // m === 3: Sort - which has curves? which has corners?
-    const askCurves = Math.random() > 0.5;
-    const pool = [...SHAPES].filter(s => s.id !== 'moon' && s.id !== 'sun').sort(() => Math.random() - 0.5);
-    const options = pool.slice(0, 4);
-    const correctOnes = options.filter(s => askCurves ? s.hasCurves : !s.hasCurves && s.corners > 0);
-    const correct = correctOnes[0];
+    const { askCurves, pool, options, correct } = generate(
+      () => {
+        const askCurves = Math.random() > 0.5;
+        const pool = [...SHAPES].filter(s => s.id !== 'moon' && s.id !== 'sun').sort(() => Math.random() - 0.5);
+        const options = pool.slice(0, 4);
+        const correctOnes = options.filter(s => askCurves ? s.hasCurves : !s.hasCurves && s.corners > 0);
+        const correct = correctOnes[0];
+        return { askCurves, pool, options, correct };
+      },
+      (r) => `${m}-${r.askCurves}-${r.options.map(o => o.id).join('-')}`
+    );
     setTarget({ id: 'sort', correctAnswer: correct?.id, askCurves });
     setChoices(options);
     setSortQuestion(askCurves ? 'Which shape has curves?' : 'Which shape has corners?');
