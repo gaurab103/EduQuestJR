@@ -7,6 +7,7 @@ const router = express.Router();
 router.post('/create', authMiddleware, subscriptionController.createSubscription);
 router.post('/plan-id', authMiddleware, subscriptionController.getPlanId);
 router.post('/activate', authMiddleware, subscriptionController.activateSubscription);
+router.post('/start-trial', authMiddleware, subscriptionController.startTrial);
 router.get('/status', authMiddleware, subscriptionController.getStatus);
 router.get('/sync', authMiddleware, subscriptionController.subscriptionSuccess);
 

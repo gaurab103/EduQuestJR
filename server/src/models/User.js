@@ -13,10 +13,12 @@ const userSchema = new mongoose.Schema(
     },
     subscriptionStatus: {
       type: String,
-      enum: ['free', 'active', 'cancelled', 'expired'],
+      enum: ['free', 'trial', 'active', 'cancelled', 'expired'],
       default: 'free',
     },
     subscriptionExpiry: { type: Date, default: null },
+    trialUsed: { type: Boolean, default: false },
+    trialStartDate: { type: Date, default: null },
     // Email verification
     emailVerified: { type: Boolean, default: false },
     verificationCode: { type: String, default: null },

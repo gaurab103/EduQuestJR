@@ -98,6 +98,8 @@ export const subscription = {
     api('/subscription/plan-id', { method: 'POST', body: JSON.stringify({ planType }) }),
   activate: (subscriptionId, planType) =>
     api('/subscription/activate', { method: 'POST', body: JSON.stringify({ subscriptionId, planType }) }),
+  startTrial: () =>
+    api('/subscription/start-trial', { method: 'POST' }),
   status: () => api('/subscription/status'),
   sync: () => api('/subscription/sync'),
 };

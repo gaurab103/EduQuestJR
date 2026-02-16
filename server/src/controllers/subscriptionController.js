@@ -94,6 +94,43 @@ export async function activateSubscription(req, res, next) {
   }
 }
 
+/**
+ * POST /api/subscription/start-trial
+ * Starts a 10-day free trial. Can only be used once per user.
+ */
+export async function startTrial(req, res, next) {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    if (user.trialUsed) {
+      return res.status(400).json({ message: 'Free trial has already been used on this account.' });
+    }
+
+    if (user.subscriptionStatus === 'active') {
+      return res.status(400).json({ message: 'You already have an active premium subscription.' });
+    }
+
+    const trialEnd = new Date(Date.now() + 10 * 24 * 60 * 60 * 1000); // 10 days from now
+
+    await User.findByIdAndUpdate(user._id, {
+      subscriptionStatus: 'trial',
+      subscriptionExpiry: trialEnd,
+      trialUsed: true,
+      trialStartDate: new Date(),
+    });
+
+    res.json({
+      success: true,
+      subscriptionStatus: 'trial',
+      subscriptionExpiry: trialEnd,
+      message: 'Your 10-day free trial has started! Enjoy full premium access.',
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function getStatus(req, res, next) {
   try {
     const sub = await Subscription.findOne({ userId: req.user._id }).sort({ createdAt: -1 });

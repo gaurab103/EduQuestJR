@@ -4,8 +4,8 @@ export function requirePremium(req, res, next) {
   }
   const status = req.user.subscriptionStatus;
   const expiry = req.user.subscriptionExpiry;
-  const isActive = status === 'active' && (!expiry || new Date(expiry) > new Date());
-  if (!isActive) {
+  const isPremium = (status === 'active' || status === 'trial') && (!expiry || new Date(expiry) > new Date());
+  if (!isPremium) {
     return res.status(403).json({
       message: 'Premium subscription required',
       code: 'PREMIUM_REQUIRED',

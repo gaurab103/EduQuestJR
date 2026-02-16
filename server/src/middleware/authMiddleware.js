@@ -18,6 +18,12 @@ export async function authMiddleware(req, res, next) {
       return res.status(401).json({ message: 'User not found' });
     }
 
+    // Auto-expire trials that have passed their expiry date
+    if (user.subscriptionStatus === 'trial' && user.subscriptionExpiry && new Date() > new Date(user.subscriptionExpiry)) {
+      user.subscriptionStatus = 'expired';
+      await User.findByIdAndUpdate(user._id, { subscriptionStatus: 'expired' });
+    }
+
     req.user = user;
     next();
   } catch (err) {

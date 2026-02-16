@@ -39,7 +39,7 @@ const PLANS = [
 ];
 
 const FEATURES = [
-  { icon: '🎮', text: '31+ premium games — full library' },
+  { icon: '🎮', text: '70+ premium games — full library' },
   { icon: '🌟', text: '30 levels per game — all unlocked' },
   { icon: '🐻', text: 'AI Buddy chat — unlimited' },
   { icon: '📊', text: 'Advanced parent analytics' },
@@ -140,10 +140,13 @@ export default function Subscription() {
   const [error, setError] = useState('');
   const [showPayment, setShowPayment] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [trialLoading, setTrialLoading] = useState(false);
 
   if (!isAdultMode) return <Navigate to="/games" replace />;
 
-  const isPremium = user?.subscriptionStatus === 'active';
+  const isPremium = user?.subscriptionStatus === 'active' || user?.subscriptionStatus === 'trial';
+  const isTrial = user?.subscriptionStatus === 'trial';
+  const trialUsed = user?.trialUsed === true;
 
   function handleSuccess() {
     setSuccess(true);
@@ -151,13 +154,34 @@ export default function Subscription() {
     setTimeout(() => navigate('/dashboard'), 3000);
   }
 
+  async function handleStartTrial() {
+    setTrialLoading(true);
+    setError('');
+    try {
+      await subscriptionApi.startTrial();
+      setSuccess(true);
+      refreshUser();
+      setTimeout(() => navigate('/dashboard'), 3000);
+    } catch (err) {
+      setError(err.message || 'Failed to start trial. Please try again.');
+    } finally {
+      setTrialLoading(false);
+    }
+  }
+
+  function trialDaysLeft() {
+    if (!user?.subscriptionExpiry) return 0;
+    const diff = new Date(user.subscriptionExpiry) - new Date();
+    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  }
+
   if (success) {
     return (
       <div className={styles.page}>
         <div className={styles.successCard}>
           <div className={styles.successIcon}>🎉</div>
-          <h2>Welcome to Premium!</h2>
-          <p>Your subscription is now active. Enjoy unlimited learning!</p>
+          <h2>{isTrial ? 'Trial Activated!' : 'Welcome to Premium!'}</h2>
+          <p>{isTrial ? 'Your 10-day free trial has started. Enjoy full premium access!' : 'Your subscription is now active. Enjoy unlimited learning!'}</p>
           <img src="/logo.png" alt="EduQuestJr" className={styles.successLogo} />
           <p className={styles.redirecting}>Redirecting to dashboard...</p>
         </div>
@@ -170,17 +194,37 @@ export default function Subscription() {
       <div className={styles.page}>
         <div className={styles.premiumCard}>
           <img src="/logo.png" alt="" className={styles.premiumLogo} />
-          <div className={styles.premiumBadge}>👑 Premium Active</div>
+          <div className={styles.premiumBadge}>
+            {isTrial ? '🆓 Free Trial Active' : '👑 Premium Active'}
+          </div>
           <h2>You have full access!</h2>
-          <p>All 31+ games, 30 levels, AI features, and no limits.</p>
-          {user?.subscriptionExpiry && (
+          <p>All 70+ games, 30 levels, AI features, and no limits.</p>
+          {isTrial && (
+            <div className={styles.trialInfo}>
+              <p className={styles.trialDays}>
+                <span className={styles.trialDaysNum}>{trialDaysLeft()}</span> days left in your trial
+              </p>
+              <p className={styles.trialHint}>Subscribe now to keep your premium access after the trial ends.</p>
+            </div>
+          )}
+          {user?.subscriptionExpiry && !isTrial && (
             <p className={styles.expiry}>
               Renews: {new Date(user.subscriptionExpiry).toLocaleDateString()}
             </p>
           )}
-          <button type="button" onClick={() => navigate('/games')} className={styles.playNowBtn}>
-            🎮 Play Now
-          </button>
+          <div className={styles.premiumActions}>
+            <button type="button" onClick={() => navigate('/games')} className={styles.playNowBtn}>
+              🎮 Play Now
+            </button>
+            {isTrial && (
+              <button type="button" onClick={() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                navigate('/subscription');
+              }} className={styles.upgradeTrialBtn}>
+                ⬆️ Upgrade to Full Premium
+              </button>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -200,6 +244,37 @@ export default function Subscription() {
           <p className={styles.subtitle}>Unlock the full EduQuestJr experience for your child</p>
         </div>
 
+        {/* Free Trial Banner */}
+        {!trialUsed && (
+          <div className={styles.trialBanner}>
+            <div className={styles.trialBannerContent}>
+              <div className={styles.trialBannerIcon}>🎁</div>
+              <div className={styles.trialBannerText}>
+                <h3>Try Premium Free for 10 Days!</h3>
+                <p>No credit card required. Full access to all 70+ games, AI features, and unlimited levels.</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleStartTrial}
+              disabled={trialLoading}
+              className={styles.trialBtn}
+            >
+              {trialLoading ? (
+                <span className={styles.trialBtnLoading}>Starting...</span>
+              ) : (
+                <>Start Free Trial<span className={styles.trialBtnSub}>No payment needed</span></>
+              )}
+            </button>
+          </div>
+        )}
+
+        {trialUsed && (
+          <div className={styles.trialUsedNote}>
+            <span>ℹ️</span> Your free trial has been used. Subscribe below to continue with premium.
+          </div>
+        )}
+
         {/* Features */}
         <div className={styles.featuresGrid}>
           {FEATURES.map((f) => (
@@ -208,6 +283,11 @@ export default function Subscription() {
               <span className={styles.featureText}>{f.text}</span>
             </div>
           ))}
+        </div>
+
+        {/* Divider */}
+        <div className={styles.orDivider}>
+          <span>{trialUsed ? 'Choose a Plan' : 'Or subscribe now'}</span>
         </div>
 
         {/* Plan selector */}
