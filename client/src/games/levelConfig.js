@@ -1,7 +1,7 @@
 /**
  * Shared level configuration for ALL games.
- * 25+ levels grouped into 5 worlds, each with 5 levels.
- * Difficulty scales progressively.
+ * 30 levels grouped into 6 worlds, each with 5 levels.
+ * Difficulty scales progressively and noticeably.
  */
 
 export const MAX_GAME_LEVEL = 30;
@@ -34,23 +34,31 @@ export function getRounds(level) {
 
 /**
  * Get number of answer choices for a given level.
+ * More choices = harder. Scales more aggressively now.
  */
 export function getChoiceCount(level) {
-  if (level <= 5) return 3;
+  if (level <= 3) return 2;
+  if (level <= 7) return 3;
   if (level <= 15) return 4;
-  return 5;
+  if (level <= 22) return 5;
+  return 6;
 }
 
 /**
  * Get max number range for counting/math games.
+ * Scales more aggressively for real difficulty progression.
  */
 export function getMaxNumber(level) {
-  if (level <= 3) return 5;
-  if (level <= 6) return 8;
-  if (level <= 10) return 10;
-  if (level <= 15) return 15;
-  if (level <= 20) return 20;
-  return 25;
+  if (level <= 2) return 3;
+  if (level <= 4) return 5;
+  if (level <= 6) return 7;
+  if (level <= 8) return 10;
+  if (level <= 10) return 12;
+  if (level <= 13) return 15;
+  if (level <= 16) return 20;
+  if (level <= 20) return 30;
+  if (level <= 25) return 50;
+  return 100;
 }
 
 /**
@@ -60,28 +68,35 @@ export function getMaxNumber(level) {
 export function getTimeLimit(level) {
   if (level <= 5) return 0;
   if (level <= 10) return 15000;
-  if (level <= 15) return 10000;
-  if (level <= 20) return 8000;
+  if (level <= 15) return 12000;
+  if (level <= 20) return 10000;
+  if (level <= 25) return 8000;
   return 6000;
 }
 
 /**
  * Get feedback delay (ms) before next round.
- * When correct: short pause then move on.
- * When wrong: longer pause so the teaching voice can explain the mistake.
- * Call as getFeedbackDelay(level) for default or getFeedbackDelay(level, false) for wrong.
+ * IMPORTANT: Must be long enough for the voice to finish teaching!
+ *
+ * Correct answers: let the praise + fact play out fully.
+ * Wrong answers: must be long enough for the explanation + correct answer + fact.
+ *
+ * Voice typically needs:
+ *  - Correct: ~2-3 seconds for praise + fact
+ *  - Wrong: ~5-7 seconds for explanation + correct answer + fact + encouragement
  */
 export function getFeedbackDelay(level, isCorrect = true) {
   if (isCorrect) {
-    // Correct: quick celebration then next
-    if (level <= 10) return 2000;
-    if (level <= 20) return 1800;
-    return 1500;
+    if (level <= 5) return 3000;
+    if (level <= 10) return 2800;
+    if (level <= 20) return 2500;
+    return 2200;
   }
-  // Wrong: longer — voice explains the mistake
-  if (level <= 10) return 4500;
-  if (level <= 20) return 4000;
-  return 3500;
+  // Wrong: longer — voice explains the mistake fully
+  if (level <= 5) return 6000;
+  if (level <= 10) return 5500;
+  if (level <= 20) return 5000;
+  return 4500;
 }
 
 /**
@@ -106,4 +121,30 @@ export function getDifficultyColor(level) {
   if (level <= 20) return '#fb923c';
   if (level <= 25) return '#f472b6';
   return '#a78bfa';
+}
+
+/**
+ * Get speed multiplier for timed/reaction games.
+ * Higher levels = faster animations, shorter windows.
+ */
+export function getSpeedMultiplier(level) {
+  if (level <= 5) return 1.0;
+  if (level <= 10) return 1.2;
+  if (level <= 15) return 1.4;
+  if (level <= 20) return 1.6;
+  if (level <= 25) return 1.8;
+  return 2.0;
+}
+
+/**
+ * Get complexity tier (1-6) for games that need to unlock
+ * new question types or mechanics at higher levels.
+ */
+export function getComplexityTier(level) {
+  if (level <= 5) return 1;
+  if (level <= 10) return 2;
+  if (level <= 15) return 3;
+  if (level <= 20) return 4;
+  if (level <= 25) return 5;
+  return 6;
 }

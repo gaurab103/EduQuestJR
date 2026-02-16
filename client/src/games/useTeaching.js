@@ -3,6 +3,9 @@
  * When WRONG: explains the mistake, teaches the correct answer, THEN moves on.
  * When CORRECT: brief praise + fact.
  * Manages speech so there's NEVER overlap or double-fire.
+ *
+ * KEY TIMING: The voice must finish BEFORE the next round starts.
+ * getFeedbackDelay() in levelConfig.js is tuned to match these voice durations.
  */
 import { useCallback, useRef } from 'react';
 
@@ -48,12 +51,14 @@ const ANIMAL_FACTS = {
   panda:'Pandas love bamboo!',koala:'Koalas sleep 22 hours a day!',
   octopus:'Octopuses have 8 arms!',crab:'Crabs walk sideways!',
   dinosaur:'Dinosaurs lived millions of years ago!',mouse:'Mice have excellent hearing!',
+  giraffe:'Giraffes are the tallest animals!',ant:'Ants can carry 50 times their weight!',
+  pig:'Pigs are very intelligent!',chicken:'Chickens can remember faces!',
 };
 
-const CORRECT_SHORT = ['Great job!','Awesome!','Perfect!','Well done!','Fantastic!','Brilliant!','Superstar!','Amazing!','Wonderful!','Nailed it!'];
-const CORRECT_NAMED = ['{name}, great job!','{name}, you\'re amazing!','Way to go, {name}!','Fantastic, {name}!','{name}, you\'re a superstar!'];
-const WRONG_EXPLAIN = ['Oops!','Not quite!','Almost!','Let me explain.','Let\'s learn this!','Good try!'];
-const WRONG_NAMED = ['Almost, {name}!','Good try, {name}!','{name}, let me help!','Not quite, {name}!'];
+const CORRECT_SHORT = ['Great job!','Awesome!','Perfect!','Well done!','Fantastic!','Brilliant!','Superstar!','Amazing!','Wonderful!','Nailed it!','You got it!','Excellent!'];
+const CORRECT_NAMED = ['{name}, great job!','{name}, you\'re amazing!','Way to go, {name}!','Fantastic, {name}!','{name}, you\'re a superstar!','Brilliant, {name}!','{name}, that\'s perfect!'];
+const WRONG_EXPLAIN = ['Oops!','Not quite!','Almost!','Let me explain.','Let\'s learn this!','Good try!','That\'s okay!','No worries!'];
+const WRONG_NAMED = ['Almost, {name}!','Good try, {name}!','{name}, let me help!','Not quite, {name}!','That\'s okay, {name}!'];
 
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 function getFact(type, key) {
@@ -70,20 +75,33 @@ function getFact(type, key) {
 }
 
 /**
+ * Track when speech is expected to finish so we never overlap.
+ */
+let speechBusyUntil = 0;
+
+/**
  * Core speech function — cancels previous, speaks new.
+ * Estimates speech duration and tracks it to prevent overlap.
  */
 function speakText(text, opts = {}) {
   if (!window.speechSynthesis || !text) return;
   window.speechSynthesis.cancel();
+
   const u = new SpeechSynthesisUtterance(text);
-  u.rate = opts.rate ?? 0.88;
+  u.rate = opts.rate ?? 0.85;
   u.pitch = opts.pitch ?? 1.15;
-  u.volume = opts.volume ?? 0.8;
+  u.volume = opts.volume ?? 0.85;
   const voices = window.speechSynthesis.getVoices();
   const preferred = voices.find(v =>
     v.name.includes('Samantha') || v.name.includes('Zira') || v.name.includes('Female')
   );
   if (preferred) u.voice = preferred;
+
+  // Estimate speech duration based on word count and rate
+  const words = text.split(/\s+/).length;
+  const estimatedMs = (words / (2.5 * (u.rate || 1))) * 1000 + 500;
+  speechBusyUntil = Date.now() + estimatedMs;
+
   window.speechSynthesis.speak(u);
 }
 
@@ -91,33 +109,33 @@ function speakText(text, opts = {}) {
  * useTeaching hook.
  *
  * The answer flow in every game should be:
- *   1. Kid answers → playSuccess/playWrong
- *   2. Call teachAfterAnswer() → voice explains
- *   3. After feedbackDelay, call advanceRound() → new question state
- *   4. readQuestion() is called ONCE in the round-setup useEffect (NOT in deps)
+ *   1. Kid answers → playSuccess/playWrong sound
+ *   2. Call teachAfterAnswer() → voice explains (immediate)
+ *   3. After feedbackDelay (from levelConfig), advance to next round
+ *   4. readQuestion() is called in the round-setup useEffect
+ *   5. readQuestion WAITS until previous speech finishes before speaking
  *
- * readQuestion waits 500ms then speaks (the feedbackDelay already gave
- * enough time for the teaching voice to finish before the round advanced).
+ * CRITICAL: feedbackDelay MUST be longer than the voice teaching duration.
+ * This ensures the child hears the full explanation before the next question.
  */
 export function useTeaching() {
   const isMutedRef = useRef(false);
 
-  // Check mute once
   try {
     isMutedRef.current = localStorage.getItem('eduquest_muted') === 'true';
   } catch {}
 
-  /**
-   * teachAfterAnswer — call immediately when kid answers.
-   * If WRONG: clearly explains the correct answer and teaches why.
-   * If CORRECT: brief praise + a fun fact.
-   */
   const childNameRef = useRef('');
 
   const setChildName = useCallback((name) => {
     childNameRef.current = name || '';
   }, []);
 
+  /**
+   * teachAfterAnswer — call immediately when kid answers.
+   * If WRONG: clearly explains the correct answer and teaches why.
+   * If CORRECT: brief praise + a fun fact.
+   */
   const teachAfterAnswer = useCallback((correct, context = {}) => {
     if (isMutedRef.current) return;
     const { type, answer, correctAnswer, extra } = context;
@@ -140,20 +158,27 @@ export function useTeaching() {
       msg += ' Let\'s keep going!';
     }
 
-    speakText(msg, { rate: correct ? 0.92 : 0.85, pitch: 1.1 });
+    speakText(msg, { rate: correct ? 0.88 : 0.8, pitch: 1.1 });
   }, []);
 
   /**
    * readQuestion — call in the round-setup useEffect to read the question aloud.
-   * Has a 600ms delay so the previous round's speech is done.
+   *
+   * Waits until any previous speech is done before speaking.
+   * Uses the speechBusyUntil tracker to calculate the right delay.
    * Returns cleanup function.
    * DO NOT put in useEffect dependency arrays.
    */
   const readQuestion = useCallback((text) => {
     if (isMutedRef.current || !text) return () => {};
+
+    // Calculate how long to wait before speaking the new question
+    const now = Date.now();
+    const waitMs = Math.max(800, speechBusyUntil - now + 400);
+
     const timer = setTimeout(() => {
       speakText(text, { rate: 0.82, pitch: 1.2 });
-    }, 600);
+    }, waitMs);
     return () => clearTimeout(timer);
   }, []);
 
