@@ -53,8 +53,12 @@ export default function SpellingBee({ onComplete, level = 1, childName }) {
     setTyped([]);
     setFeedback(null);
     setRevealed(false);
-    setTimeout(() => readQuestion('Spell the word: ' + w.toLowerCase()), 300);
-  }, [round, readQuestion]);
+    let cancelRead;
+    const t = setTimeout(() => {
+      cancelRead = readQuestion('Spell the word: ' + w.toLowerCase());
+    }, 300);
+    return () => { clearTimeout(t); if (cancelRead) cancelRead(); };
+  }, [round]);
 
   function addLetter(ch) {
     if (feedback || typed.length >= word.length) return;

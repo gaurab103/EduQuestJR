@@ -106,9 +106,10 @@ export default function EmotionMatch({ onComplete, level = 1, childAge }) {
 
   useEffect(() => {
     if (question && round < ROUNDS) {
-      readQuestion(`${question.scenario}. How would they feel?`);
+      const cancelRead = readQuestion(`${question.scenario}. How would they feel?`);
+      return cancelRead;
     }
-  }, [question, round, ROUNDS, readQuestion]);
+  }, [question, round, ROUNDS]);
 
   function handleChoice(id) {
     if (feedback) return;

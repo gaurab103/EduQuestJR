@@ -87,8 +87,9 @@ export default function AnimalQuiz({ level = 1, onComplete }) {
     setCurrentQuestion(question);
     setOptions(shuffled);
     setFeedback(null);
-    readQuestion(question.q);
-  }, [round, ROUNDS, CHOICES, readQuestion]);
+    const cancelRead = readQuestion(question.q);
+    return cancelRead;
+  }, [round, ROUNDS, CHOICES]);
 
   function handleAnswer(selected) {
     if (feedback !== null) return;

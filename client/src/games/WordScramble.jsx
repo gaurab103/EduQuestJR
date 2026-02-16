@@ -62,8 +62,9 @@ export default function WordScramble({ onComplete, level = 1, childName }) {
     setAnswer([]);
     setAvailable(s.split('').map((ch, i) => ({ ch, id: i, used: false })));
     setFeedback(null);
-    readQuestion('Unscramble the letters to make a word!');
-  }, [round, readQuestion]);
+    const cancelRead = readQuestion('Unscramble the letters to make a word!');
+    return cancelRead;
+  }, [round]);
 
   function pickLetter(item) {
     if (feedback || item.used) return;

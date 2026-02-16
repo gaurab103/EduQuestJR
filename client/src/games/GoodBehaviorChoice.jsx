@@ -43,8 +43,9 @@ export default function GoodBehaviorChoice({ onComplete, level = 1 }) {
     setItem(i);
     setOptions(allOptions.sort(() => Math.random() - 0.5));
     setFeedback(null);
-    readQuestion(i.scenario);
-  }, [round, score, ROUNDS, CHOICES, readQuestion]);
+    const cancelRead = readQuestion(i.scenario);
+    return cancelRead;
+  }, [round, score, ROUNDS, CHOICES]);
 
   function handlePick(opt) {
     if (feedback !== null) return;

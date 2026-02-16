@@ -34,8 +34,9 @@ export default function BalloonPop({ onComplete, level = 1 }) {
     setTarget(t);
     setItems(arr);
     setFeedback(null);
-    readQuestion(`Pop this one: ${t}`);
-  }, [round, score, ROUNDS, readQuestion]);
+    const cancelRead = readQuestion(`Pop this one: ${t}`);
+    return cancelRead;
+  }, [round, score, ROUNDS]);
 
   function handlePop(emoji) {
     if (feedback !== null) return;

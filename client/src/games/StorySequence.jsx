@@ -87,8 +87,9 @@ export default function StorySequence({ level = 1, onComplete }) {
 
     setSelectedOrder([]);
     setFeedback(null);
-    readQuestion('Put the story in the correct order!');
-  }, [round, ROUNDS, stepCount, correct, score, readQuestion]);
+    const cancelRead = readQuestion('Put the story in the correct order!');
+    return cancelRead;
+  }, [round, ROUNDS, stepCount, correct, score]);
 
   function handleStepClick(step) {
     if (feedback !== null) return;

@@ -76,8 +76,9 @@ export default function PatternMaster({ onComplete, level = 1, childName }) {
     setOptions([...opts].sort(() => Math.random() - 0.5));
     setFeedback(null);
     setSelected(null);
-    readQuestion('What comes next in the pattern?');
-  }, [round, ROUNDS, CHOICE_COUNT, level, readQuestion]);
+    const cancelRead = readQuestion('What comes next in the pattern?');
+    return cancelRead;
+  }, [round, ROUNDS, CHOICE_COUNT, level]);
 
   function handleChoice(choice) {
     if (feedback !== null) return;

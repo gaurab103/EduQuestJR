@@ -67,12 +67,14 @@ export function getTimeLimit(level) {
 
 /**
  * Get feedback delay (ms) before next round.
+ * Must be long enough for teaching voice to finish before next question.
  */
 export function getFeedbackDelay(level) {
-  if (level <= 5) return 1200;
-  if (level <= 10) return 1000;
-  if (level <= 15) return 800;
-  return 700;
+  if (level <= 5) return 3000;
+  if (level <= 10) return 2800;
+  if (level <= 15) return 2500;
+  if (level <= 20) return 2200;
+  return 2000;
 }
 
 /**

@@ -64,9 +64,10 @@ export default function DrawingCanvas({ onComplete, level = 1, childName }) {
 
   useEffect(() => {
     if (currentChallenge) {
-      readQuestion(`${childName ? childName + ', ' : ''}${currentChallenge.prompt}!`);
+      const cancelRead = readQuestion(`${childName ? childName + ', ' : ''}${currentChallenge.prompt}!`);
+      return cancelRead;
     }
-  }, [round, readQuestion, childName, currentChallenge]);
+  }, [round, childName, currentChallenge]);
 
   const getCtx = useCallback(() => {
     const canvas = canvasRef.current;

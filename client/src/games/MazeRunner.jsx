@@ -121,9 +121,10 @@ export default function MazeRunner({ onComplete, level = 1, childAge }) {
 
   useEffect(() => {
     if (maze && round < ROUNDS) {
-      readQuestion('Tap from the start to the finish! Find the path through the maze.');
+      const cancelRead = readQuestion('Tap from the start to the finish! Find the path through the maze.');
+      return cancelRead;
     }
-  }, [maze, round, ROUNDS, readQuestion]);
+  }, [maze, round, ROUNDS]);
 
   function handleCellClick(r, c) {
     if (!maze || feedback) return;

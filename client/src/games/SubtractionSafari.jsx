@@ -47,8 +47,9 @@ export default function SubtractionSafari({ onComplete, level = 1 }) {
     const p = getProblem(level);
     setProblem(p);
     setFeedback(null);
-    if (p) readQuestion('What is ' + p.a + ' minus ' + p.b + '?');
-  }, [round, score, ROUNDS, level, readQuestion]);
+    const cancelRead = p ? readQuestion('What is ' + p.a + ' minus ' + p.b + '?') : undefined;
+    return cancelRead;
+  }, [round, score, ROUNDS, level]);
 
   function handleAnswer(num) {
     if (feedback !== null || !problem) return;

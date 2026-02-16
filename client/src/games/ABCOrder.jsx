@@ -60,8 +60,9 @@ export default function ABCOrder({ level = 1, onComplete }) {
     setLetters(shuffled);
     setSelectedOrder([]);
     setFeedback(null);
-    readQuestion('Tap the letters in ABC order!');
-  }, [round, ROUNDS, letterCount, correct, score, readQuestion]);
+    const cancelRead = readQuestion('Tap the letters in ABC order!');
+    return cancelRead;
+  }, [round, ROUNDS, letterCount, correct, score]);
 
   function handleLetterClick(letter) {
     if (feedback !== null) return;

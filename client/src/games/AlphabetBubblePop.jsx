@@ -67,7 +67,7 @@ export default function AlphabetBubblePop({ level = 1, onComplete }) {
       playCelebration();
       // Use current state values for accuracy calculation
       const finalAccuracy = ROUNDS > 0 ? Math.round((correct / ROUNDS) * 100) : 0;
-      onComplete({ score, accuracy: finalAccuracy, total: ROUNDS });
+      onComplete(score, finalAccuracy);
       return;
     }
     
@@ -79,8 +79,8 @@ export default function AlphabetBubblePop({ level = 1, onComplete }) {
     setSelectedIndex(null);
     
     // Speak the question
-    readQuestion('Find the letter ' + letter + '!');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const cancelRead = readQuestion('Find the letter ' + letter + '!');
+    return cancelRead;
   }, [round, ROUNDS, CHOICE_COUNT]);
 
   function handleBubbleClick(index) {

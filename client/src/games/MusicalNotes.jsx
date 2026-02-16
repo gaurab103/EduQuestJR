@@ -94,7 +94,7 @@ export default function MusicalNotes({ onComplete, level = 1, childAge }) {
 
   useEffect(() => {
     if (!sequence.length || phase !== 'show' || round >= ROUNDS) return;
-    readQuestion('Watch and listen! Then repeat the pattern.');
+    const cancelRead = readQuestion('Watch and listen! Then repeat the pattern.');
     let i = 0;
     const showNext = () => {
       if (i >= sequence.length) {
@@ -108,8 +108,8 @@ export default function MusicalNotes({ onComplete, level = 1, childAge }) {
       setTimeout(showNext, 500);
     };
     const t = setTimeout(showNext, 800);
-    return () => clearTimeout(t);
-  }, [sequence, phase, round, ROUNDS, readQuestion, ensureAudio]);
+    return () => { clearTimeout(t); cancelRead(); };
+  }, [sequence, phase, round, ROUNDS, ensureAudio]);
 
   function handleColorClick(color) {
     if (phase !== 'input' || feedback) return;

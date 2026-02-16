@@ -36,8 +36,9 @@ export default function ColorInsideShape({ onComplete, level = 1 }) {
     setTargetColor(color);
     setTargetShape(shape);
     setFeedback(null);
-    readQuestion(`Color inside the ${shape.name}`);
-  }, [round, score, ROUNDS, readQuestion]);
+    const cancelRead = readQuestion(`Color inside the ${shape.name}`);
+    return cancelRead;
+  }, [round, score, ROUNDS]);
 
   function handlePick(color) {
     if (feedback !== null) return;

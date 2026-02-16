@@ -80,8 +80,9 @@ export default function ScienceSort({ onComplete, level = 1, childName }) {
     setCurrentItem(item);
     setCorrectGroup(groupIdx);
     setFeedback(null);
-    readQuestion(`Is ${item} ${cat.groups[0].label} or ${cat.groups[1].label}?`);
-  }, [round, readQuestion]);
+    const cancelRead = readQuestion(`Is ${item} ${cat.groups[0].label} or ${cat.groups[1].label}?`);
+    return cancelRead;
+  }, [round]);
 
   function handleChoice(idx) {
     if (feedback) return;

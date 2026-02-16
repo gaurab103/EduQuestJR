@@ -95,8 +95,9 @@ export default function ClockTime({ onComplete, level = 1, childName }) {
     setOptions([...opts].sort(() => Math.random() - 0.5));
     setFeedback(null);
     setSelected(null);
-    readQuestion('What time does the clock show?');
-  }, [round, readQuestion]);
+    const cancelRead = readQuestion('What time does the clock show?');
+    return cancelRead;
+  }, [round]);
 
   function handleChoice(answer) {
     if (feedback) return;

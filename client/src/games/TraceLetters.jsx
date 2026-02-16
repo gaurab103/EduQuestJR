@@ -94,9 +94,10 @@ export default function TraceLetters({ onComplete, level = 1, childName }) {
 
   useEffect(() => {
     if (letter) {
-      readQuestion(`Trace the letter ${letter}!`);
+      const cancelRead = readQuestion(`Trace the letter ${letter}!`);
+      return cancelRead;
     }
-  }, [letter, readQuestion]);
+  }, [letter]);
 
   const handleStart = (e) => {
     if (feedback !== null) return;

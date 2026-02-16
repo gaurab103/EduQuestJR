@@ -110,8 +110,9 @@ export default function ColorMixing({ level = 1, onComplete }) {
     }
     
     setFeedback(null);
-    readQuestion(isMixingLevel ? 'What color do you get when you mix these colors?' : 'What color is this?');
-  }, [round, ROUNDS, CHOICES, isMixingLevel, readQuestion]);
+    const cancelRead = readQuestion(isMixingLevel ? 'What color do you get when you mix these colors?' : 'What color is this?');
+    return cancelRead;
+  }, [round, ROUNDS, CHOICES, isMixingLevel]);
 
   function handleAnswer(selected) {
     if (feedback !== null) return;

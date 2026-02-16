@@ -81,8 +81,9 @@ export default function VocabMatch({ onComplete, level = 1, childName }) {
     setOptions([...opts].sort(() => Math.random() - 0.5));
     setFeedback(null);
     setSelected(null);
-    readQuestion('Which word means: ' + t.def + '?');
-  }, [round, readQuestion]);
+    const cancelRead = readQuestion('Which word means: ' + t.def + '?');
+    return cancelRead;
+  }, [round]);
 
   function handleChoice(word) {
     if (feedback) return;

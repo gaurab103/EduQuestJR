@@ -79,9 +79,10 @@ export default function WeatherLearn({ onComplete, level = 1, childAge }) {
 
   useEffect(() => {
     if (question && round < ROUNDS) {
-      readQuestion(question.q);
+      const cancelRead = readQuestion(question.q);
+      return cancelRead;
     }
-  }, [question, round, ROUNDS, readQuestion]);
+  }, [question, round, ROUNDS]);
 
   function handleChoice(item) {
     if (feedback) return;

@@ -34,8 +34,9 @@ export default function CalmBreathingBubble({ onComplete, level = 1 }) {
     }
     setTarget(Math.floor(Math.random() * bubbleCount));
     setFeedback(null);
-    readQuestion('Tap the glowing bubble. Breathe slowly and stay calm!');
-  }, [round, score, ROUNDS, bubbleCount, readQuestion]);
+    const cancelRead = readQuestion('Tap the glowing bubble. Breathe slowly and stay calm!');
+    return cancelRead;
+  }, [round, score, ROUNDS, bubbleCount]);
 
   function handlePop(i) {
     if (feedback !== null) return;

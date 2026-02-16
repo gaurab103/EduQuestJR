@@ -90,9 +90,10 @@ export default function BodyParts({ onComplete, level = 1, childAge }) {
 
   useEffect(() => {
     if (target && round < ROUNDS) {
-      readQuestion(`Where is the ${target.part}?`);
+      const cancelRead = readQuestion(`Where is the ${target.part}?`);
+      return cancelRead;
     }
-  }, [target, round, ROUNDS, readQuestion]);
+  }, [target, round, ROUNDS]);
 
   function handleChoice(item) {
     if (feedback) return;

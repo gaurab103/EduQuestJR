@@ -43,8 +43,9 @@ export default function OppositesMatch({ onComplete, level = 1 }) {
     setItem(i);
     setOptions(opts);
     setFeedback(null);
-    readQuestion(`What is the opposite of "${i.word}"?`);
-  }, [round, score, ROUNDS, choiceCount, readQuestion]);
+    const cancelRead = readQuestion(`What is the opposite of "${i.word}"?`);
+    return cancelRead;
+  }, [round, score, ROUNDS, choiceCount]);
 
   function handlePick(opt) {
     if (feedback !== null) return;

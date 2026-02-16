@@ -4,17 +4,74 @@ import styles from './GameCommon.module.css';
 import { getRounds, getChoiceCount, getFeedbackDelay, getMaxNumber } from './levelConfig';
 import { useAudio } from '../context/AudioContext';
 
-function getProblem(level) {
+function getMode(level, round) {
+  if (level <= 5) return 0; // 1,2,_,4 counting
+  if (level <= 10) return round % 2; // 0: counting, 1: skip by 2
+  if (level <= 15) return round % 3; // 0: counting, 1: skip by 2, 2: skip from odd
+  return round % 4; // add 3: descending, 4: skip by 5
+}
+
+function getProblem(level, round) {
   const maxNum = getMaxNumber(level);
   const choiceCount = getChoiceCount(level);
-  const seqLen = 4;
-  const start = Math.floor(Math.random() * Math.max(1, maxNum - seqLen)) + 1;
-  const seq = [start, start + 1, start + 2, start + 3];
-  const blank = Math.floor(Math.random() * seqLen);
-  const answer = seq[blank];
-  const opts = new Set([answer]);
-  while (opts.size < choiceCount) opts.add(Math.max(1, answer + (Math.floor(Math.random() * 9) - 4)));
-  return { seq, blank, answer, options: [...opts].sort(() => Math.random() - 0.5) };
+  const mode = getMode(level, round);
+
+  if (mode === 0) {
+    const seqLen = 4;
+    const start = Math.floor(Math.random() * Math.max(1, maxNum - seqLen)) + 1;
+    const seq = [start, start + 1, start + 2, start + 3];
+    const blank = Math.floor(Math.random() * seqLen);
+    const answer = seq[blank];
+    const opts = new Set([answer]);
+    while (opts.size < choiceCount) opts.add(Math.max(1, Math.min(maxNum + 5, answer + (Math.floor(Math.random() * 9) - 4))));
+    return { seq, blank, answer, options: [...opts].sort(() => Math.random() - 0.5) };
+  }
+
+  if (mode === 1) {
+    const start = 2 + (round % 2) * 2;
+    const seq = [start, start + 2, start + 4, start + 6];
+    const blank = Math.floor(Math.random() * 4);
+    const answer = seq[blank];
+    const opts = new Set([answer]);
+    const wrongPool = [answer - 2, answer + 2, answer - 4, answer + 4, answer + 1, answer - 1].filter(n => n >= 2 && n <= 30 && n !== answer);
+    while (opts.size < choiceCount && wrongPool.length > 0) opts.add(wrongPool[Math.floor(Math.random() * wrongPool.length)]);
+    while (opts.size < choiceCount) opts.add(answer + (opts.size % 2 ? 2 : -2));
+    return { seq, blank, answer, options: [...opts].sort(() => Math.random() - 0.5) };
+  }
+
+  if (mode === 2) {
+    const start = 1 + (round % 2) * 2;
+    const seq = [start, start + 2, start + 4, start + 6];
+    const blank = Math.floor(Math.random() * 4);
+    const answer = seq[blank];
+    const opts = new Set([answer]);
+    const wrongPool = [answer - 2, answer + 2, answer - 1, answer + 1].filter(n => n >= 1 && n <= 25);
+    while (opts.size < choiceCount) opts.add(wrongPool[Math.floor(Math.random() * wrongPool.length)] || answer + 2);
+    return { seq, blank, answer, options: [...opts].sort(() => Math.random() - 0.5) };
+  }
+
+  if (mode === 3) {
+    const isDesc = round % 2 === 0;
+    if (isDesc) {
+      const start = Math.min(10 + Math.floor(Math.random() * 8), 18);
+      const seq = [start, start - 1, start - 2, start - 3];
+      const blank = Math.floor(Math.random() * 4);
+      const answer = seq[blank];
+      const opts = new Set([answer]);
+      while (opts.size < choiceCount) opts.add(Math.max(1, Math.min(20, answer + (Math.floor(Math.random() * 9) - 4))));
+      return { seq, blank, answer, options: [...opts].sort(() => Math.random() - 0.5) };
+    }
+    const start = 5 + (round % 3) * 5;
+    const seq = [start, start + 5, start + 10, start + 15];
+    const blank = Math.floor(Math.random() * 4);
+    const answer = seq[blank];
+    const opts = new Set([answer]);
+    const wrongPool = [5, 10, 15, 20, 25, 0, 3, 8, 12, 18, 7, 13].filter(n => n !== answer && n >= 0 && n <= 30);
+    while (opts.size < choiceCount) opts.add(wrongPool[Math.floor(Math.random() * wrongPool.length)] || answer + 5);
+    return { seq, blank, answer, options: [...opts].sort(() => Math.random() - 0.5) };
+  }
+
+  return null;
 }
 
 export default function MissingNumber({ onComplete, level = 1 }) {
@@ -25,6 +82,7 @@ export default function MissingNumber({ onComplete, level = 1 }) {
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
   const [feedback, setFeedback] = useState(null);
+  const [mode, setModeState] = useState(0);
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const feedbackDelay = getFeedbackDelay(level);
@@ -36,11 +94,20 @@ export default function MissingNumber({ onComplete, level = 1 }) {
       onComplete(score, accuracy);
       return;
     }
-    const p = getProblem(level);
+    const m = getMode(level, round);
+    setModeState(m);
+    const p = getProblem(level, round);
     setProblem(p);
     setFeedback(null);
-    if (p) readQuestion('What number goes in the blank?');
-  }, [round, score, ROUNDS, level, readQuestion]);
+    const prompts = [
+      'What number goes in the blank?',
+      'What comes next?',
+      'Fill in the missing number!',
+      'What number fits?',
+    ];
+    const cancelRead = p ? readQuestion(prompts[Math.min(m, 3)]) : undefined;
+    return cancelRead;
+  }, [round, score, ROUNDS, level]);
 
   function handleAnswer(n) {
     if (feedback !== null || !problem) return;
@@ -77,7 +144,7 @@ export default function MissingNumber({ onComplete, level = 1 }) {
       </div>
       <div className={styles.choices}>
         {problem.options.map((n) => (
-          <button key={n} type="button" onClick={() => handleAnswer(n)} className={`${styles.choiceBtn} ${styles.choiceNumber}`} disabled={feedback !== null}>{n}</button>
+          <button key={n} type="button" onClick={() => handleAnswer(n)} className={`${styles.choiceBtn} ${styles.choiceNumber} ${feedback !== null && n === problem.answer ? styles.correct : ''} ${feedback !== null && n !== problem.answer ? styles.wrong : ''}`} disabled={feedback !== null}>{n}</button>
         ))}
       </div>
       {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? '✓ Correct!' : 'Try again!'}</p>}

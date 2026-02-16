@@ -29,8 +29,9 @@ export default function BlocklyCodingLab({ onComplete, level = 1 }) {
   const delay = getFeedbackDelay(level);
 
   useEffect(() => {
-    readQuestion(`Add ${minBlocks} or more blocks, then click Run Code`);
-  }, [minBlocks, readQuestion]);
+    const cancelRead = readQuestion(`Add ${minBlocks} or more blocks, then click Run Code`);
+    return cancelRead;
+  }, [minBlocks]);
 
   const handleAdd = (block) => {
     if (completedRef.current || feedback) return;

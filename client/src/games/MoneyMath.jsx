@@ -60,13 +60,14 @@ export default function MoneyMath({ onComplete, level = 1, childName }) {
       return;
     }
 
+    let cancelRead;
     if (mode === 'identify') {
       const coin = COINS[Math.floor(Math.random() * Math.min(COINS.length, level <= 3 ? 2 : 4))];
       const opts = new Set([coin.name]);
       while (opts.size < CHOICES) opts.add(COINS[Math.floor(Math.random() * COINS.length)].name);
       setProblem({ type: 'identify', coin });
       setOptions([...opts].sort(() => Math.random() - 0.5));
-      readQuestion(`What coin is this? It says ${coin.symbol}`);
+      cancelRead = readQuestion(`What coin is this? It says ${coin.symbol}`);
     } else {
       const { coins, total } = generateCountProblem(level);
       const opts = new Set([total]);
@@ -76,12 +77,13 @@ export default function MoneyMath({ onComplete, level = 1, childName }) {
       }
       setProblem({ type: 'count', coins, total });
       setOptions([...opts].sort((a, b) => a - b));
-      readQuestion('How much money is this?');
+      cancelRead = readQuestion('How much money is this?');
     }
 
     setFeedback(null);
     setSelected(null);
-  }, [round, readQuestion, mode, level, CHOICES]);
+    return cancelRead;
+  }, [round, mode, level, CHOICES]);
 
   function handleChoice(answer) {
     if (feedback) return;

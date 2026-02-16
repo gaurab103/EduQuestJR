@@ -80,9 +80,10 @@ export default function CauseEffectTap({ onComplete, level = 1, childName }) {
 
     if (chosen) {
       const questionText = mode === 'tap' ? `Tap the ${chosen.tap} and see what happens!` : `What happens when you tap ${chosen.tap}?`;
-      readQuestion(questionText);
+      const cancelRead = readQuestion(questionText);
+      return cancelRead;
     }
-  }, [round, readQuestion]);
+  }, [round]);
 
   // TAP MODE: just tap the item
   function handleTap() {

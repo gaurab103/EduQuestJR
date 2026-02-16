@@ -39,8 +39,9 @@ export default function MoreOrLess({ onComplete, level = 1 }) {
     const item = ITEM_POOL[Math.floor(Math.random() * ITEM_POOL.length)];
     setCurrentItem(item);
     setFeedback(null);
-    readQuestion('Tap the group with ' + q + ' ' + item.name + 's:');
-  }, [round, score, ROUNDS, MAX_NUM, readQuestion]);
+    const cancelRead = readQuestion('Tap the group with ' + q + ' ' + item.name + 's:');
+    return cancelRead;
+  }, [round, score, ROUNDS, MAX_NUM]);
 
   function handlePick(choice) {
     if (feedback !== null) return;

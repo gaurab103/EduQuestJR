@@ -78,9 +78,10 @@ export default function HandwritingHero({ onComplete, level = 1, childName }) {
       const msg = isWord
         ? `${childName ? childName + ', write' : 'Write'} the word "${currentChar}"!`
         : `${childName ? childName + ', write' : 'Write'} the letter "${currentChar}"!`;
-      readQuestion(msg);
+      const cancelRead = readQuestion(msg);
+      return cancelRead;
     }
-  }, [round, chars.length, readQuestion, childName, currentChar, isWord]);
+  }, [round, chars.length, childName, currentChar, isWord]);
 
   const getCtx = useCallback(() => {
     const canvas = canvasRef.current;

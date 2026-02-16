@@ -76,9 +76,10 @@ export default function ShadowMatch({ onComplete, level = 1, childName }) {
 
   useEffect(() => {
     if (target) {
-      readQuestion('Which shape matches this shadow?');
+      const cancelRead = readQuestion('Which shape matches this shadow?');
+      return cancelRead;
     }
-  }, [target, readQuestion]);
+  }, [target]);
 
   function handleChoice(c) {
     if (feedback !== null) return;

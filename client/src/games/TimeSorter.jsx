@@ -100,9 +100,10 @@ export default function TimeSorter({ onComplete, level = 1, childAge }) {
 
   useEffect(() => {
     if (correctOrder.length && round < ROUNDS) {
-      readQuestion('Put these activities in the correct order of the day!');
+      const cancelRead = readQuestion('Put these activities in the correct order of the day!');
+      return cancelRead;
     }
-  }, [correctOrder, round, ROUNDS, readQuestion]);
+  }, [correctOrder, round, ROUNDS]);
 
   function handleCardClick(activity) {
     if (feedback) return;

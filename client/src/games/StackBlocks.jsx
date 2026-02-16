@@ -58,8 +58,9 @@ export default function StackBlocks({ onComplete, level = 1 }) {
     setPattern(generatePattern(t, level));
     setStack([]);
     setFeedback(null);
-    readQuestion(`Stack ${t} blocks${level > 5 ? ' matching the pattern!' : '!'}`);
-  }, [round, level, readQuestion]);
+    const cancelRead = readQuestion(`Stack ${t} blocks${level > 5 ? ' matching the pattern!' : '!'}`);
+    return cancelRead;
+  }, [round, level]);
 
   function handleAdd() {
     if (feedback !== null || stack.length >= target) return;

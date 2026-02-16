@@ -57,8 +57,9 @@ export default function NumberBonds({ onComplete, level = 1, childName }) {
     setOptions([...opts].sort(() => Math.random() - 0.5));
     setFeedback(null);
     setSelected(null);
-    readQuestion(g + ' plus what equals ' + t + '?');
-  }, [round, readQuestion]);
+    const cancelRead = readQuestion(g + ' plus what equals ' + t + '?');
+    return cancelRead;
+  }, [round]);
 
   function handleChoice(n) {
     if (feedback) return;

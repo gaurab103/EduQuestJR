@@ -90,12 +90,14 @@ export default function SoundSafari({ onComplete, level = 1, childName }) {
   // Auto-speak the question
   useEffect(() => {
     if (target && !spoken) {
-      setTimeout(() => {
-        readQuestion((childName ? childName + '! ' : '') + 'Find the ' + target.word + '!');
+      let cancelRead;
+      const t = setTimeout(() => {
+        cancelRead = readQuestion((childName ? childName + '! ' : '') + 'Find the ' + target.word + '!');
         setSpoken(true);
       }, 400);
+      return () => { clearTimeout(t); if (cancelRead) cancelRead(); };
     }
-  }, [target, spoken, readQuestion]);
+  }, [target, spoken]);
 
   function handleRepeat() {
     playClick();

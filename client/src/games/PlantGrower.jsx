@@ -125,13 +125,15 @@ export default function PlantGrower({ onComplete, level = 1, childAge }) {
 
   useEffect(() => {
     if (round < ROUNDS) {
+      let cancelRead;
       if (mode === 'order') {
-        readQuestion('Put the plant stages in the correct order! Seed first, then sprout, then plant, flower, fruit.');
+        cancelRead = readQuestion('Put the plant stages in the correct order! Seed first, then sprout, then plant, flower, fruit.');
       } else if (question) {
-        readQuestion(question.q);
+        cancelRead = readQuestion(question.q);
       }
+      return cancelRead;
     }
-  }, [mode, question, round, ROUNDS, readQuestion]);
+  }, [mode, question, round, ROUNDS]);
 
   function handleOrderClick(stage) {
     if (feedback || !correctOrder.length) return;

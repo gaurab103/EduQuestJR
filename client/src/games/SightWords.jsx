@@ -53,8 +53,9 @@ export default function SightWords({ onComplete, level = 1, childName }) {
     setOptions([...opts].sort(() => Math.random() - 0.5));
     setFeedback(null);
     setSelected(null);
-    readQuestion('Find the word: ' + t);
-  }, [round, readQuestion]);
+    const cancelRead = readQuestion('Find the word: ' + t);
+    return cancelRead;
+  }, [round]);
 
   function handleChoice(w) {
     if (feedback) return;

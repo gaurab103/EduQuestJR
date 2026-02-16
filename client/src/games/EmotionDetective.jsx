@@ -46,8 +46,12 @@ export default function EmotionDetective({ onComplete, level = 1 }) {
     setShowHint(false);
 
     // Speak the question
-    setTimeout(() => readQuestion('How does this face feel?'), 300);
-  }, [round, score, ROUNDS, CHOICE_COUNT, level, readQuestion]);
+    let cancelRead;
+    const t = setTimeout(() => {
+      cancelRead = readQuestion('How does this face feel?');
+    }, 300);
+    return () => { clearTimeout(t); if (cancelRead) cancelRead(); };
+  }, [round, score, ROUNDS, CHOICE_COUNT, level]);
 
   function handleChoice(word) {
     if (feedback !== null) return;

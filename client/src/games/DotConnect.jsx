@@ -74,9 +74,10 @@ export default function DotConnect({ onComplete, level = 1, childAge }) {
 
   useEffect(() => {
     if (dots.length && round < ROUNDS) {
-      readQuestion(`Tap the dots in order from 1 to ${dots.length}!`);
+      const cancelRead = readQuestion(`Tap the dots in order from 1 to ${dots.length}!`);
+      return cancelRead;
     }
-  }, [dots, round, ROUNDS, readQuestion]);
+  }, [dots, round, ROUNDS]);
 
   function handleDotClick(dot) {
     if (feedback) return;

@@ -61,8 +61,9 @@ export default function SequenceBuilder({ onComplete, level = 1 }) {
     setOptions(shuffle([...seq]));
     setSelected([]);
     setFeedback(null);
-    readQuestion('Tap in the correct order');
-  }, [round, score, ROUNDS, sequences, readQuestion]);
+    const cancelRead = readQuestion('Tap in the correct order');
+    return cancelRead;
+  }, [round, score, ROUNDS, sequences]);
 
   function handlePick(item) {
     if (feedback !== null) return;

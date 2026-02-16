@@ -41,8 +41,9 @@ export default function MatchByCategory({ onComplete, level = 1 }) {
     setTarget(targetItem);
     setOptions(opts.sort(() => Math.random() - 0.5));
     setFeedback(null);
-    readQuestion(`Tap the ${cat} that matches`);
-  }, [round, score, ROUNDS, CHOICES, readQuestion]);
+    const cancelRead = readQuestion(`Tap the ${cat} that matches`);
+    return cancelRead;
+  }, [round, score, ROUNDS, CHOICES]);
 
   function handlePick(item) {
     if (feedback !== null) return;

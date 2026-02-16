@@ -5,12 +5,22 @@ import { getFeedbackDelay } from './levelConfig';
 import { MEMORY_THEMES, GameImage } from './gameImages';
 import styles from './GameCommon.module.css';
 
-function getPairs(level) {
-  if (level <= 3) return 3;
-  if (level <= 6) return 4;
-  if (level <= 10) return 5;
-  if (level <= 15) return 6;
-  return 8;
+function getGridConfig(level) {
+  if (level <= 2) return { rows: 2, cols: 2, pairs: 2 };
+  if (level <= 4) return { rows: 2, cols: 3, pairs: 3 };
+  if (level <= 7) return { rows: 2, cols: 3, pairs: 3 };
+  if (level <= 10) return { rows: 3, cols: 4, pairs: 6 };
+  if (level <= 13) return { rows: 3, cols: 4, pairs: 6 };
+  if (level <= 16) return { rows: 4, cols: 4, pairs: 8 };
+  if (level <= 20) return { rows: 4, cols: 5, pairs: 10 };
+  return { rows: 4, cols: 5, pairs: 10 };
+}
+
+function getFlipBackMs(level) {
+  if (level <= 10) return 0;
+  if (level <= 15) return 1200;
+  if (level <= 20) return 900;
+  return 700;
 }
 
 export default function MemoryFlipArena({ onComplete, level = 1 }) {
@@ -25,16 +35,19 @@ export default function MemoryFlipArena({ onComplete, level = 1 }) {
   const [matchAnim, setMatchAnim] = useState([]);
   const completedRef = useRef(false);
   const lockRef = useRef(false);
-  const PAIRS = getPairs(level);
+  const config = getGridConfig(level);
+  const PAIRS = config.pairs;
   const feedbackDelay = getFeedbackDelay(level);
+  const flipBackMs = getFlipBackMs(level);
 
   useEffect(() => {
-    const selectedTheme = MEMORY_THEMES[Math.floor(Math.random() * MEMORY_THEMES.length)];
+    const themeIndex = level % MEMORY_THEMES.length;
+    const selectedTheme = MEMORY_THEMES[themeIndex];
     setTheme(selectedTheme);
     const pool = selectedTheme.items.slice(0, PAIRS);
     const arr = [...pool, ...pool].map((item, i) => ({ id: i, itemId: item.id, img: item.img })).sort(() => Math.random() - 0.5);
     setCards(arr);
-  }, [PAIRS]);
+  }, [PAIRS, level]);
 
   useEffect(() => {
     if (matched.length === PAIRS * 2 && !completedRef.current) {
@@ -63,13 +76,16 @@ export default function MemoryFlipArena({ onComplete, level = 1 }) {
         playSuccess();
         teachAfterAnswer(true, { type: 'animal', correctAnswer: cards[a].itemId, extra: 'You found the ' + cards[a].itemId + ' pair!' });
         setTimeout(() => setMatchAnim([]), 600);
-      } else {
-        playWrong();
-      }
-      setTimeout(() => {
         setFlipped([]);
         lockRef.current = false;
-      }, feedbackDelay);
+      } else {
+        playWrong();
+        const delay = flipBackMs > 0 ? flipBackMs : feedbackDelay;
+        setTimeout(() => {
+          setFlipped([]);
+          lockRef.current = false;
+        }, delay);
+      }
     }
   }
 
@@ -81,6 +97,8 @@ export default function MemoryFlipArena({ onComplete, level = 1 }) {
     );
   }
 
+  const gridCols = config.cols;
+
   return (
     <div className={styles.container}>
       <div className={styles.progress}>
@@ -89,10 +107,11 @@ export default function MemoryFlipArena({ onComplete, level = 1 }) {
         <span>Moves: {moves}</span>
         <span>·</span>
         <span>Matched: {matched.length / 2}/{PAIRS}</span>
+        {flipBackMs > 0 && <span>· ⏱️ {flipBackMs / 1000}s</span>}
       </div>
       <p className={styles.prompt}>Find matching {theme.name.toLowerCase()} pairs!</p>
       <div className={styles.memoryGrid} style={{
-        gridTemplateColumns: `repeat(${PAIRS <= 3 ? 3 : 4}, 1fr)`,
+        gridTemplateColumns: `repeat(${gridCols}, 1fr)`,
       }}>
         {cards.map((card, idx) => {
           const isOpen = flipped.includes(idx) || matched.includes(idx);
@@ -125,6 +144,11 @@ export default function MemoryFlipArena({ onComplete, level = 1 }) {
       {matched.length > 0 && matched.length < PAIRS * 2 && (
         <p style={{ marginTop: '0.75rem', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>
           {matched.length / 2 === PAIRS - 1 ? 'Almost there! One more!' : `${PAIRS - matched.length / 2} more to find!`}
+        </p>
+      )}
+      {flipBackMs > 0 && (
+        <p style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+          Cards flip back in {flipBackMs / 1000} seconds!
         </p>
       )}
     </div>

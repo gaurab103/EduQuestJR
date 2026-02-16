@@ -43,8 +43,9 @@ export default function ColorBasketSorting({ onComplete, level = 1 }) {
     setTargetColor(target);
     setItems(mix);
     setFeedback(null);
-    readQuestion(`Tap the ${target.name} colored item`);
-  }, [round, score, ROUNDS, choiceCount, readQuestion]);
+    const cancelRead = readQuestion(`Tap the ${target.name} colored item`);
+    return cancelRead;
+  }, [round, score, ROUNDS, choiceCount]);
 
   function handlePick(item) {
     if (feedback !== null) return;

@@ -14,7 +14,39 @@ const RHYMES = [
   { word: 'hat', options: ['cat', 'mat', 'rat', 'sat', 'bat'], img: RHYME_IMAGES.hat },
   { word: 'fish', options: ['dish', 'sun', 'bed', 'wish', 'swish'], img: RHYME_IMAGES.fish },
   { word: 'bed', options: ['red', 'fed', 'led', 'sad', 'head'], img: RHYME_IMAGES.bed },
+  { word: 'star', options: ['car', 'far', 'bar', 'jar', 'tar'], img: RHYME_IMAGES.star },
+  { word: 'key', options: ['bee', 'see', 'tree', 'free', 'tea'], img: RHYME_IMAGES.key },
 ];
+
+function doRhyme(w1, w2) {
+  const r = RHYMES.find(x => x.word === w1);
+  if (r) return r.options.slice(0, 4).includes(w2);
+  const r2 = RHYMES.find(x => x.options.includes(w1));
+  if (r2) return r2.word === w2 || r2.options.slice(0, 4).includes(w2);
+  return false;
+}
+
+const RHYME_PAIRS = [
+  { w1: 'cat', w2: 'hat', rhyme: true },
+  { w1: 'dog', w2: 'fog', rhyme: true },
+  { w1: 'sun', w2: 'fun', rhyme: true },
+  { w1: 'cat', w2: 'dog', rhyme: false },
+  { w1: 'ball', w2: 'call', rhyme: true },
+  { w1: 'tree', w2: 'car', rhyme: false },
+  { w1: 'fish', w2: 'dish', rhyme: true },
+  { w1: 'bed', w2: 'red', rhyme: true },
+  { w1: 'hat', w2: 'run', rhyme: false },
+  { w1: 'star', w2: 'car', rhyme: true },
+  { w1: 'key', w2: 'bee', rhyme: true },
+  { w1: 'ball', w2: 'fish', rhyme: false },
+];
+
+function getMode(level, round) {
+  if (level <= 5) return 0; // What rhymes with X?
+  if (level <= 10) return round % 2; // 0: what rhymes, 1: do they rhyme (yes/no)
+  if (level <= 15) return round % 3; // 0: what rhymes, 1: do they rhyme, 2: find the one that DOESN'T rhyme
+  return round % 4; // add 3: make a rhyming pair from 6 words
+}
 
 function getOptionsForLevel(item, count) {
   const correct = item.options[0];
@@ -31,6 +63,11 @@ export default function RhymingMatch({ onComplete, level = 1 }) {
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
   const [feedback, setFeedback] = useState(null);
+  const [mode, setModeState] = useState(0);
+  const [rhymePair, setRhymePair] = useState(null);
+  const [makePairWords, setMakePairWords] = useState([]);
+  const [correctPair, setCorrectPair] = useState(null);
+  const [pairSelection, setPairSelection] = useState([]);
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const choiceCount = getChoiceCount(level);
@@ -42,31 +79,182 @@ export default function RhymingMatch({ onComplete, level = 1 }) {
       onComplete(score, Math.round((score / ROUNDS) * 100));
       return;
     }
-    const r = RHYMES[Math.floor(Math.random() * RHYMES.length)];
-    setItem(r);
-    setOptions(getOptionsForLevel(r, choiceCount));
+    const m = getMode(level, round);
+    setModeState(m);
+
+    if (m === 0) {
+      const r = RHYMES[(round * 2 + level) % RHYMES.length];
+      setItem(r);
+      setOptions(getOptionsForLevel(r, choiceCount));
+      setRhymePair(null);
+      setMakePairWords([]);
+      setCorrectPair(null);
+      setFeedback(null);
+      const cancelRead = readQuestion('Which rhymes with "' + r.word + '"?');
+      return cancelRead;
+    }
+
+    if (m === 1) {
+      const pair = RHYME_PAIRS[(round * 3 + level) % RHYME_PAIRS.length];
+      setRhymePair(pair);
+      setItem(null);
+      setOptions(['Yes', 'No']);
+      setMakePairWords([]);
+      setCorrectPair(null);
+      setFeedback(null);
+      const cancelRead = readQuestion('Do "' + pair.w1 + '" and "' + pair.w2 + '" rhyme?');
+      return cancelRead;
+    }
+
+    if (m === 2) {
+      const r = RHYMES[(round * 2 + level + 1) % RHYMES.length];
+      const rhymeWord = r.options[0];
+      const nonRhymes = r.options.slice(1, 5).filter(Boolean);
+      const opts = [rhymeWord, nonRhymes[0], nonRhymes[1]].sort(() => Math.random() - 0.5);
+      setItem({ word: r.word, correct: rhymeWord, wrongOne: nonRhymes[0] });
+      setOptions(opts);
+      setRhymePair(null);
+      setMakePairWords([]);
+      setCorrectPair(null);
+      setFeedback(null);
+      const cancelRead = readQuestion('Find the word that does NOT rhyme with "' + r.word + '"');
+      return cancelRead;
+    }
+
+    if (m === 3) {
+      const r1 = RHYMES[Math.floor(Math.random() * RHYMES.length)];
+      const r2 = RHYMES[Math.floor(Math.random() * RHYMES.length)];
+      const words = [r1.word, r1.options[0], r2.word, r2.options[0], RHYMES[2].word, RHYMES[2].options[1]];
+      const shuffled = words.sort(() => Math.random() - 0.5);
+      setMakePairWords(shuffled);
+      setCorrectPair([r1.word, r1.options[0]].sort());
+      setPairSelection([]);
+      setItem(null);
+      setOptions(shuffled);
+      setRhymePair(null);
+      setFeedback(null);
+      const cancelRead = readQuestion('Tap two words that rhyme!');
+      return cancelRead;
+    }
+
     setFeedback(null);
-    readQuestion('Which rhymes with "' + r.word + '"?');
-  }, [round, score, ROUNDS, choiceCount, readQuestion]);
+  }, [round, score, ROUNDS, choiceCount, level]);
 
   function handlePick(opt) {
     if (feedback !== null) return;
     playClick();
-    const correct = item?.options[0] === opt;
-    if (correct) { setScore(s => s + 1); setStreak(s => s + 1); playSuccess(); }
-    else { setStreak(0); playWrong(); }
-    setFeedback(correct ? 'correct' : 'wrong');
-    teachAfterAnswer(correct, { type: 'word', answer: opt, correctAnswer: item?.options[0], extra: '"' + item?.word + '" and "' + item?.options[0] + '" rhyme! They sound the same at the end.' });
-    setTimeout(() => setRound(r => r + 1), feedbackDelay);
+
+    if (mode === 1) {
+      const correct = (opt === 'Yes' && rhymePair?.rhyme) || (opt === 'No' && !rhymePair?.rhyme);
+      if (correct) { setScore(s => s + 1); setStreak(s => s + 1); playSuccess(); }
+      else { setStreak(0); playWrong(); }
+      setFeedback(correct ? 'correct' : 'wrong');
+      const extra = rhymePair?.rhyme ? `"${rhymePair.w1}" and "${rhymePair.w2}" rhyme!` : `"${rhymePair.w1}" and "${rhymePair.w2}" don't rhyme.`;
+      teachAfterAnswer(correct, { type: 'word', answer: opt, correctAnswer: rhymePair?.rhyme ? 'Yes' : 'No', extra });
+      setTimeout(() => setRound(r => r + 1), feedbackDelay);
+      return;
+    }
+
+    if (mode === 2) {
+      const correct = !doRhyme(item?.word, opt);
+      if (correct) { setScore(s => s + 1); setStreak(s => s + 1); playSuccess(); }
+      else { setStreak(0); playWrong(); }
+      setFeedback(correct ? 'correct' : 'wrong');
+      teachAfterAnswer(correct, { type: 'word', answer: opt, correctAnswer: 'a word that does not rhyme', extra: correct ? '"' + opt + '" does not rhyme with "' + item?.word + '"!' : '"' + item?.word + '" and "' + item?.correct + '" rhyme!' });
+      setTimeout(() => setRound(r => r + 1), feedbackDelay);
+      return;
+    }
+
+    if (mode === 0) {
+      const correct = item?.options[0] === opt;
+      if (correct) { setScore(s => s + 1); setStreak(s => s + 1); playSuccess(); }
+      else { setStreak(0); playWrong(); }
+      setFeedback(correct ? 'correct' : 'wrong');
+      teachAfterAnswer(correct, { type: 'word', answer: opt, correctAnswer: item?.options[0], extra: '"' + item?.word + '" and "' + item?.options[0] + '" rhyme!' });
+      setTimeout(() => setRound(r => r + 1), feedbackDelay);
+    }
+  }
+
+  function handleMakePairPick(word, idx) {
+    if (feedback !== null || mode !== 3) return;
+    if (pairSelection.length >= 2) return;
+    const newSel = pairSelection.includes(idx) ? pairSelection.filter(i => i !== idx) : [...pairSelection, idx];
+    setPairSelection(newSel);
+    if (newSel.length === 2) {
+      const w1 = makePairWords[newSel[0]];
+      const w2 = makePairWords[newSel[1]];
+      const correct = doRhyme(w1, w2);
+      if (correct) { setScore(s => s + 1); setStreak(s => s + 1); playSuccess(); }
+      else { setStreak(0); playWrong(); }
+      setFeedback(correct ? 'correct' : 'wrong');
+      teachAfterAnswer(correct, { type: 'word', answer: w1 + ' & ' + w2, correctAnswer: w1 + ' & ' + w2, extra: correct ? '"' + w1 + '" and "' + w2 + '" rhyme!' : 'Try to find two words that end with the same sound!' });
+      setTimeout(() => setRound(r => r + 1), feedbackDelay);
+    }
   }
 
   if (round >= ROUNDS) return <div className={styles.container}>Calculating your rewards...</div>;
 
+  if (mode === 3) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.progress}>
+          <span>Lv {level} · Round {round + 1}/{ROUNDS}</span><span>·</span><span>Score: {score}</span>
+          {streak > 1 && <span>· 🔥 {streak}</span>}
+        </div>
+        <p className={styles.prompt}>Tap two words that rhyme!</p>
+        <div className={styles.choices} style={{ flexWrap: 'wrap' }}>
+          {makePairWords.map((w, i) => (
+            <button key={i} type="button" onClick={() => handleMakePairPick(w, i)} className={`${styles.choiceBtn} ${styles.choiceNumber} ${pairSelection.includes(i) ? styles.correct : ''}`} disabled={feedback !== null}>{w}</button>
+          ))}
+        </div>
+        {pairSelection.length === 1 && feedback === null && <p style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--primary)' }}>Now tap the word that rhymes!</p>}
+        {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? '✓ Correct!' : 'Try again!'}</p>}
+      </div>
+    );
+  }
+
+  if (mode === 2) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.progress}>
+          <span>Lv {level} · Round {round + 1}/{ROUNDS}</span><span>·</span><span>Score: {score}</span>
+          {streak > 1 && <span>· 🔥 {streak}</span>}
+        </div>
+        <p className={styles.prompt}>Find the one that does NOT rhyme with "<strong>{item?.word}</strong>"</p>
+        <div className={styles.targetArea} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+          {item?.word && <strong style={{ fontSize: '1.5rem' }}>{item.word}</strong>}
+        </div>
+        <div className={styles.choices}>
+          {options.map((opt, i) => (
+            <button key={i} type="button" onClick={() => handlePick(opt)} className={`${styles.choiceBtn} ${styles.choiceNumber}`} disabled={feedback !== null}>{opt}</button>
+          ))}
+        </div>
+        {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? '✓ Correct!' : `"${item?.word}" rhymes with "${item?.correct}"!`}</p>}
+      </div>
+    );
+  }
+
+  if (mode === 1) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.progress}>
+          <span>Lv {level} · Round {round + 1}/{ROUNDS}</span><span>·</span><span>Score: {score}</span>
+          {streak > 1 && <span>· 🔥 {streak}</span>}
+        </div>
+        <p className={styles.prompt}>Do "<strong>{rhymePair?.w1}</strong>" and "<strong>{rhymePair?.w2}</strong>" rhyme?</p>
+        <div className={styles.choices}>
+          <button type="button" onClick={() => handlePick('Yes')} className={`${styles.choiceBtn} ${styles.choiceNumber}`} disabled={feedback !== null}>Yes</button>
+          <button type="button" onClick={() => handlePick('No')} className={`${styles.choiceBtn} ${styles.choiceNumber}`} disabled={feedback !== null}>No</button>
+        </div>
+        {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? '✓ Correct!' : 'Try again!'}</p>}
+      </div>
+    );
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.progress}>
-        <span>Lv {level} · Round {round + 1}/{ROUNDS}</span><span>·</span>
-        <span>Score: {score}</span>
+        <span>Lv {level} · Round {round + 1}/{ROUNDS}</span><span>·</span><span>Score: {score}</span>
         {streak > 1 && <span>· 🔥 {streak}</span>}
       </div>
       <p className={styles.prompt}>Which rhymes with "<strong>{item?.word}</strong>"?</p>
@@ -76,14 +264,10 @@ export default function RhymingMatch({ onComplete, level = 1 }) {
       </div>
       <div className={styles.choices}>
         {options.map((opt, i) => (
-          <button key={i} type="button" onClick={() => handlePick(opt)}
-            className={`${styles.choiceBtn} ${styles.choiceNumber}`}
-            disabled={feedback !== null}>{opt}</button>
+          <button key={i} type="button" onClick={() => handlePick(opt)} className={`${styles.choiceBtn} ${styles.choiceNumber}`} disabled={feedback !== null}>{opt}</button>
         ))}
       </div>
-      {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-        {feedback === 'correct' ? '✓ Correct!' : `The answer was "${item?.options[0]}"!`}
-      </p>}
+      {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? '✓ Correct!' : `The answer was "${item?.options[0]}"!`}</p>}
     </div>
   );
 }

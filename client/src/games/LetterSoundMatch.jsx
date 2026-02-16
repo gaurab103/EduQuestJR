@@ -76,8 +76,9 @@ export default function LetterSoundMatch({ level = 1, onComplete }) {
     setChoices(allChoices);
     setCorrectIndex(allChoices.findIndex(c => c.letter === item.letter));
     setFeedback(null);
-    readQuestion('What starts with "' + item.letter + '"?');
-  }, [round, ROUNDS, choiceCount, readQuestion]);
+    const cancelRead = readQuestion('What starts with "' + item.letter + '"?');
+    return cancelRead;
+  }, [round, ROUNDS, choiceCount]);
 
   function handleChoice(index) {
     if (feedback !== null) return;
