@@ -78,25 +78,33 @@ export function getTimeLimit(level) {
  * Get feedback delay (ms) before next round.
  * IMPORTANT: Must be long enough for the voice to finish teaching!
  *
- * Voice durations (estimated):
- *  - Correct: ~3-4 seconds (praise + fun fact)
- *  - Wrong: ~7-10 seconds (gentle correction + what they picked +
- *           correct answer + explanation + encouragement)
- *
- * Lower levels get MORE time because kids need longer to process.
+ * When WRONG: extra time for careful teaching. If answeredTooFast (< 2s),
+ * add more delay so voice can say "Take your time" and teach fully.
  */
-export function getFeedbackDelay(level, isCorrect = true) {
+export function getFeedbackDelay(level, isCorrect = true, answeredTooFast = false) {
   if (isCorrect) {
-    if (level <= 5) return 4000;
-    if (level <= 10) return 3500;
-    if (level <= 20) return 3200;
-    return 2800;
+    // Must allow voice to finish praise + fact. ~4–6s typical.
+    if (level <= 5) return 5500;
+    if (level <= 10) return 5000;
+    if (level <= 20) return 4500;
+    return 4000;
   }
-  // Wrong: much longer — voice explains the mistake fully, teaches, encourages
-  if (level <= 5) return 8000;
-  if (level <= 10) return 7500;
-  if (level <= 20) return 7000;
-  return 6000;
+  // Wrong: longer for careful teaching. ECD kids need time to process.
+  let base = level <= 5 ? 10000 : level <= 10 ? 9500 : level <= 20 ? 9000 : 8000;
+  if (answeredTooFast) base += 2500; // "Take your time" + full teaching
+  return base;
+}
+
+/**
+ * Progressive difficulty within a level: Q1 easier, last question slightly harder.
+ * Returns 0 (easiest) to 1 (hardest) for round index.
+ * Games can use this to pick content: pool[Math.min(floor(t * pool.length), pool.length-1)]
+ */
+export function getRoundDifficultyFactor(level, round, totalRounds) {
+  if (totalRounds <= 1) return 0;
+  const progress = round / (totalRounds - 1);
+  const levelScale = Math.min(1, (level - 1) / 10);
+  return Math.min(1, progress * (0.6 + 0.4 * levelScale));
 }
 
 /**

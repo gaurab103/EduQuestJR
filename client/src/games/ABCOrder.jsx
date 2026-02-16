@@ -27,7 +27,7 @@ function getLetterCount(level) {
 
 export default function ABCOrder({ level = 1, onComplete }) {
   const { playSuccess, playWrong, playClick } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [letters, setLetters] = useState([]);
@@ -93,7 +93,7 @@ export default function ABCOrder({ level = 1, onComplete }) {
         setFeedback('correct');
         playSuccess();
         teachAfterAnswer(true, { type: 'letter', correctAnswer: correctOrder[0] });
-        const delay = getFeedbackDelay(level, true);
+        const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, true));
         setTimeout(() => setRound(r => r + 1), delay);
       } else {
         setWrong(w => w + 1);
@@ -102,7 +102,7 @@ export default function ABCOrder({ level = 1, onComplete }) {
         playWrong();
         teachAfterAnswer(false, { type: 'letter', correctAnswer: correctOrder.join('') });
         // Reset after showing feedback
-        const delay = getFeedbackDelay(level, false);
+        const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, false));
         setTimeout(() => {
           setSelectedOrder([]);
           setFeedback(null);

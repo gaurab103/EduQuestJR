@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useChildMode } from '../context/ChildModeContext';
 import { useAudio } from '../context/AudioContext';
+import { useLanguage } from '../context/LanguageContext';
 import { auth as authApi } from '../api/client';
 import styles from './Settings.module.css';
 
@@ -10,6 +11,7 @@ export default function Settings() {
   const { user, refreshUser } = useAuth();
   const { isAdultMode, setPin } = useChildMode();
   const { muted, toggleMute } = useAudio();
+  const { lang, setLang, languages } = useLanguage();
 
   const [name, setName] = useState(user?.name || '');
   const [nameSaving, setNameSaving] = useState(false);
@@ -53,8 +55,10 @@ export default function Settings() {
 
   return (
     <div className={styles.page}>
-      <h1 className={styles.title}>Settings</h1>
-      <Link to="/dashboard" className={styles.back}>← Back to Dashboard</Link>
+      <div className={styles.pageHeader}>
+        <h1 className={styles.title}>👑 Parent Zone</h1>
+        <Link to="/dashboard" className={styles.back}>← Dashboard</Link>
+      </div>
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Profile</h2>
@@ -95,6 +99,27 @@ export default function Settings() {
             </button>
           </div>
           {pinMsg && <p className={styles.msg}>{pinMsg}</p>}
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Language</h2>
+        <div className={styles.card}>
+          <label className={styles.label}>App & Buddy Bear language</label>
+          <div className={styles.langRow}>
+            {languages.map((l) => (
+              <button
+                key={l.code}
+                type="button"
+                onClick={() => setLang(l.code)}
+                className={`${styles.langBtn} ${lang === l.code ? styles.langActive : ''}`}
+              >
+                <span className={styles.langFlag}>{l.flag}</span>
+                <span>{l.name}</span>
+              </button>
+            ))}
+          </div>
+          <p className={styles.detail}>Buddy Bear and speech will use this language.</p>
         </div>
       </section>
 

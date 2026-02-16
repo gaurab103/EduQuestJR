@@ -45,7 +45,7 @@ function getWrongChoices(currentLetter, count) {
 
 export default function LetterSoundMatch({ level = 1, onComplete }) {
   const { playSuccess, playWrong, playClick, speak } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [currentItem, setCurrentItem] = useState(null);
@@ -103,7 +103,7 @@ export default function LetterSoundMatch({ level = 1, onComplete }) {
       teachAfterAnswer(false, { type: 'letter', answer: choices[index]?.word, correctAnswer: currentItem?.letter });
     }
 
-    const delay = getFeedbackDelay(level, isCorrect);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, isCorrect));
     setTimeout(() => {
       setRound(r => r + 1);
     }, delay);

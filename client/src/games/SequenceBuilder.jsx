@@ -36,7 +36,7 @@ function getSequencesForLength(len) {
 
 export default function SequenceBuilder({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [correct, setCorrect] = useState([]);
@@ -85,7 +85,7 @@ export default function SequenceBuilder({ onComplete, level = 1 }) {
       else { setStreak(0); playWrong(); }
       teachAfterAnswer(ok, { type: 'sequence', correctAnswer: correct.join(' → '), extra: 'Sequences follow a pattern. Look at the order and remember what comes next!' });
       setFeedback(ok ? 'correct' : 'wrong');
-      const delay = getFeedbackDelay(level, ok);
+      const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, ok));
       setTimeout(() => setRound((r) => r + 1), delay);
     }
   }

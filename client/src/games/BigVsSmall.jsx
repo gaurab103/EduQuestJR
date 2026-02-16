@@ -24,7 +24,7 @@ function getMode(level, round) {
 
 export default function BigVsSmall({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [ask, setAsk] = useState('big');
@@ -139,7 +139,7 @@ export default function BigVsSmall({ onComplete, level = 1 }) {
     const correctItem = mode <= 1 || mode >= 4 ? (ask === 'big' ? pair?.big : pair?.small) : (mode === 2 ? triple?.find(t => t.isBiggest) : triple?.find(t => t.correctOrder));
     const selectedItem = mode <= 1 || mode >= 4 ? (choice === 'left' ? (swapped ? pair?.small : pair?.big) : (swapped ? pair?.big : pair?.small)) : null;
     teachAfterAnswer(correct, { type: 'animal', answer: selectedItem?.name || choice, correctAnswer: correctItem?.name });
-    const delay = getFeedbackDelay(level, correct);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
     setTimeout(() => setRound(r => r + 1), delay);
   }
 
@@ -151,7 +151,7 @@ export default function BigVsSmall({ onComplete, level = 1 }) {
     else { setStreak(0); playWrong(); }
     setFeedback(correct ? 'correct' : 'wrong');
     teachAfterAnswer(correct, { type: 'animal', answer: triple[idx]?.name, correctAnswer: triple?.find(t => t.isBiggest)?.name });
-    const delay = getFeedbackDelay(level, correct);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
     setTimeout(() => setRound(r => r + 1), delay);
   }
 
@@ -163,7 +163,7 @@ export default function BigVsSmall({ onComplete, level = 1 }) {
     else { setStreak(0); playWrong(); }
     setFeedback(correct ? 'correct' : 'wrong');
     teachAfterAnswer(correct, { type: 'animal', answer: triple[idx]?.name, correctAnswer: triple?.find(t => t.correctOrder)?.name });
-    const delay = getFeedbackDelay(level, correct);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

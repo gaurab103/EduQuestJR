@@ -87,8 +87,8 @@ export const ai = {
     return api(`/ai/encouragement?${q}`);
   },
   suggestedLevel: (childId, gameSlug) => api(`/ai/suggested-level?childId=${childId}&gameSlug=${gameSlug}`),
-  chat: (childId, message, history = []) =>
-    api('/ai/chat', { method: 'POST', body: JSON.stringify({ childId, message, history }) }),
+  chat: (childId, message, history = [], lang = 'en') =>
+    api('/ai/chat', { method: 'POST', body: JSON.stringify({ childId, message, history, lang }) }),
 };
 
 export const subscription = {

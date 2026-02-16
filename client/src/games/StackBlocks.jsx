@@ -32,7 +32,7 @@ function generatePattern(count, level) {
 
 export default function StackBlocks({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [stack, setStack] = useState([]);
@@ -101,7 +101,7 @@ export default function StackBlocks({ onComplete, level = 1 }) {
         playWrong();
         teachAfterAnswer(false, { type: 'math', extra: 'Stacking blocks helps us learn patterns and counting!' });
       }
-      const delay = getFeedbackDelay(level, passed) + 300;
+      const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, passed) + 300);
       setTimeout(() => setRound(r => r + 1), delay);
     }
   }

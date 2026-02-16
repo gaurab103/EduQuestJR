@@ -84,7 +84,7 @@ export const GAME_COMPONENTS = {
   'blockly-coding-lab': BlocklyCodingLab,
   'subtraction-safari': SubtractionSafari,
   'sequence-builder': SequenceBuilder,
-  'shadow-match': MatchShadow,  // merged: both use MatchShadow (richer implementation)
+  'shadow-match': MatchShadow,
   'color-basket-sorting': ColorBasketSorting,
   'big-vs-small': BigVsSmall,
   'match-by-category': MatchByCategory,
@@ -126,7 +126,6 @@ export const GAME_COMPONENTS = {
   'plant-grower': PlantGrower,
   'compare-weight': CompareWeight,
   'direction-quest': DirectionQuest,
-  'match-shadow': MatchShadow,
   'number-line': NumberLine,
   'syllable-clap': SyllableClap,
   'sort-by-size': SortBySize,

@@ -28,7 +28,7 @@ function getProblem(level) {
 
 export default function SubtractionSafari({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [problem, setProblem] = useState(null);
@@ -70,7 +70,7 @@ export default function SubtractionSafari({ onComplete, level = 1 }) {
     }
     setFeedback(correct ? 'correct' : 'wrong');
     teachAfterAnswer(correct, { type: 'subtraction', answer: num, correctAnswer: problem.diff, a: problem.a, b: problem.b });
-    const delay = getFeedbackDelay(level, correct);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
     setTimeout(() => setRound((r) => r + 1), delay);
   }
 

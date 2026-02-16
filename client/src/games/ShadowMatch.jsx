@@ -36,7 +36,7 @@ function getShapePool(level) {
 
 export default function ShadowMatch({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(null);
@@ -112,7 +112,7 @@ export default function ShadowMatch({ onComplete, level = 1, childName }) {
       teachAfterAnswer(false, { type: 'shape', correctAnswer: target?.name?.toLowerCase() });
     }
 
-    const delay = getFeedbackDelay(level, isCorrect);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, isCorrect));
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

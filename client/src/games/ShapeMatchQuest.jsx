@@ -27,7 +27,7 @@ function getMode(level, round) {
 
 export default function ShapeMatchQuest({ onComplete, level = 1, childName, childAge }) {
   const { playSuccess, playWrong, playClick } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(null);
@@ -147,8 +147,12 @@ export default function ShapeMatchQuest({ onComplete, level = 1, childName, chil
     }
     setFeedback(correct ? 'correct' : 'wrong');
     const correctAns = mode === 0 ? target?.label : mode === 1 ? target?.correctAnswer : mode === 2 ? target?.label : (target?.askCurves ? 'the curved shape' : 'the shape with corners');
-    teachAfterAnswer(correct, { type: 'shape', answer: choice.id, correctAnswer: correctAns });
-    const delay = getFeedbackDelay(level, correct);
+    const ctx = { type: 'shape', answer: choice.id, correctAnswer: mode === 1 ? target?.label : correctAns };
+    if (mode === 1) ctx.sides = target?.correctAnswer;
+    if (mode === 2) ctx.sides = target?.sides;
+    if (mode === 3) ctx.extra = target?.askCurves ? 'Shapes with curves are round, like circles!' : 'Shapes with corners have straight edges and points!';
+    teachAfterAnswer(correct, ctx);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
     setTimeout(() => setRound((r) => r + 1), delay);
   }
 

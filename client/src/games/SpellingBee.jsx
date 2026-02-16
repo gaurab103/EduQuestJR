@@ -26,7 +26,7 @@ const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
 export default function SpellingBee({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [word, setWord] = useState('');
@@ -98,7 +98,7 @@ export default function SpellingBee({ onComplete, level = 1, childName }) {
       teachAfterAnswer(false, { type: 'word', answer: attempt, correctAnswer: word, extra: 'The correct spelling is "' + word.toLowerCase() + '".' });
     }
     const isCorrect = attempt === word;
-    const delay = getFeedbackDelay(level, isCorrect) + 400;
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, isCorrect) + 400);
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

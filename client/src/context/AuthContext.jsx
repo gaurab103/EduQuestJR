@@ -45,11 +45,17 @@ export function AuthProvider({ children }) {
   };
 
   const register = async (name, email, password) => {
-    const { user, token } = await authApi.register({ name, email, password });
-    localStorage.setItem(TOKEN_KEY, token);
-    localStorage.setItem(USER_KEY, JSON.stringify(user));
-    setUser(user);
-    return user;
+    const res = await authApi.register({ name, email, password });
+    if (res.requiresVerification) {
+      return { requiresVerification: true, user: res.user };
+    }
+    if (res.token) {
+      localStorage.setItem(TOKEN_KEY, res.token);
+      localStorage.setItem(USER_KEY, JSON.stringify(res.user));
+      setUser(res.user);
+      return res.user;
+    }
+    return res.user;
   };
 
   const logout = () => {

@@ -29,7 +29,7 @@ function getMinPoints(level) {
 
 export default function TraceLetters({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [letter, setLetter] = useState('');
@@ -188,7 +188,7 @@ export default function TraceLetters({ onComplete, level = 1, childName }) {
       playWrong();
       teachAfterAnswer(false, { type: 'letter', correctAnswer: letter });
     }
-    const delay = getFeedbackDelay(level, passed) + 300;
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, passed) + 300);
     setTimeout(() => setRound(r => r + 1), delay);
   };
 

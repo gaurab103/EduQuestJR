@@ -14,7 +14,7 @@ function getBubbleCount(level) {
 
 export default function CalmBreathingBubble({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(0);
   const [score, setScore] = useState(0);
@@ -46,7 +46,7 @@ export default function CalmBreathingBubble({ onComplete, level = 1 }) {
     else { setStreak(0); playWrong(); }
     teachAfterAnswer(correct, { type: 'word', extra: 'Taking deep breaths helps us feel calm!' });
     setFeedback(correct ? 'correct' : 'wrong');
-    const delay = getFeedbackDelay(level, correct);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
     setTimeout(() => setRound((r) => r + 1), delay);
   }
 

@@ -77,7 +77,7 @@ function getProblem(level, round) {
 
 export default function MissingNumber({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [problem, setProblem] = useState(null);
@@ -128,7 +128,7 @@ export default function MissingNumber({ onComplete, level = 1 }) {
     }
     setFeedback(correct ? 'correct' : 'wrong');
     teachAfterAnswer(correct, { type: 'math', answer: n, correctAnswer: problem.answer, extra: 'The sequence was: ' + problem.seq.join(', ') });
-    const delay = getFeedbackDelay(level, correct);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
     setTimeout(() => setRound((r) => r + 1), delay);
   }
 

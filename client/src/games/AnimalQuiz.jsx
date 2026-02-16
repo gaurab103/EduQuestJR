@@ -36,7 +36,7 @@ const QUESTIONS = [
 
 export default function AnimalQuiz({ level = 1, onComplete }) {
   const { playSuccess, playWrong, playClick, speak } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(null);
@@ -108,15 +108,15 @@ export default function AnimalQuiz({ level = 1, onComplete }) {
       playSuccess();
       speak(currentQuestion.answer);
       setFeedback('correct');
-      teachAfterAnswer(true, { type: 'animal', answer: selected, correctAnswer: currentQuestion.answer });
+      teachAfterAnswer(true, { type: 'animal', answer: selected, correctAnswer: currentQuestion.answer, question: currentQuestion.q });
     } else {
       setWrong(w => w + 1);
       playWrong();
       setFeedback('wrong');
-      teachAfterAnswer(false, { type: 'animal', answer: selected, correctAnswer: currentQuestion.answer });
+      teachAfterAnswer(false, { type: 'animal', answer: selected, correctAnswer: currentQuestion.answer, question: currentQuestion.q });
     }
     
-    const delay = getFeedbackDelay(level, isCorrect);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, isCorrect));
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

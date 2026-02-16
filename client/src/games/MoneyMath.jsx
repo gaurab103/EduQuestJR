@@ -36,7 +36,7 @@ function generateCountProblem(level) {
 
 export default function MoneyMath({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [problem, setProblem] = useState(null);
@@ -118,7 +118,7 @@ export default function MoneyMath({ onComplete, level = 1, childName }) {
       playWrong();
       teachAfterAnswer(false, { type: 'math', correctAnswer: problem.type === 'identify' ? problem.coin.name : problem.total, extra: 'Learning about money helps us make smart choices!' });
     }
-    const delay = getFeedbackDelay(level, isCorrect);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, isCorrect));
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

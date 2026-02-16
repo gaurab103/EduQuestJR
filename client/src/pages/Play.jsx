@@ -66,22 +66,30 @@ export default function Play() {
     }
   }
 
-  function handleCloseReward() {
+  const currentLevel = level || 1;
+  const nextLevel = currentLevel + 1;
+  const PREMIUM_LEVEL = 16;
+  const MAX_LEVEL = 30;
+  const hasNextLevel = nextLevel <= MAX_LEVEL && (nextLevel < PREMIUM_LEVEL || status?.isPremium);
+
+  async function handleNextLevel() {
+    if (!childId || !gameSlug || !hasNextLevel) return;
     setRewardData(null);
-    // Reload play status to get updated completedLevels
-    if (childId && gameSlug) {
-      setLoading(true);
-      setLevel(null);
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await progressApi.playStatus(childId, gameSlug);
+      setStatus(data);
+      setLevel(nextLevel);
       setResult(null);
-      setError(null);
-      progressApi
-        .playStatus(childId, gameSlug)
-        .then((data) => setStatus(data))
-        .catch(() => {})
-        .finally(() => setLoading(false));
-    } else {
-      navigate('/games');
-    }
+      startSession();
+    } catch (_) {}
+    setLoading(false);
+  }
+
+  function handlePlayOther() {
+    setRewardData(null);
+    navigate(`/games?child=${childId}`);
   }
 
   if (loading) {
@@ -128,7 +136,10 @@ export default function Play() {
         <RewardModal
           rewards={rewardData.rewards}
           child={rewardData.child}
-          onClose={handleCloseReward}
+          gameLevel={currentLevel}
+          hasNextLevel={hasNextLevel}
+          onNextLevel={handleNextLevel}
+          onPlayOther={handlePlayOther}
         />
       </GameLayout>
     );

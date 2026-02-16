@@ -87,7 +87,7 @@ const SPATIAL_FACTS = [
 
 export default function MazeRunner({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [maze, setMaze] = useState(null);
@@ -138,7 +138,7 @@ export default function MazeRunner({ onComplete, level = 1, childAge }) {
       playWrong();
       setFeedback('wrong');
       teachAfterAnswer(false, { type: 'spatial', answer: 'wall', correctAnswer: 'path', extra: SPATIAL_FACTS[Math.floor(Math.random() * SPATIAL_FACTS.length)] });
-      const delay = getFeedbackDelay(level, false);
+      const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, false));
       setTimeout(() => { setFeedback(null); }, delay);
       return;
     }
@@ -153,7 +153,7 @@ export default function MazeRunner({ onComplete, level = 1, childAge }) {
       playWrong();
       setFeedback('wrong');
       teachAfterAnswer(false, { type: 'spatial', answer: 'jump', correctAnswer: 'step', extra: 'Tap the next cell right next to where you are! Move one step at a time.' });
-      const delay = getFeedbackDelay(level, false);
+      const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, false));
       setTimeout(() => { setFeedback(null); }, delay);
       return;
     }
@@ -166,7 +166,7 @@ export default function MazeRunner({ onComplete, level = 1, childAge }) {
       playSuccess();
       setFeedback('correct');
       teachAfterAnswer(true, { type: 'spatial', answer: 'path', correctAnswer: 'path', extra: SPATIAL_FACTS[Math.floor(Math.random() * SPATIAL_FACTS.length)] });
-      const delay = getFeedbackDelay(level, true);
+      const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, true));
       setTimeout(() => setRound(r => r + 1), delay);
     }
   }

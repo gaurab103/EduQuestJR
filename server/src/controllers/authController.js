@@ -53,16 +53,11 @@ export async function register(req, res, next) {
     delete userObj.verificationCode;
     delete userObj.verificationCodeExpiry;
 
-    // Return user info but NOT a token yet — they need to verify first
-    // (For backwards compatibility and dev convenience, also issue a token)
-    const token = signToken(user._id);
-
+    // Do NOT return a token — user must verify email first
     res.status(201).json({
       message: 'Registration successful. Please check your email for verification code.',
       user: userObj,
-      token,
       requiresVerification: true,
-      expiresIn: JWT_EXPIRES_IN,
     });
   } catch (err) {
     next(err);

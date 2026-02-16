@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTeaching } from './useTeaching';
 import { useNoRepeat } from './useNoRepeat';
+import { useQuestionTimer } from './useQuestionTimer';
 import styles from './GameCommon.module.css';
-import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
+import { getRounds, getChoiceCount, getFeedbackDelay, getRoundDifficultyFactor } from './levelConfig';
 import { useAudio } from '../context/AudioContext';
 
 const WORDS_FIRST = [
@@ -105,7 +106,8 @@ function getMode(level, round) {
 
 export default function FillMissingLetter({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
+  const { markStart, isAnsweredTooFast } = useQuestionTimer();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [item, setItem] = useState(null);
@@ -130,8 +132,12 @@ export default function FillMissingLetter({ onComplete, level = 1 }) {
     setModeState(m);
 
     const pools = [WORDS_FIRST, WORDS_LAST, WORDS_MIDDLE, WORDS_TWO];
+    const factor = getRoundDifficultyFactor(level, round, ROUNDS);
+    const pool = pools[m];
+    const poolSize = Math.max(1, Math.floor(pool.length * (0.5 + 0.5 * factor)));
+    const subPool = pool.slice(0, poolSize);
     const w = generate(
-      () => pools[m][Math.floor(Math.random() * pools[m].length)],
+      () => subPool[Math.floor(Math.random() * subPool.length)],
       (r) => `${m}-${r.word}`
     );
 
@@ -142,6 +148,7 @@ export default function FillMissingLetter({ onComplete, level = 1 }) {
     setItem(w);
     setOptions([...opts].sort(() => Math.random() - 0.5));
     setFeedback(null);
+    markStart();
 
     const prompts = [
       'What letter makes the word?',
@@ -167,8 +174,9 @@ export default function FillMissingLetter({ onComplete, level = 1 }) {
       playWrong();
     }
     setFeedback(correct ? 'correct' : 'wrong');
-    teachAfterAnswer(correct, { type: 'letter', answer: letter, correctAnswer: correctLetter });
-    const delay = getFeedbackDelay(level, correct);
+    const answeredTooFast = !correct && isAnsweredTooFast();
+    teachAfterAnswer(correct, { type: 'letter', answer: letter, correctAnswer: correctLetter, answeredTooFast, word: item?.word, blank: item?.blank });
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct, answeredTooFast));
     setTimeout(() => setRound((r) => r + 1), delay);
   }
 

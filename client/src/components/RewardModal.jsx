@@ -61,7 +61,7 @@ function ConfettiCanvas() {
   return <canvas ref={canvasRef} className={styles.confettiCanvas} />;
 }
 
-export default function RewardModal({ rewards, child, onClose }) {
+export default function RewardModal({ rewards, child, gameLevel = 1, hasNextLevel = false, onNextLevel, onPlayOther }) {
   const [show, setShow] = useState(false);
   const [stars, setStars] = useState(0);
   const [showStars, setShowStars] = useState([false, false, false]);
@@ -136,6 +136,9 @@ export default function RewardModal({ rewards, child, onClose }) {
               </span>
             ))}
           </div>
+          <p className={styles.starsEarned}>
+            You earned {rewards?.accuracy >= 80 ? 3 : rewards?.accuracy >= 50 ? 2 : 1} of 3 stars!
+          </p>
           {isReplay ? (
             <div className={styles.rewards}>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600 }}>
@@ -179,9 +182,16 @@ export default function RewardModal({ rewards, child, onClose }) {
               Total: <strong>{child.xp} XP</strong> · <strong>{child.coins} coins</strong> · Level {child.level}
             </p>
           )}
-          <button type="button" onClick={onClose} className={styles.closeBtn}>
-            Continue Playing
-          </button>
+          <div className={styles.actions}>
+            {hasNextLevel && (
+              <button type="button" onClick={onNextLevel} className={styles.primaryBtn}>
+                Next Level →
+              </button>
+            )}
+            <button type="button" onClick={onPlayOther} className={hasNextLevel ? styles.secondaryBtn : styles.primaryBtn}>
+              {hasNextLevel ? 'Play Other Game' : 'Back to Games'}
+            </button>
+          </div>
         </div>
       </div>
     </div>

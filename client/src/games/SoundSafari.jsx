@@ -68,7 +68,7 @@ export default function SoundSafari({ onComplete, level = 1, childName }) {
   const [options, setOptions] = useState([]);
   const [spoken, setSpoken] = useState(false);
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
 
   const totalRounds = getRounds(level);
@@ -124,17 +124,17 @@ export default function SoundSafari({ onComplete, level = 1, childName }) {
       playSuccess();
       speak(`Great job! That's ${target.word}!`);
       const type = SOUND_SETS.animals.some(a => a.word === target.word) ? 'animal' : SOUND_SETS.colors.some(c => c.word === target.word) ? 'color' : 'word';
-      teachAfterAnswer(true, { type, answer: item.word, correctAnswer: target.word });
+      teachAfterAnswer(true, { type, answer: item.word, correctAnswer: target.word, question: 'Find the ' + target.word });
     } else {
       setStreak(0);
       setFeedback({ text: `That's ${item.word}. Let's try another!`, correct: false });
       playWrong();
       const type = SOUND_SETS.animals.some(a => a.word === target.word) ? 'animal' : SOUND_SETS.colors.some(c => c.word === target.word) ? 'color' : 'word';
-      teachAfterAnswer(false, { type, answer: item.word, correctAnswer: target.word });
+      teachAfterAnswer(false, { type, answer: item.word, correctAnswer: target.word, question: 'Find the ' + target.word });
     }
 
     const isCorrect = item.word === target.word;
-    const delay = getFeedbackDelay(level, isCorrect);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, isCorrect));
     setTimeout(() => {
       setFeedback(null);
       if (round + 1 >= totalRounds) {

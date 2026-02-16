@@ -14,7 +14,7 @@ const COLORS = [
 
 export default function ColorBasketSorting({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [targetColor, setTargetColor] = useState(null);
@@ -66,7 +66,7 @@ export default function ColorBasketSorting({ onComplete, level = 1 }) {
     }
     teachAfterAnswer(correct, { type: 'color', correctAnswer: targetColor?.name?.toLowerCase() });
     setFeedback(correct ? 'correct' : 'wrong');
-    const delay = getFeedbackDelay(level, correct);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
     setTimeout(() => setRound((r) => r + 1), delay);
   }
 

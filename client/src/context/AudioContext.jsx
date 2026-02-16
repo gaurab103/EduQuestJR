@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
+import { useLanguage } from './LanguageContext';
 
 const AudioCtx = createContext(null);
 
@@ -63,6 +64,7 @@ function playCelebrationSound(audioCtx) {
 export function AudioProvider({ children }) {
   const [muted, setMuted] = useState(() => localStorage.getItem('eduquest_muted') === 'true');
   const audioCtxRef = useRef(null);
+  const { speechLang } = useLanguage();
 
   const ensureCtx = useCallback(() => {
     if (!audioCtxRef.current) {
@@ -111,19 +113,16 @@ export function AudioProvider({ children }) {
     if (muted || !window.speechSynthesis) return;
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = options.lang || speechLang;
     utterance.rate = options.rate ?? 0.85;
     utterance.pitch = options.pitch ?? 1.2;
     utterance.volume = options.volume ?? 0.8;
-    // Try to find a child-friendly voice
     const voices = window.speechSynthesis.getVoices();
-    const preferred = voices.find(v =>
-      v.name.includes('Samantha') || v.name.includes('Karen') ||
-      v.name.includes('Zira') || v.name.includes('Female') ||
-      v.name.includes('child')
-    );
+    const preferred = voices.find(v => v.lang?.startsWith(speechLang.split('-')[0])) ||
+      voices.find(v => v.name.includes('Samantha') || v.name.includes('Karen') || v.name.includes('Zira') || v.name.includes('Female'));
     if (preferred) utterance.voice = preferred;
     window.speechSynthesis.speak(utterance);
-  }, [muted]);
+  }, [muted, speechLang]);
 
   const value = {
     muted,

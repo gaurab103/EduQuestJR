@@ -62,7 +62,7 @@ function ClockFace({ h, m, size = 160 }) {
 
 export default function ClockTime({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [time, setTime] = useState({ h: 12, m: 0 });
@@ -122,7 +122,7 @@ export default function ClockTime({ onComplete, level = 1, childName }) {
       playWrong();
       teachAfterAnswer(false, { type: 'time', correctAnswer, extra: 'Clocks help us know what time it is!' });
     }
-    const delay = getFeedbackDelay(level, isCorrect);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, isCorrect));
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

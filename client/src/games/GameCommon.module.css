@@ -123,19 +123,22 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* ECD-friendly: larger touch targets (min 48px+), smooth feedback */
 .choiceBtn {
-  min-width: 92px;
-  min-height: 92px;
-  padding: 1rem;
+  min-width: 100px;
+  min-height: 100px;
+  padding: 1.1rem;
   background: linear-gradient(145deg, var(--card-bg), rgba(255,255,255,0.9));
   border: 3px solid rgba(56, 189, 248, 0.25);
-  border-radius: 20px;
+  border-radius: 24px;
   box-shadow: 0 4px 16px rgba(56, 189, 248, 0.08), 0 1px 3px rgba(0,0,0,0.05);
   font-size: 2rem;
-  transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
   overflow: hidden;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .choiceBtn::before {
@@ -146,14 +149,16 @@
   pointer-events: none;
 }
 
-.choiceBtn:hover:not(:disabled) {
+.choiceBtn:hover:not(:disabled),
+.choiceBtn:focus-visible:not(:disabled) {
   border-color: var(--primary);
-  transform: scale(1.1) translateY(-2px);
+  transform: scale(1.08) translateY(-2px);
   box-shadow: 0 8px 28px rgba(56, 189, 248, 0.2), 0 0 0 3px rgba(56, 189, 248, 0.08);
 }
 
 .choiceBtn:active:not(:disabled) {
-  transform: scale(0.95);
+  transform: scale(0.96);
+  transition-duration: 0.1s;
 }
 
 .choiceBtn:disabled {
@@ -184,9 +189,10 @@
 
 @keyframes correctPop {
   0% { transform: scale(1); }
-  30% { transform: scale(1.18) rotate(3deg); }
-  60% { transform: scale(1.05) rotate(-1deg); }
-  100% { transform: scale(1.05); }
+  25% { transform: scale(1.15) rotate(2deg); }
+  50% { transform: scale(1.08) rotate(-1deg); }
+  75% { transform: scale(1.04); }
+  100% { transform: scale(1.02); }
 }
 
 .wrong {

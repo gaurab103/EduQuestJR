@@ -6,7 +6,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { useNoRepeat } from './useNoRepeat';
-import { getRounds, getFeedbackDelay, getMaxNumber } from './levelConfig';
+import { getRounds, getFeedbackDelay, getMaxNumber, getRoundDifficultyFactor } from './levelConfig';
 import { useTeaching } from './useTeaching';
 import styles from './GameCommon.module.css';
 
@@ -44,7 +44,7 @@ function getMode(level, round) {
 
 export default function DotConnect({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [dots, setDots] = useState([]);
@@ -56,9 +56,12 @@ export default function DotConnect({ onComplete, level = 1, childAge }) {
   const [feedback, setFeedback] = useState(null);
   const [done, setDone] = useState(false);
   const completedRef = useRef(false);
+  const roundStartRef = useRef(Date.now());
   const ROUNDS = getRounds(level);
   const maxNum = Math.min(getMaxNumber(level), 12);
-  const dotCount = Math.min(Math.max(3, Math.floor(maxNum * 0.6)), 12);
+  const baseDotCount = Math.min(Math.max(3, Math.floor(maxNum * 0.6)), 12);
+  const roundFactor = getRoundDifficultyFactor(level, round, ROUNDS);
+  const dotCount = Math.min(baseDotCount + Math.floor(roundFactor * 2), 12);
 
   const loadRound = useCallback(() => {
     const m = getMode(level, round);
@@ -80,6 +83,7 @@ export default function DotConnect({ onComplete, level = 1, childAge }) {
     setDots(shuffled);
     setNextNum(m === 'reverse' ? dotCount : m === 'skip' ? skip : 1);
     setFeedback(null);
+    roundStartRef.current = Date.now();
   }, [dotCount, generate, level, round]);
 
   useEffect(() => {
@@ -125,9 +129,11 @@ export default function DotConnect({ onComplete, level = 1, childAge }) {
     if (dot.num !== nextNum) {
       playWrong();
       setFeedback('wrong');
+      const elapsed = Date.now() - roundStartRef.current;
+      const answeredTooFast = elapsed < 2500;
       const hint = mode === 'reverse' ? `Tap from ${dots.length} down to 1!` : mode === 'skip' ? `Count by ${skipBy}s: ${skipBy}, ${2*skipBy}, ${3*skipBy}...` : `Tap number ${nextNum} next!`;
-      teachAfterAnswer(false, { type: 'counting', answer: dot.num, correctAnswer: nextNum, extra: hint });
-      const delay = getFeedbackDelay(level, false);
+      teachAfterAnswer(false, { type: 'counting', answer: dot.num, correctAnswer: nextNum, extra: hint, answeredTooFast });
+      const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, false, answeredTooFast));
       setTimeout(() => setRound(r => r + 1), delay);
       return;
     }
@@ -140,7 +146,7 @@ export default function DotConnect({ onComplete, level = 1, childAge }) {
       setFeedback('correct');
       const extra = mode === 'reverse' ? 'You connected in reverse order!' : mode === 'skip' ? `Great skip-counting by ${skipBy}s!` : COUNTING_FACTS[Math.floor(Math.random() * COUNTING_FACTS.length)](dots.length);
       teachAfterAnswer(true, { type: 'counting', answer: dot.num, correctAnswer: dot.num, extra });
-      const delay = getFeedbackDelay(level, true);
+      const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, true));
       setTimeout(() => setRound(r => r + 1), delay);
     }
   }

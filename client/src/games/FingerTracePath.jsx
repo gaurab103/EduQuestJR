@@ -148,7 +148,7 @@ function getPromptText(target, level) {
 
 export default function FingerTracePath({ onComplete, level = 1, childName, childAge }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const canvasRef = useRef(null);
   const guideRef = useRef(null);
@@ -387,7 +387,7 @@ export default function FingerTracePath({ onComplete, level = 1, childName, chil
       teachAfterAnswer(false, { type: 'shape', correctAnswer: target, extra: `Follow the blue dashed line from S to E!` });
     }
 
-    const delay = getFeedbackDelay(level, passed);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, passed));
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

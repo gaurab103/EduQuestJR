@@ -22,7 +22,7 @@ function getPool(level) {
 
 export default function SightWords({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState('');
@@ -82,7 +82,7 @@ export default function SightWords({ onComplete, level = 1, childName }) {
       playWrong();
       teachAfterAnswer(false, { type: 'word', answer: w, correctAnswer: target });
     }
-    const delay = getFeedbackDelay(level, isCorrect);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, isCorrect));
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

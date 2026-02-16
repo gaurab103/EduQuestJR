@@ -57,7 +57,7 @@ function getOptionsForLevel(item, count) {
 
 export default function RhymingMatch({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [item, setItem] = useState(null);
@@ -168,7 +168,7 @@ export default function RhymingMatch({ onComplete, level = 1 }) {
       setFeedback(correct ? 'correct' : 'wrong');
       const extra = rhymePair?.rhyme ? `"${rhymePair.w1}" and "${rhymePair.w2}" rhyme!` : `"${rhymePair.w1}" and "${rhymePair.w2}" don't rhyme.`;
       teachAfterAnswer(correct, { type: 'word', answer: opt, correctAnswer: rhymePair?.rhyme ? 'Yes' : 'No', extra });
-      const delay = getFeedbackDelay(level, correct);
+      const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
       setTimeout(() => setRound(r => r + 1), delay);
       return;
     }
@@ -179,7 +179,7 @@ export default function RhymingMatch({ onComplete, level = 1 }) {
       else { setStreak(0); playWrong(); }
       setFeedback(correct ? 'correct' : 'wrong');
       teachAfterAnswer(correct, { type: 'word', answer: opt, correctAnswer: 'a word that does not rhyme', extra: correct ? '"' + opt + '" does not rhyme with "' + item?.word + '"!' : '"' + item?.word + '" and "' + item?.correct + '" rhyme!' });
-      const delay = getFeedbackDelay(level, correct);
+      const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
       setTimeout(() => setRound(r => r + 1), delay);
       return;
     }
@@ -190,7 +190,7 @@ export default function RhymingMatch({ onComplete, level = 1 }) {
       else { setStreak(0); playWrong(); }
       setFeedback(correct ? 'correct' : 'wrong');
       teachAfterAnswer(correct, { type: 'word', answer: opt, correctAnswer: item?.options[0], extra: '"' + item?.word + '" and "' + item?.options[0] + '" rhyme!' });
-      const delay = getFeedbackDelay(level, correct);
+      const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
       setTimeout(() => setRound(r => r + 1), delay);
     }
   }
@@ -208,7 +208,7 @@ export default function RhymingMatch({ onComplete, level = 1 }) {
       else { setStreak(0); playWrong(); }
       setFeedback(correct ? 'correct' : 'wrong');
       teachAfterAnswer(correct, { type: 'word', answer: w1 + ' & ' + w2, correctAnswer: w1 + ' & ' + w2, extra: correct ? '"' + w1 + '" and "' + w2 + '" rhyme!' : 'Try to find two words that end with the same sound!' });
-      const delay = getFeedbackDelay(level, correct);
+      const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
       setTimeout(() => setRound(r => r + 1), delay);
     }
   }

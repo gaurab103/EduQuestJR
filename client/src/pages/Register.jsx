@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { auth as authApi } from '../api/client';
 import styles from './Auth.module.css';
+
+const PENDING_VERIFY_KEY = 'eduquest_pending_verify';
 
 export default function Register() {
   const [step, setStep] = useState('register'); // 'register' | 'verify'
@@ -13,8 +14,20 @@ export default function Register() {
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    try {
+      const pending = sessionStorage.getItem(PENDING_VERIFY_KEY);
+      if (pending) {
+        const { email: e, name: n } = JSON.parse(pending);
+        if (e) {
+          setEmail(e);
+          if (n) setName(n);
+          setStep('verify');
+        }
+      }
+    } catch (_) {}
+  }, []);
 
   async function handleRegister(e) {
     e.preventDefault();
@@ -22,9 +35,14 @@ export default function Register() {
     setInfo('');
     setLoading(true);
     try {
-      await authApi.register({ name: name.trim(), email, password });
-      setInfo('A verification code has been sent to your email.');
-      setStep('verify');
+      const res = await authApi.register({ name: name.trim(), email, password });
+      if (res.requiresVerification) {
+        sessionStorage.setItem(PENDING_VERIFY_KEY, JSON.stringify({ email, name: name.trim() }));
+        setInfo('A verification code has been sent to your email. Check your inbox and spam folder.');
+        setStep('verify');
+      } else {
+        setError('Unexpected response. Please try again.');
+      }
     } catch (err) {
       setError(err.message || 'Registration failed');
     } finally {
@@ -38,14 +56,15 @@ export default function Register() {
     setLoading(true);
     try {
       const res = await authApi.verifyEmail({ email, code: code.trim() });
-      if (res.token) {
+      if (res.token && res.user) {
+        sessionStorage.removeItem(PENDING_VERIFY_KEY);
         localStorage.setItem('eduquest_token', res.token);
         localStorage.setItem('eduquest_user', JSON.stringify(res.user));
-        // New user — force adult mode so they land on parent dashboard to add a child
         localStorage.setItem('eduquest_mode', 'adult');
         window.location.href = '/dashboard';
       } else {
         setInfo('Email verified! You can now log in.');
+        sessionStorage.removeItem(PENDING_VERIFY_KEY);
         setTimeout(() => navigate('/login'), 1500);
       }
     } catch (err) {
@@ -114,7 +133,7 @@ export default function Register() {
           </form>
 
           <p className={styles.footer}>
-            Wrong email? <Link to="/register" onClick={() => setStep('register')}>Go back</Link>
+            Wrong email? <Link to="/register" onClick={() => { sessionStorage.removeItem(PENDING_VERIFY_KEY); setStep('register'); }}>Go back</Link>
           </p>
         </div>
       </div>

@@ -68,7 +68,7 @@ function getMode(level, round) {
 
 export default function CompareWeight({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [pair, setPair] = useState(null);
@@ -140,7 +140,7 @@ export default function CompareWeight({ onComplete, level = 1, childAge }) {
     setFeedback(correct ? 'correct' : 'wrong');
     const correctItem = askHeavier ? pair?.heavy : pair?.light;
     teachAfterAnswer(correct, { type: 'animal', correctAnswer: correctItem?.label, extra: `${correctItem?.label} is ${askHeavier ? 'heavier' : 'lighter'}!` });
-    const delay = getFeedbackDelay(level, correct);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
     setTimeout(() => setRound((r) => r + 1), delay);
   }
 
@@ -160,7 +160,7 @@ export default function CompareWeight({ onComplete, level = 1, childAge }) {
       } else playWrong();
       setFeedback(correct ? 'correct' : 'wrong');
       teachAfterAnswer(correct, { type: 'word', correctAnswer: orderSet.map((x) => x.label).join(', '), extra: 'Great job thinking about weight!' });
-      const delay = getFeedbackDelay(level, correct);
+      const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
       setTimeout(() => setRound((r) => r + 1), delay);
     }
   }

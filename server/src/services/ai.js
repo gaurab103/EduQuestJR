@@ -192,8 +192,15 @@ RULES (STRICT):
 - Use the child's name when provided
 - End with a question or fun prompt to keep conversation going`;
 
-export async function chatWithBuddy(childName, childAge, message, conversationHistory = []) {
-  const systemMsg = BUDDY_SYSTEM_PROMPT + `\n\nYou're talking to ${childName || 'a friend'}, age ${childAge || 5}.`;
+const LANG_INSTRUCTION = {
+  en: 'Respond ONLY in English.',
+  es: 'Respond ONLY in Spanish (Español).',
+  ne: 'Respond ONLY in Nepali (नेपाली). Use Devanagari script.',
+};
+
+export async function chatWithBuddy(childName, childAge, message, conversationHistory = [], lang = 'en') {
+  const langRule = LANG_INSTRUCTION[lang] || LANG_INSTRUCTION.en;
+  const systemMsg = BUDDY_SYSTEM_PROMPT + `\n\n${langRule}\n\nYou're talking to ${childName || 'a friend'}, age ${childAge || 5}.`;
   
   const messages = [
     { role: 'system', content: systemMsg },
@@ -205,7 +212,7 @@ export async function chatWithBuddy(childName, childAge, message, conversationHi
   
   if (result) return result;
 
-  // Fallback responses
+  // Fallback responses (in English; AI should respond in selected lang when working)
   const fallbacks = [
     `Hey ${childName || 'friend'}! That's a great question! Let's learn about something fun today! What's your favorite animal? 🐻`,
     `Wow ${childName || 'buddy'}! I love talking with you! Did you know butterflies can taste with their feet? Cool, right? 🦋`,
@@ -214,6 +221,7 @@ export async function chatWithBuddy(childName, childAge, message, conversationHi
   ];
   return fallbacks[Math.floor(Math.random() * fallbacks.length)];
 }
+
 
 /* ────────── Utility AI Functions ────────── */
 

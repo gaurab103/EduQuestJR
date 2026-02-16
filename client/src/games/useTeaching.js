@@ -151,6 +151,12 @@ const WRONG_EXPLAIN = [
   'That\'s okay! Let me teach you.', 'No worries! Let\'s figure this out.',
   'Nice try! Let me show you.',
 ];
+const WRONG_TAKE_TIME = [
+  'Take your time! Let me teach you carefully.',
+  'Not so fast! Let\'s slow down and learn this together.',
+  'No rush! Here\'s what you need to know.',
+  'It\'s okay to take your time. Let me explain.',
+];
 const WRONG_NAMED = [
   'Almost, {name}! Let me help.', 'Good try, {name}! Here\'s what happened.',
   '{name}, let me explain!', 'Not quite, {name}. Let me teach you!',
@@ -160,10 +166,11 @@ const WRONG_NAMED = [
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
 /**
- * Build a rich, type-specific explanation for the answer.
+ * Build a QUESTION-BASED explanation — tied to what was actually asked.
+ * Prefer contextual teaching over random facts.
  */
 function buildExplanation(type, context) {
-  const { answer, correctAnswer, extra, a, b } = context;
+  const { answer, correctAnswer, extra, a, b, question, word, blank, object, sides, mix, corners } = context;
   const ca = correctAnswer;
 
   switch (type) {
@@ -187,7 +194,7 @@ function buildExplanation(type, context) {
           ? MATH_EXPLAIN.addition(a, b, ca)
           : MATH_EXPLAIN.subtraction(a, b, ca);
       }
-      return ca !== undefined ? `The correct answer is ${ca}.` : (extra || '');
+      return ca !== undefined ? `The correct answer is ${ca}.` : '';
 
     case 'compare':
       if (a !== undefined && b !== undefined)
@@ -195,18 +202,55 @@ function buildExplanation(type, context) {
       return ca !== undefined ? `The correct answer is ${ca}.` : '';
 
     case 'letter':
+      if (word && ca !== undefined) {
+        const w = String(word).toLowerCase();
+        const letter = String(ca).toUpperCase();
+        const pos = blank === 0 ? 'first' : blank === w.length - 1 ? 'last' : 'middle';
+        return `The letter ${letter} goes in the ${pos} of ${w.toUpperCase()} to make ${w}!`;
+      }
       return LETTER_FACTS[String(ca || answer || '').toUpperCase()] || '';
 
     case 'color':
+      if (mix && mix.a && mix.b && mix.result)
+        return `When we mix ${mix.a} and ${mix.b}, we get ${mix.result}!`;
+      if (object && ca !== undefined) {
+        const obj = String(object).charAt(0).toUpperCase() + String(object).slice(1).toLowerCase();
+        return `${obj} is ${ca}!`;
+      }
       return COLOR_FACTS[String(ca || '').toLowerCase()] || '';
 
     case 'shape':
+      if (extra && typeof extra === 'string' && extra.trim()) return extra;
+      if (sides !== undefined && ca !== undefined) {
+        const attr = corners ? 'corners' : 'sides';
+        return `A ${String(ca).toLowerCase()} has ${sides} ${attr}!`;
+      }
       return SHAPE_FACTS[String(ca || '').toLowerCase()] || '';
 
     case 'animal':
+      if (question && ca !== undefined) {
+        const q = String(question).toLowerCase();
+        const animal = String(ca).toLowerCase();
+        const cap = animal.charAt(0).toUpperCase() + animal.slice(1);
+        if (q.includes('find') || q.includes('tap') || q.includes('match'))
+          return `That's the ${cap}!`;
+        if (q.includes('says') || q.includes('woof') || q.includes('meow') || q.includes('quack'))
+          return `Yes! ${cap} ${q.includes('woof') ? 'says Woof!' : q.includes('meow') ? 'says Meow!' : q.includes('quack') ? 'says Quack!' : 'makes that sound!'}`;
+        if (q.includes('lives') || q.includes('ocean') || q.includes('water'))
+          return `Yes! ${cap} ${q.includes('ocean') || q.includes('water') ? 'lives in the water!' : 'lives there!'}`;
+        if (q.includes('has') || q.includes('trunk') || q.includes('stripes') || q.includes('neck'))
+          return `Yes! ${cap} ${q.includes('trunk') ? 'has a trunk!' : q.includes('stripes') ? 'has stripes!' : q.includes('neck') ? 'has a long neck!' : 'has that!'}`;
+        if (q.includes('hops') || q.includes('flies') || q.includes('swims'))
+          return `Yes! ${cap} ${q.includes('hops') ? 'hops!' : q.includes('flies') ? 'flies!' : 'swims!'}`;
+      }
       return ANIMAL_FACTS[String(ca || '').toLowerCase()] || '';
 
     case 'emotion':
+      if (question && ca !== undefined) {
+        const q = String(question).toLowerCase();
+        if (q.includes('feel') || q.includes('would'))
+          return `Yes! In that situation, they would feel ${ca}!`;
+      }
       return EMOTION_FACTS[String(ca || '').toLowerCase()] || '';
 
     case 'science':
@@ -251,8 +295,10 @@ function speakText(text, opts = {}) {
   if (preferred) u.voice = preferred;
 
   const words = text.split(/\s+/).length;
-  const estimatedMs = (words / (2.2 * (u.rate || 1))) * 1000 + 600;
-  speechBusyUntil = Date.now() + estimatedMs;
+  const rate = u.rate || 1;
+  const wordsPerSec = 2.0 * rate;
+  const estimatedMs = Math.ceil((words / wordsPerSec) * 1000) + 800;
+  speechBusyUntil = Date.now() + Math.ceil(estimatedMs * 1.25);
 
   window.speechSynthesis.speak(u);
 }
@@ -270,18 +316,13 @@ export function useTeaching() {
    * teachAfterAnswer — call immediately when kid answers.
    *
    * context shape:
-   *   { type, answer, correctAnswer, extra, a, b }
-   *   - type: 'counting'|'addition'|'subtraction'|'math'|'compare'|'letter'|
-   *           'color'|'shape'|'animal'|'emotion'|'science'|'time'|'music'|
-   *           'spatial'|'sequence'|'word'
-   *   - answer: what the child picked
-   *   - correctAnswer: the right answer
-   *   - extra: optional additional explanation string
-   *   - a, b: operands for math questions (so we can explain the operation)
+   *   { type, answer, correctAnswer, extra, a, b, answeredTooFast }
+   *   - answeredTooFast: true if kid answered wrong very quickly → "Take your time"
+   *   - type, answer, correctAnswer, extra, a, b as before
    */
   const teachAfterAnswer = useCallback((correct, context = {}) => {
     if (isMutedRef.current) return;
-    const { type, answer, correctAnswer } = context;
+    const { type, answer, correctAnswer, answeredTooFast } = context;
     const name = childNameRef.current;
 
     let msg;
@@ -290,7 +331,11 @@ export function useTeaching() {
       const fact = buildExplanation(type, context);
       if (fact) msg += ' ' + fact;
     } else {
-      msg = name ? pick(WRONG_NAMED).replace('{name}', name) : pick(WRONG_EXPLAIN);
+      if (answeredTooFast) {
+        msg = pick(WRONG_TAKE_TIME);
+      } else {
+        msg = name ? pick(WRONG_NAMED).replace('{name}', name) : pick(WRONG_EXPLAIN);
+      }
 
       if (answer !== undefined && correctAnswer !== undefined) {
         msg += ` You picked ${answer}, but the correct answer is ${correctAnswer}.`;
@@ -305,8 +350,8 @@ export function useTeaching() {
     }
 
     speakText(msg, {
-      rate: correct ? 0.85 : 0.75,
-      pitch: correct ? 1.15 : 1.05,
+      rate: correct ? 0.85 : 0.72,
+      pitch: correct ? 1.15 : 1.02,
     });
   }, []);
 
@@ -333,7 +378,19 @@ export function useTeaching() {
     speakText(text, { rate: 0.82, pitch: 1.15 });
   }, []);
 
-  return { teachAfterAnswer, readQuestion, teachFact, setChildName };
+  /**
+   * getRecommendedDelayBeforeNext — call AFTER teachAfterAnswer.
+   * Returns delay (ms) so voice finishes before next question. Use:
+   *   teachAfterAnswer(correct, context);
+   *   const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct, answeredTooFast));
+   *   setTimeout(() => setRound(r => r + 1), delay);
+   */
+  const getRecommendedDelayBeforeNext = useCallback((minDelay) => {
+    const remaining = speechBusyUntil - Date.now() + 1200;
+    return Math.max(minDelay, Math.max(0, remaining));
+  }, []);
+
+  return { teachAfterAnswer, readQuestion, teachFact, setChildName, getRecommendedDelayBeforeNext };
 }
 
 export { ANIMAL_FACTS, LETTER_FACTS, COLOR_FACTS, SHAPE_FACTS, EMOTION_FACTS, SCIENCE_FACTS, TIME_FACTS, MUSIC_FACTS };

@@ -32,7 +32,7 @@ function scramble(word) {
 
 export default function WordScramble({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [word, setWord] = useState('');
@@ -101,7 +101,7 @@ export default function WordScramble({ onComplete, level = 1, childName }) {
       playWrong();
       teachAfterAnswer(false, { type: 'word', answer: attempt, correctAnswer: word, extra: 'The answer was "' + word + '".' });
     }
-    const delay = getFeedbackDelay(level, attempt === word) + 200;
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, attempt === word) + 200);
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

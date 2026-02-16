@@ -64,7 +64,7 @@ function playTone(audioCtx, freq, duration = 0.15) {
 
 export default function MusicRhythmTap({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const [phase, setPhase] = useState('ready');
   const [pattern, setPattern] = useState([]);
   const [currentBeat, setCurrentBeat] = useState(-1);

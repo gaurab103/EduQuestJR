@@ -69,8 +69,9 @@ export default function Layout({ children }) {
                   type="button"
                   onClick={() => setShowPinModal(true)}
                   className={styles.forGrownups}
+                  title="Parent settings & dashboard"
                 >
-                  For Grown-ups
+                  👑 Parents
                 </button>
               </>
             )

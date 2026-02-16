@@ -41,7 +41,7 @@ function buildPattern(level) {
 
 export default function PatternMaster({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [pattern, setPattern] = useState([]);
@@ -110,7 +110,7 @@ export default function PatternMaster({ onComplete, level = 1, childName }) {
       teachAfterAnswer(false, { type: 'sequence', answer: choice, correctAnswer: answer, extra: 'The answer was ' + answer + '. Patterns repeat in a sequence!' });
     }
 
-    const delay = getFeedbackDelay(level, isCorrect);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, isCorrect));
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

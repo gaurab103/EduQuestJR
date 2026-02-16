@@ -103,7 +103,7 @@ function getScenesForLevel(level) {
 
 export default function DigitalColoringBook({ onComplete, level = 1, childName }) {
   const { playSuccess, playClick, playCelebration } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [scene, setScene] = useState(null);
@@ -150,7 +150,7 @@ export default function DigitalColoringBook({ onComplete, level = 1, childName }
       setScore(s => s + 10 + Math.round(accuracy / 10));
       playSuccess();
       teachAfterAnswer(true, { type: 'color', extra: `Beautiful ${scene.name}! You colored all ${scene.regions.length} parts!` });
-      const delay = getFeedbackDelay(level, true);
+      const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, true));
       setTimeout(() => setRound(r => r + 1), delay);
     }
   }

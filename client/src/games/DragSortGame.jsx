@@ -101,7 +101,7 @@ function getPromptText(level) {
 
 export default function DragSortGame({ onComplete, level = 1, childName, childAge }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [items, setItems] = useState([]);
@@ -179,7 +179,7 @@ export default function DragSortGame({ onComplete, level = 1, childName, childAg
       teachAfterAnswer(false, { correctAnswer: sorted.map(i => i.label).join(', '), extra: 'Check the order and try again!' });
     }
 
-    const delay = getFeedbackDelay(level, correct);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

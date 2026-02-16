@@ -47,7 +47,7 @@ function getWordPool(level) {
 
 export default function SyllableClap({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [currentWord, setCurrentWord] = useState(null);
@@ -87,7 +87,7 @@ export default function SyllableClap({ onComplete, level = 1, childAge }) {
     if (correct) playSuccess();
     setFeedback(correct ? 'correct' : 'wrong');
     teachAfterAnswer(correct, { type: 'word', correctAnswer: String(currentWord?.syllables), extra: `"${currentWord?.word}" has ${currentWord?.syllables} syllable${currentWord?.syllables > 1 ? 's' : ''}!` });
-    const delay = getFeedbackDelay(level, correct);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
     setTimeout(() => setRound((r) => r + 1), delay);
   }
 

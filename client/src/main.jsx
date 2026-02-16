@@ -5,6 +5,7 @@ import App from './App';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { ChildModeProvider } from './context/ChildModeContext';
+import { LanguageProvider } from './context/LanguageContext';
 import { AudioProvider } from './context/AudioContext';
 import './index.css';
 
@@ -14,9 +15,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <ThemeProvider>
         <AuthProvider>
           <ChildModeProvider>
-            <AudioProvider>
-              <App />
-            </AudioProvider>
+            <LanguageProvider>
+              <AudioProvider>
+                <App />
+              </AudioProvider>
+            </LanguageProvider>
           </ChildModeProvider>
         </AuthProvider>
       </ThemeProvider>

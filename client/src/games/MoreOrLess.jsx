@@ -10,7 +10,7 @@ const ITEM_POOL = Object.entries(FRUIT_IMAGES).map(([name, img]) => ({ name, img
 
 export default function MoreOrLess({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [left, setLeft] = useState(0);
@@ -65,7 +65,7 @@ export default function MoreOrLess({ onComplete, level = 1 }) {
     const correctSide = (ask === 'more' && left > right) || (ask === 'less' && left < right) ? 'left' : 'right';
     const correctCount = correctSide === 'left' ? left : right;
     teachAfterAnswer(correct, { type: 'math', extra: 'The side with ' + correctCount + ' had ' + ask + '!' });
-    const delay = getFeedbackDelay(level, correct);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

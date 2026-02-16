@@ -85,7 +85,7 @@ const PHONEME_COLORS = ['#ef4444', '#3b82f6', '#22c55e', '#eab308', '#a855f7', '
 
 export default function PhonicsBlendingLab({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [word, setWord] = useState(null);
@@ -145,7 +145,7 @@ export default function PhonicsBlendingLab({ onComplete, level = 1, childName })
           setFeedback('wrong');
           teachAfterAnswer(false, { type: 'letter', answer: built, correctAnswer: word.word, extra: `The sounds ${word.phonemes.join(' + ')} blend together to make "${word.word}".` });
         }
-        const delay = getFeedbackDelay(level, isCorrect);
+        const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, isCorrect));
         setTimeout(() => setRound(r => r + 1), delay);
       }, 600);
     }

@@ -57,7 +57,7 @@ function getMode(level, round) {
 
 export default function SortBySize({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [items, setItems] = useState([]);
@@ -108,7 +108,7 @@ export default function SortBySize({ onComplete, level = 1, childAge }) {
       if (correct) playSuccess();
       setFeedback(correct ? 'correct' : 'wrong');
       teachAfterAnswer(correct, { type: 'word', correctAnswer: items.map((x) => x.label).join(', '), extra: 'Great job ordering by size!' });
-      const delay = getFeedbackDelay(level, correct);
+      const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
       setTimeout(() => setRound((r) => r + 1), delay);
     }
   }

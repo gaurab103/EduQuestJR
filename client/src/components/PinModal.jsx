@@ -19,8 +19,8 @@ export default function PinModal({ onSuccess, onCancel }) {
   return (
     <div className={styles.overlay} role="dialog" aria-modal="true" aria-labelledby="pin-title">
       <div className={styles.card}>
-        <h2 id="pin-title" className={styles.title}>For Grown-ups</h2>
-        <p className={styles.subtitle}>Enter PIN to access parent settings</p>
+        <h2 id="pin-title" className={styles.title}>👑 Parent Zone</h2>
+        <p className={styles.subtitle}>Enter your PIN to access dashboard & settings</p>
         <form onSubmit={handleSubmit}>
           <input
             type="password"

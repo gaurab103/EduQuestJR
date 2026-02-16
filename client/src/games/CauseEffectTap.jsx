@@ -38,7 +38,7 @@ function getItemPool(level) {
 
 export default function CauseEffectTap({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [item, setItem] = useState(null);
@@ -101,7 +101,7 @@ export default function CauseEffectTap({ onComplete, level = 1, childName }) {
     playSuccess();
     speak(item.result);
     teachAfterAnswer(true, { type: 'word', extra: 'When we tap something, we cause an effect! That\'s cause and effect!' });
-    const delay = getFeedbackDelay(level, true);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, true));
     setTimeout(() => setRound(r => r + 1), delay);
   }
 
@@ -126,7 +126,7 @@ export default function CauseEffectTap({ onComplete, level = 1, childName }) {
       speak(`Not quite! The answer was ${item.result}`);
       teachAfterAnswer(false, { type: 'word', correctAnswer: item.result, extra: 'Cause and effect: when we do something, something else happens!' });
     }
-    const delay = getFeedbackDelay(level, isCorrect) + 300;
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, isCorrect) + 300);
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

@@ -43,7 +43,7 @@ const WEATHER_FACTS = {
 
 export default function WeatherLearn({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [question, setQuestion] = useState(null);
@@ -109,7 +109,7 @@ export default function WeatherLearn({ onComplete, level = 1, childAge }) {
       correctAnswer: question.answer,
       extra: WEATHER_FACTS[question.weather] || `On ${question.weather} days, ${question.answer} helps!`,
     });
-    const delay = getFeedbackDelay(level, isCorrect);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, isCorrect));
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

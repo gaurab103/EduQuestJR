@@ -10,7 +10,7 @@ const GAMES = [
   { title: 'Big vs Small', slug: 'big-vs-small', category: 'cognitive', difficulty: 'easy', isPremium: false },
   { title: 'Match by Category', slug: 'match-by-category', category: 'cognitive', difficulty: 'easy', isPremium: false },
   { title: 'Cause & Effect Tap', slug: 'cause-effect-tap', category: 'cognitive', difficulty: 'easy', isPremium: false },
-  { title: 'Shadow Match', slug: 'shadow-match', category: 'cognitive', difficulty: 'easy', isPremium: false },  // match-shadow uses same component
+  { title: 'Shadow Match', slug: 'shadow-match', category: 'cognitive', difficulty: 'easy', isPremium: false },
   { title: 'Science Sort', slug: 'science-sort', category: 'cognitive', difficulty: 'easy', isPremium: false },
 
   // ── Free Numeracy Games ──
@@ -59,7 +59,6 @@ const GAMES = [
   { title: 'Weather Learn', slug: 'weather-learn', category: 'cognitive', difficulty: 'easy', isPremium: false },
   { title: 'Dot Connect', slug: 'dot-connect', category: 'motor', difficulty: 'easy', isPremium: false },
   { title: 'Finger Trace Path', slug: 'finger-trace-path', category: 'motor', difficulty: 'easy', isPremium: false },
-  { title: 'Connect the Stars', slug: 'connect-the-stars', category: 'motor', difficulty: 'easy', isPremium: false },
   { title: 'Drag & Sort', slug: 'drag-sort-game', category: 'motor', difficulty: 'easy', isPremium: false },
   { title: 'Emotion Match', slug: 'emotion-match', category: 'sel', difficulty: 'easy', isPremium: false },
   { title: 'Plant Grower', slug: 'plant-grower', category: 'cognitive', difficulty: 'easy', isPremium: false },
@@ -91,8 +90,12 @@ const GAMES = [
 
 export async function seedGames() {
   const existing = await Game.countDocuments();
+  const slugs = GAMES.map((g) => g.slug);
   for (const g of GAMES) {
     await Game.findOneAndUpdate({ slug: g.slug }, g, { upsert: true });
   }
+  // Remove games no longer in the list (e.g. duplicates, deprecated)
+  const removed = await Game.deleteMany({ slug: { $nin: slugs } });
+  if (removed.deletedCount > 0) console.log(`Removed ${removed.deletedCount} deprecated game(s)`);
   if (existing === 0) console.log(`Games seeded (${GAMES.length} total)`);
 }

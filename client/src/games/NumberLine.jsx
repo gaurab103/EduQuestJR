@@ -20,7 +20,7 @@ function getQuestionType(level, round) {
 
 export default function NumberLine({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [qType, setQType] = useState('place');
@@ -148,7 +148,7 @@ export default function NumberLine({ onComplete, level = 1, childAge }) {
         extra: `${target} goes here on the number line. It is ${target - rangeMin} away from ${rangeMin}.`,
       });
     }
-    const delay = getFeedbackDelay(level, isCorrect);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, isCorrect));
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

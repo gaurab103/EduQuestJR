@@ -37,7 +37,7 @@ function getGridPositions(count) {
 
 export default function ConnectTheStars({ onComplete, level = 1, childName, childAge }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const containerRef = useRef(null);
   const [round, setRound] = useState(0);
@@ -92,7 +92,7 @@ export default function ConnectTheStars({ onComplete, level = 1, childName, chil
       setTimeout(() => setWrongShake(false), 400);
       setFeedback('wrong');
       teachAfterAnswer(false, { answer: star.num, correctAnswer: nextNum, extra: `Find number ${nextNum} next!` });
-      const delay = getFeedbackDelay(level, false);
+      const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, false));
       setTimeout(() => setRound(r => r + 1), delay);
       return;
     }
@@ -106,7 +106,7 @@ export default function ConnectTheStars({ onComplete, level = 1, childName, chil
       playSuccess();
       setFeedback('correct');
       teachAfterAnswer(true, { type: 'counting', correctAnswer: stars.length, extra: 'You connected all the stars!' });
-      const delay = getFeedbackDelay(level, true);
+      const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, true));
       setTimeout(() => setRound(r => r + 1), delay);
     }
   }

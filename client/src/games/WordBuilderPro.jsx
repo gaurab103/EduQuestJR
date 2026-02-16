@@ -79,7 +79,7 @@ function generateExtraLetters(word, count) {
 
 export default function WordBuilderPro({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [item, setItem] = useState(null);
@@ -135,7 +135,7 @@ export default function WordBuilderPro({ onComplete, level = 1, childName }) {
         playSuccess();
         setFeedback('correct');
         teachAfterAnswer(true, { type: 'word', correctAnswer: item.word, extra: `You spelled "${item.word}"! ${item.hint}.` });
-        const delay = getFeedbackDelay(level, true);
+        const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, true));
         setTimeout(() => setRound(r => r + 1), delay);
       }
     } else {

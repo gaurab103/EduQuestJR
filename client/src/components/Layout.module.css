@@ -115,19 +115,24 @@
 }
 
 .forGrownups {
-  padding: 0.3rem 0.6rem;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  background: transparent;
-  border: 1px dashed var(--card-border);
-  font-weight: 600;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.85rem;
+  color: #b45309;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(245, 158, 11, 0.1));
+  border: 2px solid rgba(251, 191, 36, 0.4);
+  font-weight: 700;
   min-height: auto;
   white-space: nowrap;
+  border-radius: var(--radius-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .forGrownups:hover {
-  color: var(--primary);
-  border-color: var(--primary);
+  color: #92400e;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.25), rgba(245, 158, 11, 0.2));
+  border-color: rgba(251, 191, 36, 0.6);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.25);
 }
 
 .childModeBtn {

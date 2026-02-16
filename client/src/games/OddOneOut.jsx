@@ -21,7 +21,7 @@ function getMode(level, round) {
 
 export default function OddOneOut({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [items, setItems] = useState([]);
@@ -125,7 +125,7 @@ export default function OddOneOut({ onComplete, level = 1 }) {
         setFeedback(correct ? 'correct' : 'wrong');
         const oddNames = oddIndices.map(i => items[i]?.name).join(' and ');
         teachAfterAnswer(correct, { type: 'animal', answer: newSelected.map(i => items[i]?.name).join(', '), correctAnswer: oddNames, extra: 'The different ones were ' + oddNames + '!' });
-        const delay = getFeedbackDelay(level, correct);
+        const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
         setTimeout(() => setRound(r => r + 1), delay);
       }
       return;
@@ -137,7 +137,7 @@ export default function OddOneOut({ onComplete, level = 1 }) {
     else { setStreak(0); playWrong(); }
     setFeedback(correct ? 'correct' : 'wrong');
     teachAfterAnswer(correct, { type: 'animal', answer: items[idx]?.name, correctAnswer: oddItem?.name, extra: 'The different one was the ' + (oddItem?.name || 'odd one') + '!' });
-    const delay = getFeedbackDelay(level, correct);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

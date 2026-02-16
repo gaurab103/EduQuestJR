@@ -54,7 +54,7 @@ function getMode(level, round) {
 
 export default function TapTheColor({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(null);
@@ -184,8 +184,11 @@ export default function TapTheColor({ onComplete, level = 1 }) {
     }
     setFeedback(correct ? 'correct' : 'wrong');
     const correctAns = mode === 3 ? 'any color except ' + notColorTarget?.name : target?.name;
-    teachAfterAnswer(correct, { type: 'color', answer: c.name, correctAnswer: correctAns });
-    const delay = getFeedbackDelay(level, correct);
+    const ctx = { type: 'color', answer: c.name, correctAnswer: correctAns };
+    if (mode === 1 && objectQuestion) ctx.object = objectQuestion;
+    if (mode === 2 && mixQuestion) ctx.mix = mixQuestion;
+    teachAfterAnswer(correct, ctx);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
     setTimeout(() => setRound((r) => r + 1), delay);
   }
 

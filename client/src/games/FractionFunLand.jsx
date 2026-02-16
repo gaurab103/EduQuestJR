@@ -132,7 +132,7 @@ function generateQuestion(types, denominators, choiceCount) {
 
 export default function FractionFunLand({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [question, setQuestion] = useState(null);
@@ -186,7 +186,7 @@ export default function FractionFunLand({ onComplete, level = 1, childName }) {
       extra: `${question.numer}/${question.denom} means ${question.numer} out of ${question.denom} equal parts!`,
     });
     setFeedback(isCorrect ? 'correct' : 'wrong');
-    setTimeout(() => setRound(r => r + 1), getFeedbackDelay(level, isCorrect));
+    setTimeout(() => setRound(r => r + 1), getRecommendedDelayBeforeNext(getFeedbackDelay(level, isCorrect)));
   }
 
   function handleChoiceClick(option) {
@@ -205,7 +205,7 @@ export default function FractionFunLand({ onComplete, level = 1, childName }) {
       : `The fraction shown is ${question.answer}.`;
     teachAfterAnswer(isCorrect, { type: 'math', answer: option, correctAnswer: question.answer, extra });
     setFeedback(isCorrect ? 'correct' : 'wrong');
-    setTimeout(() => setRound(r => r + 1), getFeedbackDelay(level, isCorrect));
+    setTimeout(() => setRound(r => r + 1), getRecommendedDelayBeforeNext(getFeedbackDelay(level, isCorrect)));
   }
 
   if (round >= ROUNDS) {

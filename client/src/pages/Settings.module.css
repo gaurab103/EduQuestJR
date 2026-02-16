@@ -4,17 +4,29 @@
   padding: 0.5rem 0;
 }
 
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
 .title {
   font-size: 1.75rem;
   font-weight: 800;
-  margin-bottom: 0.25rem;
+  margin: 0;
 }
 
 .back {
   font-weight: 700;
   color: var(--primary);
-  display: inline-block;
-  margin-bottom: 1.5rem;
+  text-decoration: none;
+}
+
+.back:hover {
+  text-decoration: underline;
 }
 
 .section {
@@ -76,6 +88,37 @@
   font-size: 0.85rem;
   color: var(--text-muted);
   margin: 0;
+}
+
+.langRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.langBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: var(--radius-sm);
+  background: var(--card-bg);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.langBtn:hover {
+  border-color: var(--primary);
+}
+
+.langActive {
+  border-color: var(--primary);
+  background: rgba(251, 191, 36, 0.15);
+}
+
+.langFlag {
+  font-size: 1.25rem;
 }
 
 .toggleRow {

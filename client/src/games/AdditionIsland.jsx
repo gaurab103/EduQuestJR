@@ -80,7 +80,7 @@ function getProblem(level, round) {
 
 export default function AdditionIsland({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [problem, setProblem] = useState(null);
@@ -131,7 +131,7 @@ export default function AdditionIsland({ onComplete, level = 1 }) {
       ? `${problem.a} + ${problem.b} = ${problem.sum}!`
       : `${problem.a} plus ${problem.b}${problem.c != null ? ' plus ' + problem.c : ''} equals ${problem.sum}!`;
     teachAfterAnswer(correct, { type: 'addition', answer: num, correctAnswer: problem.sum, a: problem.a, b: problem.b, extra });
-    const delay = getFeedbackDelay(level, correct);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
     setTimeout(() => setRound((r) => r + 1), delay);
   }
 

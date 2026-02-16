@@ -74,7 +74,7 @@ const PLANT_FACTS = {
 
 export default function PlantGrower({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [mode, setMode] = useState('order');
@@ -162,7 +162,7 @@ export default function PlantGrower({ onComplete, level = 1, childAge }) {
       }
       const key = correctOrder[correctOrder.length - 1]?.id;
       teachAfterAnswer(isCorrect, { type: 'word', answer: 'order', correctAnswer: 'order', extra: PLANT_FACTS[key] || PLANT_FACTS.plant });
-      const delay = getFeedbackDelay(level, isCorrect);
+      const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, isCorrect));
       setTimeout(() => setRound(r => r + 1), delay);
     }
   }
@@ -182,7 +182,7 @@ export default function PlantGrower({ onComplete, level = 1, childAge }) {
       setFeedback('wrong');
     }
     teachAfterAnswer(isCorrect, { type: 'word', answer: ans, correctAnswer: question.answer, extra: PLANT_FACTS[question.answer] || 'Plants need sun, water, and soil to grow!' });
-    const delay = getFeedbackDelay(level, isCorrect);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, isCorrect));
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

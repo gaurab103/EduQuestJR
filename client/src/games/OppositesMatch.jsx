@@ -18,7 +18,7 @@ const OPPOSITES = [
 
 export default function OppositesMatch({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [item, setItem] = useState(null);
@@ -66,7 +66,7 @@ export default function OppositesMatch({ onComplete, level = 1 }) {
     }
     teachAfterAnswer(correct, { type: 'word', correctAnswer: item?.correct, extra: 'Opposites are words that mean the opposite of each other!' });
     setFeedback(correct ? 'correct' : 'wrong');
-    const delay = getFeedbackDelay(level, correct);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
     setTimeout(() => setRound((r) => r + 1), delay);
   }
 

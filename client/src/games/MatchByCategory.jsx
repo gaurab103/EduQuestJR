@@ -11,7 +11,7 @@ const VEGGIES = Object.entries(VEGGIE_IMAGES).map(([name, img]) => ({ name, img,
 
 export default function MatchByCategory({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(null);
@@ -62,7 +62,7 @@ export default function MatchByCategory({ onComplete, level = 1 }) {
     else { setStreak(0); playWrong(); }
     teachAfterAnswer(correct, { type: 'word', correctAnswer: target?.name, extra: 'Things that are alike belong in the same category!' });
     setFeedback(correct ? 'correct' : 'wrong');
-    const delay = getFeedbackDelay(level, correct);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

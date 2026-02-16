@@ -99,7 +99,7 @@ function getPool(level) {
 
 export default function LogicGridJunior({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [puzzle, setPuzzle] = useState(null);
@@ -169,7 +169,7 @@ export default function LogicGridJunior({ onComplete, level = 1, childName }) {
         ).join(', ');
         teachAfterAnswer(false, { type: 'science', extra: `The correct answer is: ${correctNames}. Read each clue carefully!` });
       }
-      const delay = getFeedbackDelay(level, allCorrect);
+      const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, allCorrect));
       setTimeout(() => setRound(r => r + 1), delay);
     }
   }

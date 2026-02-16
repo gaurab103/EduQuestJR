@@ -121,7 +121,7 @@ export default function CountingAdventure({ onComplete, level = 1, childName, ch
     else { setStreak(0); playWrong(); }
     setFeedback(correct ? 'correct' : 'wrong');
     teachAfterAnswer(correct, { type: 'counting', answer: selected, correctAnswer: questionData.correct });
-    const delay = getFeedbackDelay(level, correct);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

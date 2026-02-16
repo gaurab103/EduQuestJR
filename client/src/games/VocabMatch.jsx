@@ -51,7 +51,7 @@ function getPool(level) {
 
 export default function VocabMatch({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(null);
@@ -107,7 +107,7 @@ export default function VocabMatch({ onComplete, level = 1, childName }) {
       playWrong();
       teachAfterAnswer(false, { type: 'word', answer: word, correctAnswer: target.word, extra: '"' + target.word + '" means ' + target.def });
     }
-    const delay = getFeedbackDelay(level, isCorrect);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, isCorrect));
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

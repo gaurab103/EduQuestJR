@@ -52,7 +52,7 @@ export default function DrawingCanvas({ onComplete, level = 1, childName }) {
   const [done, setDone] = useState(false);
   const [strokes, setStrokes] = useState(0);
   const { playSuccess, playCelebration, playClick, playWrong: playWrongSfx } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
 
   const totalRounds = getRounds(level);

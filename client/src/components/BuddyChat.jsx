@@ -1,21 +1,14 @@
 /**
  * Buddy the Bear - AI Chat Friend for kids.
  * A friendly, safe chatbot that kids can talk to for fun and learning.
- * Uses personalized greetings with child's name.
+ * Uses selected language (English, Spanish, Nepali).
  */
 import { useState, useRef, useEffect } from 'react';
 import { ai as aiApi } from '../api/client';
 import { useAudio } from '../context/AudioContext';
+import { useLanguage } from '../context/LanguageContext';
+import { BUDDY_TRANSLATIONS } from '../i18n/translations';
 import styles from './BuddyChat.module.css';
-
-const QUICK_PROMPTS = [
-  { emoji: '🦕', text: 'Tell me a fun fact!' },
-  { emoji: '🎵', text: 'Sing me a short song!' },
-  { emoji: '🧮', text: 'Give me a math puzzle!' },
-  { emoji: '🌈', text: 'What colors make purple?' },
-  { emoji: '🐾', text: 'Tell me about animals!' },
-  { emoji: '🌟', text: "Let's play a word game!" },
-];
 
 export default function BuddyChat({ childId, childName, isOpen, onClose }) {
   const [messages, setMessages] = useState([]);
@@ -24,17 +17,17 @@ export default function BuddyChat({ childId, childName, isOpen, onClose }) {
   const [isMinimized, setIsMinimized] = useState(false);
   const messagesEndRef = useRef(null);
   const { speak, playClick, playSuccess } = useAudio();
+  const { lang } = useLanguage();
+  const t = BUDDY_TRANSLATIONS[lang] || BUDDY_TRANSLATIONS.en;
 
   // Initial greeting when opened
   useEffect(() => {
     if (isOpen && messages.length === 0) {
-      const greeting = childName
-        ? `Hi ${childName}! I'm Buddy the Bear! 🐻 I'm so happy to see you! What should we talk about today?`
-        : "Hi friend! I'm Buddy the Bear! 🐻 What should we talk about today?";
+      const greeting = childName ? t.greetingWithName(childName) : t.greetingNoName;
       setMessages([{ role: 'assistant', content: greeting }]);
       speak(greeting);
     }
-  }, [isOpen]);
+  }, [isOpen, lang]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -55,13 +48,13 @@ export default function BuddyChat({ childId, childName, isOpen, onClose }) {
         role: m.role,
         content: m.content,
       }));
-      const res = await aiApi.chat(childId, text.trim(), history);
-      const reply = res.reply || "Hmm, let me think about that! Can you ask me something else? 🤔";
+      const res = await aiApi.chat(childId, text.trim(), history, lang);
+      const reply = res.reply || t.fallback;
       setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
       playSuccess();
       speak(reply);
     } catch (_) {
-      const fallback = `That's a great question, ${childName || 'friend'}! Let me think... Can you ask me something else? 🤔`;
+      const fallback = t.fallbackError(childName);
       setMessages(prev => [...prev, { role: 'assistant', content: fallback }]);
     }
     setLoading(false);
@@ -97,8 +90,8 @@ export default function BuddyChat({ childId, childName, isOpen, onClose }) {
             className={styles.headerAvatar}
           />
           <div className={styles.headerInfo}>
-            <span className={styles.headerName}>Buddy the Bear</span>
-            <span className={styles.headerStatus}>🟢 Online</span>
+            <span className={styles.headerName}>{t.headerName}</span>
+            <span className={styles.headerStatus}>{t.headerStatus}</span>
           </div>
           <div className={styles.headerActions}>
             <button
@@ -158,7 +151,7 @@ export default function BuddyChat({ childId, childName, isOpen, onClose }) {
 
         {/* Quick prompts */}
         <div className={styles.quickPrompts}>
-          {QUICK_PROMPTS.map((p, i) => (
+          {t.quickPrompts.map((p, i) => (
             <button
               key={i}
               type="button"
@@ -184,7 +177,7 @@ export default function BuddyChat({ childId, childName, isOpen, onClose }) {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={`Talk to Buddy...`}
+            placeholder={t.placeholder}
             className={styles.textInput}
             disabled={loading}
             maxLength={200}

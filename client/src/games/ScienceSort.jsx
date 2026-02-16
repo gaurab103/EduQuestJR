@@ -50,7 +50,7 @@ const CATEGORIES = [
 
 export default function ScienceSort({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [category, setCategory] = useState(null);
@@ -108,7 +108,7 @@ export default function ScienceSort({ onComplete, level = 1, childName }) {
       playWrong();
       teachAfterAnswer(false, { type: 'science', correctAnswer: category.groups[correctGroup].label, extra: 'Scientists sort things into groups to learn about them!' });
     }
-    const delay = getFeedbackDelay(level, isCorrect);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, isCorrect));
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

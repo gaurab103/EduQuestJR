@@ -72,7 +72,7 @@ function placeGems(grid, count) {
 
 export default function MazeExplorer({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [grid, setGrid] = useState(null);
@@ -142,7 +142,7 @@ export default function MazeExplorer({ onComplete, level = 1, childName }) {
         setFeedback('wrong');
         teachAfterAnswer(false, { type: 'spatial', extra: `You reached the end but missed ${gems.length - newCollected.size} gems! Try to collect them all.` });
       }
-      const delay = getFeedbackDelay(level, allCollected);
+      const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, allCollected));
       setTimeout(() => setRound(r => r + 1), delay);
     }
   }, [pos, grid, feedback, gridSize, gems, collected, steps, level]);

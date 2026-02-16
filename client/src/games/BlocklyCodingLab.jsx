@@ -21,7 +21,7 @@ function getMinBlocks(level) {
 
 export default function BlocklyCodingLab({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const [sequence, setSequence] = useState([]);
   const [feedback, setFeedback] = useState(null);
   const completedRef = useRef(false);
@@ -46,7 +46,7 @@ export default function BlocklyCodingLab({ onComplete, level = 1 }) {
     teachAfterAnswer(ok, { type: 'math', extra: 'Coding helps us tell computers what to do! Great job building your sequence!' });
     setFeedback(ok ? 'correct' : 'wrong');
     completedRef.current = true;
-    const delay = getFeedbackDelay(level, ok);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, ok));
     setTimeout(() => onComplete(ok ? 100 : 30, ok ? 90 : 50), delay);
   };
 

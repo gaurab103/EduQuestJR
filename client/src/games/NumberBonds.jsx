@@ -7,7 +7,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { useTeaching } from './useTeaching';
 import { useNoRepeat } from './useNoRepeat';
-import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
+import { getRounds, getChoiceCount, getFeedbackDelay, getRoundDifficultyFactor } from './levelConfig';
+import { useQuestionTimer } from './useQuestionTimer';
 import styles from './GameCommon.module.css';
 
 function getTargetMax(level) {
@@ -19,7 +20,8 @@ function getTargetMax(level) {
 
 export default function NumberBonds({ onComplete, level = 1, childName }) {
   const { playSuccess, playWrong, playClick, playCelebration, speak } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
+  const { markStart, isAnsweredTooFast } = useQuestionTimer();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState(0);
@@ -46,9 +48,11 @@ export default function NumberBonds({ onComplete, level = 1, childName }) {
       return;
     }
     const maxT = getTargetMax(level);
+    const factor = getRoundDifficultyFactor(level, round, ROUNDS);
+    const effectiveMax = Math.max(5, Math.floor(3 + (maxT - 3) * (0.4 + 0.6 * factor)));
     const { t, g } = generate(
       () => {
-        const t = Math.floor(Math.random() * (maxT - 2)) + 3;
+        const t = Math.floor(Math.random() * (effectiveMax - 2)) + 3;
         const g = Math.floor(Math.random() * t);
         return { t, g };
       },
@@ -65,6 +69,7 @@ export default function NumberBonds({ onComplete, level = 1, childName }) {
     setOptions([...opts].sort(() => Math.random() - 0.5));
     setFeedback(null);
     setSelected(null);
+    markStart();
     const cancelRead = readQuestion(g + ' plus what equals ' + t + '?');
     return cancelRead;
   }, [round]);
@@ -88,9 +93,10 @@ export default function NumberBonds({ onComplete, level = 1, childName }) {
       setStreak(0);
       setFeedback({ type: 'wrong', text: `Wrong! ${given} + ${answer} = ${target}` });
       playWrong();
-      teachAfterAnswer(false, { type: 'addition', answer: n, correctAnswer: answer, a: given, b: answer });
+      const answeredTooFast = isAnsweredTooFast();
+      teachAfterAnswer(false, { type: 'addition', answer: n, correctAnswer: answer, a: given, b: answer, answeredTooFast });
     }
-    const delay = getFeedbackDelay(level, isCorrect);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, isCorrect, !isCorrect && isAnsweredTooFast()));
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

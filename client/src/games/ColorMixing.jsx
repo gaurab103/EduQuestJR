@@ -33,7 +33,7 @@ const SIMPLE_COLORS = ['Red', 'Blue', 'Yellow', 'Green', 'Orange', 'Purple', 'Pi
 
 export default function ColorMixing({ level = 1, onComplete }) {
   const { playSuccess, playWrong, playClick, speak } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [currentChallenge, setCurrentChallenge] = useState(null);
@@ -142,7 +142,7 @@ export default function ColorMixing({ level = 1, onComplete }) {
       teachAfterAnswer(false, { type: 'color', answer: selected, correctAnswer: currentChallenge.answer });
     }
     
-    const delay = getFeedbackDelay(level, isCorrect);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, isCorrect));
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

@@ -128,7 +128,7 @@ export async function getSuggestedLevel(req, res, next) {
  */
 export async function chatWithBuddy(req, res, next) {
   try {
-    const { childId, message, history = [] } = req.body;
+    const { childId, message, history = [], lang = 'en' } = req.body;
     if (!message) return res.status(400).json({ message: 'message required' });
 
     let childName = 'friend';
@@ -142,7 +142,7 @@ export async function chatWithBuddy(req, res, next) {
       }
     }
 
-    const reply = await ai.chatWithBuddy(childName, childAge, message, history);
+    const reply = await ai.chatWithBuddy(childName, childAge, message, history, lang);
     res.json({ reply });
   } catch (err) {
     next(err);

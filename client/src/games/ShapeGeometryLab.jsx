@@ -28,7 +28,7 @@ function getMode(level) {
 
 export default function ShapeGeometryLab({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
-  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { teachAfterAnswer, readQuestion, getRecommendedDelayBeforeNext } = useTeaching();
   const { generate } = useNoRepeat(level);
   const [round, setRound] = useState(0);
   const [mode, setMode] = useState('sides');
@@ -61,8 +61,8 @@ export default function ShapeGeometryLab({ onComplete, level = 1 }) {
         (s) => s.id
       );
       const q = Math.random() > 0.5
-        ? { type: 'sides', text: `How many sides does a ${target.label} have?`, answer: target.sides }
-        : { type: 'corners', text: `How many corners does a ${target.label} have?`, answer: target.corners };
+        ? { type: 'sides', text: `How many sides does a ${target.label} have?`, answer: target.sides, shapeLabel: target.label }
+        : { type: 'corners', text: `How many corners does a ${target.label} have?`, answer: target.corners, shapeLabel: target.label };
       setQuestion(q);
       const nums = [q.answer, q.answer + 1, q.answer - 1, q.answer + 2].filter(n => n >= 3 && n <= 8);
       const opts = [...new Set(nums)];
@@ -110,13 +110,17 @@ export default function ShapeGeometryLab({ onComplete, level = 1 }) {
       setScore(s => s + 10);
       playSuccess();
       setFeedback('correct');
-      teachAfterAnswer(true, { type: 'shape', correctAnswer: question.answer, extra: `Yes! ${question.answer} is correct!` });
+      const ctx = { type: 'shape', correctAnswer: question.shapeLabel || question.answer, sides: question.answer };
+      if (question.type === 'corners') ctx.corners = true;
+      teachAfterAnswer(true, ctx);
     } else {
       playWrong();
       setFeedback('wrong');
-      teachAfterAnswer(false, { type: 'shape', answer: n, correctAnswer: question.answer, extra: `A ${question.text.includes('sides') ? 'shape' : 'shape'} with ${question.answer} ${question.text.includes('sides') ? 'sides' : 'corners'} is the answer!` });
+      const ctx = { type: 'shape', answer: n, correctAnswer: question.shapeLabel || question.answer, sides: question.answer };
+      if (question.type === 'corners') ctx.corners = true;
+      teachAfterAnswer(false, ctx);
     }
-    const delay = getFeedbackDelay(level, correct);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
     setTimeout(() => setRound(r => r + 1), delay);
   }, [question, feedback, level, playClick, playSuccess, playWrong, teachAfterAnswer]);
 
@@ -129,14 +133,14 @@ export default function ShapeGeometryLab({ onComplete, level = 1 }) {
       playSuccess();
       setFeedback('correct');
       const shape = SHAPES.find(s => s.id === shapeId);
-      teachAfterAnswer(true, { type: 'shape', correctAnswer: shape?.label, extra: `Yes! A ${shape?.label} has ${shape?.sides} sides!` });
+      teachAfterAnswer(true, { type: 'shape', correctAnswer: shape?.label, sides: shape?.sides });
     } else {
       playWrong();
       setFeedback('wrong');
       const shape = SHAPES.find(s => s.id === question.answer);
-      teachAfterAnswer(false, { type: 'shape', answer: shapeId, correctAnswer: shape?.label, extra: `The ${shape?.label} has ${shape?.sides} sides!` });
+      teachAfterAnswer(false, { type: 'shape', answer: shapeId, correctAnswer: shape?.label, sides: shape?.sides });
     }
-    const delay = getFeedbackDelay(level, correct);
+    const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, correct));
     setTimeout(() => setRound(r => r + 1), delay);
   }, [question, feedback, level, playClick, playSuccess, playWrong, teachAfterAnswer]);
 
@@ -154,7 +158,7 @@ export default function ShapeGeometryLab({ onComplete, level = 1 }) {
         playSuccess();
         setFeedback('correct');
         teachAfterAnswer(true, { type: 'shape', extra: 'You filled the grid! Great spatial thinking!' });
-        setTimeout(() => setRound(r => r + 1), getFeedbackDelay(level, true));
+        setTimeout(() => setRound(r => r + 1), getRecommendedDelayBeforeNext(getFeedbackDelay(level, true)));
       }
       return next;
     });
