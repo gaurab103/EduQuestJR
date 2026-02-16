@@ -5,7 +5,6 @@ import { useChildMode } from '../context/ChildModeContext';
 import { useAudio } from '../context/AudioContext';
 import AvatarPicker from '../components/AvatarPicker';
 import BadgeShelf from '../components/BadgeShelf';
-import BuddyChat from '../components/BuddyChat';
 import styles from './ChildProfile.module.css';
 
 const ALL_ACHIEVEMENTS = [
@@ -41,7 +40,6 @@ export default function ChildProfile() {
   const [editAvatar, setEditAvatar] = useState('🐻');
   const [saving, setSaving] = useState(false);
   const [aiGreeting, setAiGreeting] = useState('');
-  const [chatOpen, setChatOpen] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -193,9 +191,9 @@ export default function ChildProfile() {
         <Link to={`/games?child=${childId}`} className={styles.actionPrimary}>🎮 Play Games</Link>
         <Link to={`/shop?child=${childId}`} className={styles.actionBtn}>🎁 Sticker Shop</Link>
         <Link to={`/map?child=${childId}`} className={styles.actionBtn}>🗺️ Adventure Map</Link>
-        <button type="button" onClick={() => setChatOpen(true)} className={styles.actionBtn}>
+        <Link to="#" onClick={(e) => { e.preventDefault(); document.querySelector('[aria-label="Talk to Buddy Bear"]')?.click(); }} className={styles.actionBtn}>
           🐻 Talk to Buddy
-        </button>
+        </Link>
         {isAdultMode && <Link to={`/analytics/${childId}`} className={styles.actionBtn}>📊 Analytics</Link>}
         {isAdultMode && (
           <button type="button" onClick={() => setEditing(!editing)} className={styles.actionBtn}>
@@ -320,13 +318,6 @@ export default function ChildProfile() {
         )}
       </section>
 
-      {/* Buddy Chat */}
-      <BuddyChat
-        childId={childId}
-        childName={child.name}
-        isOpen={chatOpen}
-        onClose={() => setChatOpen(false)}
-      />
     </div>
   );
 }

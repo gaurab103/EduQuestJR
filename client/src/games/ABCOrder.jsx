@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { getRounds, getFeedbackDelay } from './levelConfig';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import styles from './GameCommon.module.css';
 
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');

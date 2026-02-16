@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import { ai as aiApi } from '../api/client';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { GameImage, SHAPE_IMAGES, OBJECT_IMAGES } from './gameImages';

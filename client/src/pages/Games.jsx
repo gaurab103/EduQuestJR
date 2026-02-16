@@ -3,7 +3,6 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useChildMode } from '../context/ChildModeContext';
 import { games as gamesApi, children as childrenApi, ai as aiApi, challenges as challengesApi } from '../api/client';
-import BuddyChat from '../components/BuddyChat';
 import DailyTasks from '../components/DailyTasks';
 import PersonalMascot from '../components/PersonalMascot';
 import styles from './Games.module.css';
@@ -60,7 +59,6 @@ export default function Games() {
   const [search, setSearch] = useState('');
   const [aiRecommendation, setAiRecommendation] = useState(null);
   const [dailyChallenge, setDailyChallenge] = useState(null);
-  const [buddyChatOpen, setBuddyChatOpen] = useState(false);
 
   const selectedChildId = urlChildId || (childList.length > 0 ? childList[0]._id : null);
   const selectedChild = childList.find(c => c._id === selectedChildId) || null;
@@ -283,45 +281,6 @@ export default function Games() {
         </div>
       )}
 
-      {selectedChild && (
-        <>
-          <BuddyChat
-            childId={selectedChild._id}
-            childName={selectedChild.name}
-            isOpen={buddyChatOpen}
-            onClose={() => setBuddyChatOpen(false)}
-          />
-          {!buddyChatOpen && (
-            <button
-              type="button"
-              onClick={() => setBuddyChatOpen(true)}
-              style={{
-                position: 'fixed',
-                bottom: '24px',
-                right: '24px',
-                width: '64px',
-                height: '64px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #a78bfa, #7c3aed)',
-                border: 'none',
-                boxShadow: '0 4px 20px rgba(124,58,237,0.4)',
-                cursor: 'pointer',
-                zIndex: 999,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                animation: 'buddyBounce 2s ease-in-out infinite',
-              }}
-            >
-              <img
-                src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f43b.svg"
-                alt="Talk to Buddy"
-                style={{ width: '36px', height: '36px' }}
-              />
-            </button>
-          )}
-        </>
-      )}
     </div>
   );
 }

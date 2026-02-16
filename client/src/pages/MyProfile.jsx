@@ -7,7 +7,6 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { children as childrenApi, progress as progressApi, stickers as stickersApi, ai as aiApi } from '../api/client';
 import { useAudio } from '../context/AudioContext';
-import BuddyChat from '../components/BuddyChat';
 import styles from './MyProfile.module.css';
 
 export default function MyProfile() {
@@ -18,7 +17,6 @@ export default function MyProfile() {
   const [allStickers, setAllStickers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [aiGreeting, setAiGreeting] = useState('');
-  const [chatOpen, setChatOpen] = useState(false);
 
   useEffect(() => {
     childrenApi.list().then(async (res) => {
@@ -159,7 +157,7 @@ export default function MyProfile() {
         </Link>
         <button
           type="button"
-          onClick={() => setChatOpen(true)}
+          onClick={() => document.querySelector('[aria-label="Talk to Buddy Bear"]')?.click()}
           className={styles.actionCard}
           style={{ background: 'linear-gradient(135deg, #a78bfa, #7c3aed)' }}
         >
@@ -186,24 +184,6 @@ export default function MyProfile() {
         </div>
       )}
 
-      {/* Buddy Chat */}
-      <BuddyChat
-        childId={child._id}
-        childName={child.name}
-        isOpen={chatOpen}
-        onClose={() => setChatOpen(false)}
-      />
-
-      {/* Floating Buddy button when chat is closed */}
-      {!chatOpen && (
-        <button
-          type="button"
-          onClick={() => setChatOpen(true)}
-          className={styles.buddyFab}
-        >
-          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f43b.svg" alt="Talk to Buddy" className={styles.buddyFabImg} />
-        </button>
-      )}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { COUNTING_THEMES, GameImage } from './gameImages';
 import styles from './GameCommon.module.css';
