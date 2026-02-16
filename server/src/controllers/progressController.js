@@ -37,7 +37,7 @@ export async function getPlayStatus(req, res, next) {
 
     const user = await User.findById(req.user._id).select('subscriptionStatus subscriptionExpiry');
     const isPremium =
-      user.subscriptionStatus === 'active' &&
+      (user.subscriptionStatus === 'active' || user.subscriptionStatus === 'trial') &&
       (!user.subscriptionExpiry || new Date(user.subscriptionExpiry) > new Date());
 
     const dailyUsed = child.dailyPlayMinutesUsed ?? 0;
@@ -121,7 +121,7 @@ export async function submitProgress(req, res, next) {
 
     const user = await User.findById(req.user._id).select('subscriptionStatus subscriptionExpiry');
     const isPremium =
-      user.subscriptionStatus === 'active' &&
+      (user.subscriptionStatus === 'active' || user.subscriptionStatus === 'trial') &&
       (!user.subscriptionExpiry || new Date(user.subscriptionExpiry) > new Date());
 
     if (game.isPremium && !isPremium) {

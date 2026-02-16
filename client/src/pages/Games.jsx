@@ -90,7 +90,7 @@ export default function Games() {
       .finally(() => setLoading(false));
   }, []);
 
-  const isPremium = user?.subscriptionStatus === 'active';
+  const isPremium = user?.subscriptionStatus === 'active' || user?.subscriptionStatus === 'trial';
 
   const filtered = useMemo(() => {
     let list = allGames;

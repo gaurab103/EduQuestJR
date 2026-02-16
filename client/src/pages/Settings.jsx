@@ -113,7 +113,7 @@ export default function Settings() {
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Subscription</h2>
         <div className={styles.card}>
-          <p>Current plan: <strong>{user?.subscriptionStatus === 'active' ? 'Premium' : 'Free'}</strong></p>
+          <p>Current plan: <strong>{user?.subscriptionStatus === 'active' ? 'Premium' : user?.subscriptionStatus === 'trial' ? 'Trial (Premium)' : 'Free'}</strong></p>
           <Link to="/subscription" className={styles.linkBtn}>Manage Subscription</Link>
         </div>
       </section>
