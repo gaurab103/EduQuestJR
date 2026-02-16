@@ -52,6 +52,12 @@ import DotConnect from './DotConnect';
 import EmotionMatch from './EmotionMatch';
 import TimeSorter from './TimeSorter';
 import PlantGrower from './PlantGrower';
+import CompareWeight from './CompareWeight';
+import DirectionQuest from './DirectionQuest';
+import MatchShadow from './MatchShadow';
+import NumberLine from './NumberLine';
+import SyllableClap from './SyllableClap';
+import SortBySize from './SortBySize';
 
 export const GAME_COMPONENTS = {
   'shape-match-quest': ShapeMatchQuest,
