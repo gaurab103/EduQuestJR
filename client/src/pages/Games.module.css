@@ -103,6 +103,24 @@
   color: var(--text-muted);
 }
 
+.noChildBtn {
+  display: inline-block;
+  margin-top: 0.65rem;
+  padding: 0.55rem 1.25rem;
+  background: linear-gradient(135deg, #38bdf8, #818cf8);
+  color: white;
+  font-size: 0.88rem;
+  font-weight: 700;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.noChildBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.35);
+}
+
 /* ---- Daily Challenge ---- */
 .dailyChallenge {
   display: flex;

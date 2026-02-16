@@ -155,8 +155,11 @@ export default function Games() {
         <div className={styles.noChildBanner}>
           <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f9d2.svg" alt="" className={styles.noChildImg} />
           <div>
-            <strong>No child profile found</strong>
-            <p><Link to="/dashboard">Add a child profile</Link> on the dashboard to start playing games.</p>
+            <strong>Almost there!</strong>
+            <p>A parent needs to add a child profile before you can play.</p>
+            <Link to="/dashboard" className={styles.noChildBtn}>
+              Go to Parent Setup
+            </Link>
           </div>
         </div>
       )}

@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
+import { useChildMode } from './context/ChildModeContext';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -27,8 +28,11 @@ function ProtectedRoute({ children }) {
 
 function PublicOnly({ children }) {
   const { isAuthenticated, loading } = useAuth();
+  const { isAdultMode } = useChildMode();
   if (loading) return <Layout><div className="loading-screen">Loading...</div></Layout>;
-  if (isAuthenticated) return <Navigate to="/dashboard" replace />;
+  if (isAuthenticated) {
+    return <Navigate to={isAdultMode ? '/dashboard' : '/games'} replace />;
+  }
   return children;
 }
 

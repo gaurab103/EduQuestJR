@@ -41,6 +41,8 @@ export default function Register() {
       if (res.token) {
         localStorage.setItem('eduquest_token', res.token);
         localStorage.setItem('eduquest_user', JSON.stringify(res.user));
+        // New user — force adult mode so they land on parent dashboard to add a child
+        localStorage.setItem('eduquest_mode', 'adult');
         window.location.href = '/dashboard';
       } else {
         setInfo('Email verified! You can now log in.');

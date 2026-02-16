@@ -57,7 +57,7 @@ const CATEGORY_IMAGES = {
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const { isAdultMode } = useChildMode();
+  const { isAdultMode, enterAdultMode } = useChildMode();
   const [childList, setChildList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
@@ -114,10 +114,65 @@ export default function Dashboard() {
     setSubmitting(false);
   }
 
-  const isPremium = user?.subscriptionStatus === 'active';
+  const isPremium = user?.subscriptionStatus === 'active' || user?.subscriptionStatus === 'trial';
 
+  // Smart routing for child mode:
+  // - While loading, show loading screen (don't redirect yet)
+  // - After loading: if children exist → redirect to games
+  // - After loading: if NO children → show onboarding setup (don't redirect)
   if (!isAdultMode) {
-    return <Navigate to="/games" replace />;
+    if (loading) {
+      return (
+        <div className={styles.dashboard}>
+          <div className={styles.loadingShimmer} style={{ height: '200px', borderRadius: '1rem' }} />
+        </div>
+      );
+    }
+    if (childList.length > 0) {
+      return <Navigate to="/games" replace />;
+    }
+    // No children — show onboarding setup screen
+    return (
+      <div className={styles.dashboard}>
+        <div className={styles.onboardingScreen}>
+          <img src="/logo.png" alt="EduQuestJr" className={styles.onboardingLogo} />
+          <h1 className={styles.onboardingTitle}>Welcome to EduQuestJr!</h1>
+          <p className={styles.onboardingSub}>
+            Before your child can play, a parent needs to set up their profile first.
+          </p>
+
+          <div className={styles.onboardingSteps}>
+            <div className={styles.onboardingStep}>
+              <span className={styles.onboardingStepNum}>1</span>
+              <div>
+                <strong>Parent sets up profile</strong>
+                <p>Add your child's name, age, and avatar</p>
+              </div>
+            </div>
+            <div className={styles.onboardingStep}>
+              <span className={styles.onboardingStepNum}>2</span>
+              <div>
+                <strong>Child starts playing</strong>
+                <p>70+ fun educational games await!</p>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => enterAdultMode('1234')}
+            className={styles.onboardingBtn}
+          >
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f469-200d-1f4bb.svg" alt="" style={{ width: 24, height: 24 }} />
+            Parent Setup
+          </button>
+
+          <p className={styles.onboardingHint}>
+            Default parent PIN: <strong>1234</strong> (you can change it in Settings)
+          </p>
+        </div>
+      </div>
+    );
   }
 
   const totalXp = childList.reduce((sum, c) => sum + (c.xp || 0), 0);

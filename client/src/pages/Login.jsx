@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useChildMode } from '../context/ChildModeContext';
+import { children as childrenApi } from '../api/client';
 import styles from './Auth.module.css';
 
 export default function Login() {
@@ -9,6 +11,7 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const { enterAdultMode, exitAdultMode } = useChildMode();
   const navigate = useNavigate();
 
   async function handleSubmit(e) {
@@ -17,7 +20,23 @@ export default function Login() {
     setLoading(true);
     try {
       await login(email, password);
-      navigate('/dashboard');
+
+      // Check if user has children to decide where to redirect
+      try {
+        const { children } = await childrenApi.list();
+        if (!children || children.length === 0) {
+          // First time / no children — go to parent dashboard to set up
+          enterAdultMode('1234');
+          navigate('/dashboard');
+        } else {
+          // Has children — go to child-friendly games page
+          exitAdultMode();
+          navigate('/games');
+        }
+      } catch (_) {
+        // Fallback: go to dashboard
+        navigate('/dashboard');
+      }
     } catch (err) {
       setError(err.message || 'Login failed');
     } finally {
