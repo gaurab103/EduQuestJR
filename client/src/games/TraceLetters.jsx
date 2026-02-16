@@ -39,12 +39,13 @@ export default function TraceLetters({ onComplete, level = 1, childName }) {
   const [streak, setStreak] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [done, setDone] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+  const [pathLength, setPathLength] = useState(0);
   const canvasRef = useRef(null);
   const guideDataRef = useRef(null);
   const completedRef = useRef(false);
   const drawingRef = useRef(false);
   const pathRef = useRef([]);
-  const startedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const threshold = getPassThreshold(level);
   const minPoints = getMinPoints(level);
@@ -64,8 +65,9 @@ export default function TraceLetters({ onComplete, level = 1, childName }) {
       (r) => r
     ));
     setFeedback(null);
+    setHasStarted(false);
+    setPathLength(0);
     pathRef.current = [];
-    startedRef.current = false;
   }, [round, ROUNDS]);
 
   // Draw the guide letter and save reference pixel data
@@ -113,7 +115,7 @@ export default function TraceLetters({ onComplete, level = 1, childName }) {
     const x = (e.clientX || e.touches?.[0]?.clientX) - rect.left;
     const y = (e.clientY || e.touches?.[0]?.clientY) - rect.top;
     drawingRef.current = true;
-    startedRef.current = true;
+    setHasStarted(true);
     pathRef.current = [...pathRef.current, { x, y }];
     const ctx = canvas.getContext('2d');
     ctx.beginPath();
@@ -135,6 +137,7 @@ export default function TraceLetters({ onComplete, level = 1, childName }) {
 
   const handleEnd = () => {
     drawingRef.current = false;
+    setPathLength(pathRef.current.length);
   };
 
   function analyzeCoverage() {
@@ -168,7 +171,7 @@ export default function TraceLetters({ onComplete, level = 1, childName }) {
     if (feedback !== null) return;
     const coverage = analyzeCoverage();
     const points = pathRef.current.length;
-    const passed = startedRef.current && points >= minPoints && coverage >= threshold;
+    const passed = hasStarted && points >= minPoints && coverage >= threshold;
 
     if (passed) {
       const roundScore = Math.min(10, Math.floor(coverage / 10));
@@ -181,7 +184,7 @@ export default function TraceLetters({ onComplete, level = 1, childName }) {
     } else {
       setWrong(w => w + 1);
       setStreak(0);
-      const reason = !startedRef.current || points < minPoints
+      const reason = !hasStarted || points < minPoints
         ? 'Not enough drawing — trace the letter more carefully!'
         : `Only ${coverage}% coverage — need at least ${threshold}%.`;
       setFeedback({ type: 'wrong', reason, coverage, points });
@@ -196,7 +199,8 @@ export default function TraceLetters({ onComplete, level = 1, childName }) {
     if (feedback !== null) return;
     playClick();
     pathRef.current = [];
-    startedRef.current = false;
+    setHasStarted(false);
+    setPathLength(0);
     // Redraw guide
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -247,16 +251,24 @@ export default function TraceLetters({ onComplete, level = 1, childName }) {
         Trace the letter <strong style={{ fontSize: '1.5rem', color: '#6d28d9' }}>{letter}</strong>
       </p>
 
-      {/* Criteria */}
-      <p style={{
-        fontSize: '0.72rem',
-        color: 'var(--text-muted)',
-        textAlign: 'center',
-        marginBottom: '0.4rem',
-        fontWeight: 600,
+      {/* Star criteria - clear and visible */}
+      <div style={{
+        background: 'linear-gradient(135deg, rgba(251,191,36,0.12), rgba(56,189,248,0.08))',
+        borderRadius: 12,
+        padding: '0.5rem 1rem',
+        marginBottom: '0.75rem',
+        border: '1px solid rgba(251,191,36,0.3)',
       }}>
-        Cover at least {threshold}% of the letter with {minPoints}+ trace points to pass
-      </p>
+        <p style={{ fontSize: '0.75rem', fontWeight: 800, marginBottom: '0.25rem', color: 'var(--text)' }}>
+          ⭐ How to earn stars:
+        </p>
+        <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', lineHeight: 1.4, margin: 0 }}>
+          ★★★ 80%+ correct · ★★☆ 50%+ correct · ★☆☆ Keep trying!
+        </p>
+        <p style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '0.2rem', marginBottom: 0 }}>
+          Pass each letter: {threshold}% coverage + {minPoints}+ trace points
+        </p>
+      </div>
 
       <canvas
         ref={canvasRef}
@@ -278,10 +290,10 @@ export default function TraceLetters({ onComplete, level = 1, childName }) {
         fontSize: '0.72rem',
         textAlign: 'center',
         fontWeight: 700,
-        color: pathRef.current.length >= minPoints ? 'var(--success)' : 'var(--text-muted)',
+        color: pathLength >= minPoints ? 'var(--success)' : 'var(--text-muted)',
         margin: '0.3rem 0',
       }}>
-        Trace points: {pathRef.current.length}/{minPoints} {pathRef.current.length >= minPoints ? '✓' : ''}
+        Trace points: {pathLength}/{minPoints} {pathLength >= minPoints ? '✓' : ''}
       </p>
 
       {/* Actions */}
@@ -302,11 +314,11 @@ export default function TraceLetters({ onComplete, level = 1, childName }) {
           style={{
             fontSize: '0.85rem',
             padding: '0.6rem 1.5rem',
-            background: startedRef.current ? 'var(--success)' : 'var(--text-muted)',
+            background: hasStarted ? 'var(--primary)' : 'var(--text-muted)',
             color: 'white',
             fontWeight: 900,
           }}
-          disabled={feedback !== null || !startedRef.current}
+          disabled={feedback !== null || !hasStarted}
         >
           ✅ Submit
         </button>

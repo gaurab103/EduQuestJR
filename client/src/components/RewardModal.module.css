@@ -84,7 +84,14 @@
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--text);
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.starCriteria {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 1rem;
 }
 
 .star {

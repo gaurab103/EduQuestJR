@@ -25,11 +25,42 @@ const PALETTE = [
 ];
 
 // layer: 0=background (drawn first), 1=mid, 2=foreground (drawn last)
+// Simple 4-region scenes for level 1 — large, easy-to-tap areas
+const SIMPLE_SCENES = [
+  {
+    name: 'Sun and Sky',
+    regions: [
+      { id: 'sky', label: 'Sky', d: 'M0,0 L260,0 L260,220 L0,220 Z', suggest: 'sky', layer: 0 },
+      { id: 'sun', label: 'Sun', d: 'M100,60 L160,60 L160,120 L100,120 Z', suggest: 'yellow', layer: 1 },
+      { id: 'cloud', label: 'Cloud', d: 'M40,140 L120,140 L120,180 L40,180 Z', suggest: 'pink', layer: 1 },
+      { id: 'ground', label: 'Ground', d: 'M0,200 L260,200 L260,220 L0,220 Z', suggest: 'green', layer: 1 },
+    ],
+  },
+  {
+    name: 'Simple House',
+    regions: [
+      { id: 'sky', label: 'Sky', d: 'M0,0 L260,0 L260,100 L0,100 Z', suggest: 'sky', layer: 0 },
+      { id: 'grass', label: 'Grass', d: 'M0,170 L260,170 L260,220 L0,220 Z', suggest: 'green', layer: 0 },
+      { id: 'house', label: 'House', d: 'M80,100 L80,170 L180,170 L180,100 Z', suggest: 'yellow', layer: 1 },
+      { id: 'roof', label: 'Roof', d: 'M60,100 L130,50 L200,100 Z', suggest: 'red', layer: 1 },
+    ],
+  },
+  {
+    name: 'Simple Flower',
+    regions: [
+      { id: 'sky', label: 'Sky', d: 'M0,0 L260,0 L260,120 L0,120 Z', suggest: 'sky', layer: 0 },
+      { id: 'ground', label: 'Ground', d: 'M0,180 L260,180 L260,220 L0,220 Z', suggest: 'green', layer: 0 },
+      { id: 'flower', label: 'Flower', d: 'M90,80 L170,80 L170,160 L90,160 Z', suggest: 'pink', layer: 1 },
+      { id: 'stem', label: 'Stem', d: 'M120,160 L140,160 L140,180 L120,180 Z', suggest: 'green', layer: 1 },
+    ],
+  },
+];
+
 const SCENES = [
   {
     name: 'House',
     regions: [
-      { id: 'sky', label: 'Sky', d: 'M0,0 L260,0 L260,80 L40,80 L130,20 L220,80 L260,80 L260,0 Z', suggest: 'sky', layer: 0 },
+      { id: 'sky', label: 'Sky', d: 'M0,0 L260,0 L260,90 L0,90 Z', suggest: 'sky', layer: 0 },
       { id: 'grass', label: 'Grass', d: 'M0,180 L260,180 L260,220 L0,220 Z', suggest: 'green', layer: 0 },
       { id: 'wall', label: 'Wall', d: 'M60,180 L60,80 L200,80 L200,180 Z', suggest: 'yellow', layer: 1 },
       { id: 'roof', label: 'Roof', d: 'M40,80 L130,20 L220,80 Z', suggest: 'red', layer: 1 },
@@ -40,7 +71,6 @@ const SCENES = [
   {
     name: 'Butterfly',
     regions: [
-      { id: 'bg', label: 'Background', d: 'M0,0 L260,0 L260,200 L0,200 Z', suggest: 'sky', layer: 0 },
       { id: 'lwing', label: 'Left Wing', d: 'M100,80 Q40,40 60,120 Q80,140 100,120 Z', suggest: 'purple', layer: 1 },
       { id: 'rwing', label: 'Right Wing', d: 'M160,80 Q220,40 200,120 Q180,140 160,120 Z', suggest: 'pink', layer: 1 },
       { id: 'body', label: 'Body', d: 'M120,60 L140,60 L145,160 L115,160 Z', suggest: 'brown', layer: 1 },
@@ -97,7 +127,8 @@ const SCENES = [
 ];
 
 function getScenesForLevel(level) {
-  if (level <= 5) return SCENES.slice(0, 2);
+  if (level <= 3) return SIMPLE_SCENES;
+  if (level <= 5) return [...SIMPLE_SCENES, ...SCENES.slice(0, 2)];
   if (level <= 10) return SCENES.slice(0, 4);
   return SCENES;
 }
@@ -252,8 +283,8 @@ export default function DigitalColoringBook({ onComplete, level = 1, childName }
               d={r.d}
               fill={regionColors[r.id] || '#f3f4f6'}
               stroke="#333"
-              strokeWidth={1.5}
-              style={{ cursor: done ? 'default' : 'pointer', transition: 'fill 0.2s' }}
+              strokeWidth={2}
+              style={{ cursor: done ? 'default' : 'pointer', transition: 'fill 0.2s', pointerEvents: 'all' }}
               onClick={() => handleRegionClick(r.id)}
             >
               <title>{r.label}</title>

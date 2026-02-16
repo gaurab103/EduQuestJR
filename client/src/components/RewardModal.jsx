@@ -139,6 +139,9 @@ export default function RewardModal({ rewards, child, gameLevel = 1, hasNextLeve
           <p className={styles.starsEarned}>
             You earned {rewards?.accuracy >= 80 ? 3 : rewards?.accuracy >= 50 ? 2 : 1} of 3 stars!
           </p>
+          <p className={styles.starCriteria}>
+            {rewards?.accuracy >= 80 ? '★★★ 80%+ = 3 stars' : rewards?.accuracy >= 50 ? '★★☆ 50%+ = 2 stars' : '★☆☆ Keep practicing!'}
+          </p>
           {isReplay ? (
             <div className={styles.rewards}>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600 }}>
