@@ -36,14 +36,12 @@ import MoneyMath from './MoneyMath';
 import ScienceSort from './ScienceSort';
 import VocabMatch from './VocabMatch';
 import SpellingBee from './SpellingBee';
-// New games
 import AlphabetBubblePop from './AlphabetBubblePop';
 import LetterSoundMatch from './LetterSoundMatch';
 import ABCOrder from './ABCOrder';
 import StorySequence from './StorySequence';
 import AnimalQuiz from './AnimalQuiz';
 import ColorMixing from './ColorMixing';
-// EduQuestJr 8 new games
 import MazeRunner from './MazeRunner';
 import BodyParts from './BodyParts';
 import WeatherLearn from './WeatherLearn';
@@ -61,6 +59,18 @@ import SortBySize from './SortBySize';
 import FingerTracePath from './FingerTracePath';
 import ConnectTheStars from './ConnectTheStars';
 import DragSortGame from './DragSortGame';
+import AlphabetTracingWorld from './AlphabetTracingWorld';
+// Premium-exclusive unique game components
+import PhonicsBlendingLab from './PhonicsBlendingLab';
+import DigitalColoringBook from './DigitalColoringBook';
+import LogicGridJunior from './LogicGridJunior';
+import WordBuilderPro from './WordBuilderPro';
+import MusicRhythmTap from './MusicRhythmTap';
+import MazeExplorer from './MazeExplorer';
+import ShapeGeometryLab from './ShapeGeometryLab';
+import StoryBuilderStudio from './StoryBuilderStudio';
+import FractionFunLand from './FractionFunLand';
+import MultiplicationTreasure from './MultiplicationTreasure';
 
 export const GAME_COMPONENTS = {
   'shape-match-quest': ShapeMatchQuest,
@@ -75,7 +85,7 @@ export const GAME_COMPONENTS = {
   'blockly-coding-lab': BlocklyCodingLab,
   'subtraction-safari': SubtractionSafari,
   'sequence-builder': SequenceBuilder,
-  'shadow-match': ShadowMatch,
+  'shadow-match': MatchShadow,  // merged: both use MatchShadow (richer implementation)
   'color-basket-sorting': ColorBasketSorting,
   'big-vs-small': BigVsSmall,
   'match-by-category': MatchByCategory,
@@ -90,11 +100,9 @@ export const GAME_COMPONENTS = {
   'color-inside-shape': ColorInsideShape,
   'stack-blocks': StackBlocks,
   'fill-missing-letter': FillMissingLetter,
-  // Motor & audio games
   'drawing-canvas': DrawingCanvas,
   'handwriting-hero': HandwritingHero,
   'sound-safari': SoundSafari,
-  // Academic growth games
   'word-scramble': WordScramble,
   'sight-words': SightWords,
   'number-bonds': NumberBonds,
@@ -103,14 +111,12 @@ export const GAME_COMPONENTS = {
   'science-sort': ScienceSort,
   'vocab-match': VocabMatch,
   'spelling-bee': SpellingBee,
-  // New alphabet & learning games
   'alphabet-bubble-pop': AlphabetBubblePop,
   'letter-sound-match': LetterSoundMatch,
   'abc-order': ABCOrder,
   'story-sequence': StorySequence,
   'animal-quiz': AnimalQuiz,
   'color-mixing': ColorMixing,
-  // EduQuestJr 8 new games
   'maze-runner': MazeRunner,
   'body-parts': BodyParts,
   'weather-learn': WeatherLearn,
@@ -128,16 +134,16 @@ export const GAME_COMPONENTS = {
   'finger-trace-path': FingerTracePath,
   'connect-the-stars': ConnectTheStars,
   'drag-sort-game': DragSortGame,
-  // Aliases for seeded premium games that reuse components
-  'alphabet-tracing-world': LetterSoundMatch,  // redirected from old tracing game
-  'phonics-blending-lab': SpellingBee,
-  'digital-coloring-book': DrawingCanvas,
-  'logic-grid-junior': OddOneOut,
-  'word-builder-pro': FillMissingLetter,
-  'music-rhythm-tap': SoundSafari,
-  'maze-explorer': SequenceBuilder,
-  'shape-geometry-lab': ShapeMatchQuest,
-  'story-builder-studio': StorySequence,
-  'fraction-fun-land': NumberBonds,
-  'multiplication-treasure': AdditionIsland,
+  // Premium-exclusive games — each is a UNIQUE component with its own mechanic
+  'alphabet-tracing-world': AlphabetTracingWorld,
+  'phonics-blending-lab': PhonicsBlendingLab,
+  'digital-coloring-book': DigitalColoringBook,
+  'logic-grid-junior': LogicGridJunior,
+  'word-builder-pro': WordBuilderPro,
+  'music-rhythm-tap': MusicRhythmTap,
+  'maze-explorer': MazeExplorer,
+  'shape-geometry-lab': ShapeGeometryLab,
+  'story-builder-studio': StoryBuilderStudio,
+  'fraction-fun-land': FractionFunLand,
+  'multiplication-treasure': MultiplicationTreasure,
 };

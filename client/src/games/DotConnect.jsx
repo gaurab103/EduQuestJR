@@ -36,6 +36,12 @@ const COUNTING_FACTS = [
   (n) => `Connecting dots helps with hand-eye coordination!`,
 ];
 
+function getMode(level, round) {
+  if (level <= 5) return 'normal';
+  if (level <= 10) return round % 2 ? 'normal' : 'reverse';
+  return round % 3 === 0 ? 'normal' : round % 3 === 1 ? 'reverse' : 'skip';
+}
+
 export default function DotConnect({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
@@ -43,6 +49,8 @@ export default function DotConnect({ onComplete, level = 1, childAge }) {
   const [round, setRound] = useState(0);
   const [dots, setDots] = useState([]);
   const [nextNum, setNextNum] = useState(1);
+  const [mode, setMode] = useState('normal');
+  const [skipBy, setSkipBy] = useState(1);
   const [score, setScore] = useState(0);
   const [correct, setCorrect] = useState(0);
   const [feedback, setFeedback] = useState(null);
@@ -53,17 +61,26 @@ export default function DotConnect({ onComplete, level = 1, childAge }) {
   const dotCount = Math.min(Math.max(3, Math.floor(maxNum * 0.6)), 12);
 
   const loadRound = useCallback(() => {
+    const m = getMode(level, round);
+    setMode(m);
+    const skip = m === 'skip' ? (round % 2 ? 2 : 5) : 1;
+    setSkipBy(skip);
     const shapePool = DOT_SHAPES.filter(s => s.length >= dotCount);
     const shape = generate(
       () => (shapePool.length ? shapePool[Math.floor(Math.random() * shapePool.length)] : DOT_SHAPES[DOT_SHAPES.length - 1]).slice(0, dotCount),
       (r) => r.map(p => p.join(',')).join('|')
     );
     const positions = shape;
-    const shuffled = positions.map((pos, i) => ({ pos, num: i + 1 })).sort(() => Math.random() - 0.5);
+    const nums = m === 'reverse'
+      ? Array.from({ length: dotCount }, (_, i) => dotCount - i)
+      : m === 'skip'
+        ? Array.from({ length: dotCount }, (_, i) => (i + 1) * skip)
+        : Array.from({ length: dotCount }, (_, i) => i + 1);
+    const shuffled = positions.map((pos, i) => ({ pos, num: nums[i] })).sort(() => Math.random() - 0.5);
     setDots(shuffled);
-    setNextNum(1);
+    setNextNum(m === 'reverse' ? dotCount : m === 'skip' ? skip : 1);
     setFeedback(null);
-  }, [dotCount, generate]);
+  }, [dotCount, generate, level, round]);
 
   useEffect(() => {
     window.speechSynthesis?.cancel();
@@ -80,10 +97,27 @@ export default function DotConnect({ onComplete, level = 1, childAge }) {
 
   useEffect(() => {
     if (dots.length && round < ROUNDS) {
-      const cancelRead = readQuestion(`Tap the dots in order from 1 to ${dots.length}!`);
+      const q = mode === 'reverse'
+        ? `Tap the dots in REVERSE order from ${dots.length} down to 1!`
+        : mode === 'skip'
+          ? `Tap the dots counting by ${skipBy}s!`
+          : `Tap the dots in order from 1 to ${dots.length}!`;
+      const cancelRead = readQuestion(q);
       return cancelRead;
     }
-  }, [dots, round, ROUNDS]);
+  }, [dots, round, ROUNDS, mode, skipBy]);
+
+  const getExpectedNext = () => {
+    if (mode === 'reverse') return nextNum - 1;
+    if (mode === 'skip') return nextNum + skipBy;
+    return nextNum + 1;
+  };
+
+  const isLastInSequence = (num) => {
+    if (mode === 'reverse') return num === 1;
+    if (mode === 'skip') return num === dots.length * skipBy;
+    return num === dots.length;
+  };
 
   function handleDotClick(dot) {
     if (feedback) return;
@@ -91,19 +125,21 @@ export default function DotConnect({ onComplete, level = 1, childAge }) {
     if (dot.num !== nextNum) {
       playWrong();
       setFeedback('wrong');
-      teachAfterAnswer(false, { type: 'counting', answer: dot.num, correctAnswer: nextNum, extra: COUNTING_FACTS[Math.floor(Math.random() * COUNTING_FACTS.length)](nextNum) });
+      const hint = mode === 'reverse' ? `Tap from ${dots.length} down to 1!` : mode === 'skip' ? `Count by ${skipBy}s: ${skipBy}, ${2*skipBy}, ${3*skipBy}...` : `Tap number ${nextNum} next!`;
+      teachAfterAnswer(false, { type: 'counting', answer: dot.num, correctAnswer: nextNum, extra: hint });
       const delay = getFeedbackDelay(level, false);
       setTimeout(() => setRound(r => r + 1), delay);
       return;
     }
-    const newNext = nextNum + 1;
+    const newNext = getExpectedNext();
     setNextNum(newNext);
-    if (newNext > dots.length) {
+    if (isLastInSequence(dot.num)) {
       setScore(s => s + 10);
       setCorrect(c => c + 1);
       playSuccess();
       setFeedback('correct');
-      teachAfterAnswer(true, { type: 'counting', answer: dot.num, correctAnswer: dot.num, extra: COUNTING_FACTS[Math.floor(Math.random() * COUNTING_FACTS.length)](dots.length) });
+      const extra = mode === 'reverse' ? 'You connected in reverse order!' : mode === 'skip' ? `Great skip-counting by ${skipBy}s!` : COUNTING_FACTS[Math.floor(Math.random() * COUNTING_FACTS.length)](dots.length);
+      teachAfterAnswer(true, { type: 'counting', answer: dot.num, correctAnswer: dot.num, extra });
       const delay = getFeedbackDelay(level, true);
       setTimeout(() => setRound(r => r + 1), delay);
     }
@@ -130,7 +166,11 @@ export default function DotConnect({ onComplete, level = 1, childAge }) {
       <div className={styles.hud}>
         <span>Lv {level} · {round + 1}/{ROUNDS} · ✅ {correct} · ⭐ {score}</span>
       </div>
-      <p className={styles.prompt}>Tap the dots in order: 1, 2, 3...</p>
+      <p className={styles.prompt}>
+        {mode === 'reverse' && `Tap in REVERSE order: ${dots.length}, ${dots.length-1}... 1`}
+        {mode === 'skip' && `Tap by ${skipBy}s: ${skipBy}, ${2*skipBy}, ${3*skipBy}...`}
+        {mode === 'normal' && 'Tap the dots in order: 1, 2, 3...'}
+      </p>
       <div className={styles.targetArea} style={{ position: 'relative', width: '100%', maxWidth: 320, height: 220, margin: '0 auto' }}>
         {dots.map((dot) => {
           const isConnected = dot.num < nextNum;
@@ -168,7 +208,7 @@ export default function DotConnect({ onComplete, level = 1, childAge }) {
       </div>
       {feedback && (
         <div className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-          {feedback === 'correct' ? '✓ Shape complete!' : `Tap number ${nextNum} next!`}
+          {feedback === 'correct' ? '✓ Shape complete!' : mode === 'reverse' ? `Tap ${nextNum} next!` : mode === 'skip' ? `Tap ${nextNum} next!` : `Tap number ${nextNum} next!`}
         </div>
       )}
     </div>
