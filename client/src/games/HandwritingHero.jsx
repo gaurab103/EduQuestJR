@@ -77,6 +77,7 @@ export default function HandwritingHero({ onComplete, level = 1, childName }) {
 
   useEffect(() => {
     if (currentChar) {
+      window.speechSynthesis?.cancel();
       const msg = isWord
         ? `${childName ? childName + ', write' : 'Write'} the word "${currentChar}"!`
         : `${childName ? childName + ', write' : 'Write'} the letter "${currentChar}"!`;
@@ -222,7 +223,7 @@ export default function HandwritingHero({ onComplete, level = 1, childName }) {
     } else {
       setWrong(w => w + 1);
       setFeedback({
-        text: `Not quite right — try to trace over the guide letter more! (${coverage}%)`,
+        text: `Not quite! The correct answer is "${currentChar}". Try to trace over the guide more — you covered ${coverage}%.`,
         correct: false,
         coverage,
       });
@@ -242,7 +243,7 @@ export default function HandwritingHero({ onComplete, level = 1, childName }) {
       } else {
         setRound(r => r + 1);
       }
-    }, getFeedbackDelay(level) + 400);
+    }, getFeedbackDelay(level, passed) + 400);
   }
 
   function handleSkip() {
@@ -260,7 +261,7 @@ export default function HandwritingHero({ onComplete, level = 1, childName }) {
       } else {
         setRound(r => r + 1);
       }
-    }, getFeedbackDelay(level));
+    }, getFeedbackDelay(level, false));
   }
 
   if (done) {

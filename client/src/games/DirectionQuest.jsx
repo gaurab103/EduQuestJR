@@ -73,9 +73,9 @@ export default function DirectionQuest({ onComplete, level = 1, childAge }) {
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const GRID = getGridSize(level);
-  const delay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       onComplete(score, Math.round((score / ROUNDS) * 100));
@@ -115,6 +115,7 @@ export default function DirectionQuest({ onComplete, level = 1, childAge }) {
     if (correct) playSuccess();
     setFeedback(correct ? 'correct' : 'wrong');
     teachAfterAnswer(correct, { type: 'word', correctAnswer: correctDir, extra: `${correctDir} is the way to go!` });
+    const delay = getFeedbackDelay(level, correct);
     setTimeout(() => setRound((r) => r + 1), delay);
   }
 
@@ -152,7 +153,12 @@ export default function DirectionQuest({ onComplete, level = 1, childAge }) {
           </button>
         ))}
       </div>
-      {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? '✓ Correct!' : `Try ${correctDir}!`}</p>}
+      {feedback === 'correct' && <p className={styles.feedbackOk}>✓ Correct!</p>}
+      {feedback === 'wrong' && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>{correctDir}</strong></p>
+        </div>
+      )}
     </div>
   );
 }

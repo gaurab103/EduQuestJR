@@ -52,11 +52,11 @@ export default function CauseEffectTap({ onComplete, level = 1, childName }) {
   const [done, setDone] = useState(false);
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
-  const delay = getFeedbackDelay(level);
   const mode = getMode(level);
   const pool = getItemPool(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       setDone(true);
@@ -101,6 +101,7 @@ export default function CauseEffectTap({ onComplete, level = 1, childName }) {
     playSuccess();
     speak(item.result);
     teachAfterAnswer(true, { type: 'word', extra: 'When we tap something, we cause an effect! That\'s cause and effect!' });
+    const delay = getFeedbackDelay(level, true);
     setTimeout(() => setRound(r => r + 1), delay);
   }
 
@@ -125,7 +126,8 @@ export default function CauseEffectTap({ onComplete, level = 1, childName }) {
       speak(`Not quite! The answer was ${item.result}`);
       teachAfterAnswer(false, { type: 'word', correctAnswer: item.result, extra: 'Cause and effect: when we do something, something else happens!' });
     }
-    setTimeout(() => setRound(r => r + 1), delay + 300);
+    const delay = getFeedbackDelay(level, isCorrect) + 300;
+    setTimeout(() => setRound(r => r + 1), delay);
   }
 
   if (done) {

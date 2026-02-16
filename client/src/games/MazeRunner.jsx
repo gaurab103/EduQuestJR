@@ -96,7 +96,6 @@ export default function MazeRunner({ onComplete, level = 1, childAge }) {
   const [done, setDone] = useState(false);
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
-  const delay = getFeedbackDelay(level);
   const gridSize = getGridSize(level);
 
   const loadRound = useCallback(() => {
@@ -108,6 +107,7 @@ export default function MazeRunner({ onComplete, level = 1, childAge }) {
   }, [gridSize]);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       setDone(true);
@@ -133,6 +133,7 @@ export default function MazeRunner({ onComplete, level = 1, childAge }) {
       playWrong();
       setFeedback('wrong');
       teachAfterAnswer(false, { type: 'word', answer: 'wall', correctAnswer: 'path', extra: SPATIAL_FACTS[Math.floor(Math.random() * SPATIAL_FACTS.length)] });
+      const delay = getFeedbackDelay(level, false);
       setTimeout(() => { setFeedback(null); }, delay);
       return;
     }
@@ -147,6 +148,7 @@ export default function MazeRunner({ onComplete, level = 1, childAge }) {
       playWrong();
       setFeedback('wrong');
       teachAfterAnswer(false, { type: 'word', answer: 'jump', correctAnswer: 'step', extra: 'Tap the next cell right next to where you are!' });
+      const delay = getFeedbackDelay(level, false);
       setTimeout(() => { setFeedback(null); }, delay);
       return;
     }
@@ -159,6 +161,7 @@ export default function MazeRunner({ onComplete, level = 1, childAge }) {
       playSuccess();
       setFeedback('correct');
       teachAfterAnswer(true, { type: 'word', answer: 'path', correctAnswer: 'path', extra: SPATIAL_FACTS[Math.floor(Math.random() * SPATIAL_FACTS.length)] });
+      const delay = getFeedbackDelay(level, true);
       setTimeout(() => setRound(r => r + 1), delay);
     }
   }
@@ -238,7 +241,7 @@ export default function MazeRunner({ onComplete, level = 1, childAge }) {
       </div>
       {feedback && (
         <div className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-          {feedback === 'correct' ? '✓ You found the path!' : 'Try again!'}
+          {feedback === 'correct' ? '✓ You found the path!' : 'Try again! Tap only on green path cells, one step at a time, from start to finish.'}
         </div>
       )}
     </div>

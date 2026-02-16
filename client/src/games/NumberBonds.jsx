@@ -35,9 +35,9 @@ export default function NumberBonds({ onComplete, level = 1, childName }) {
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const CHOICES = getChoiceCount(level);
-  const delay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       setDone(true);
@@ -90,6 +90,7 @@ export default function NumberBonds({ onComplete, level = 1, childName }) {
       playWrong();
       teachAfterAnswer(false, { type: 'math', answer: n, correctAnswer: answer, extra: given + ' plus ' + answer + ' equals ' + target + '!' });
     }
+    const delay = getFeedbackDelay(level, isCorrect);
     setTimeout(() => setRound(r => r + 1), delay);
   }
 
@@ -164,9 +165,13 @@ export default function NumberBonds({ onComplete, level = 1, childName }) {
         })}
       </div>
 
-      {feedback && (
-        <div className={feedback.type === 'correct' ? styles.feedbackOk : styles.feedbackBad}
-          style={{ marginTop: '0.5rem' }}>{feedback.text}</div>
+      {feedback?.type === 'correct' && (
+        <div className={styles.feedbackOk} style={{ marginTop: '0.5rem' }}>{feedback.text}</div>
+      )}
+      {feedback?.type === 'wrong' && (
+        <div className={styles.feedbackBad} style={{ marginTop: '0.5rem' }}>
+          <p>✗ The answer is <strong>{target - given}</strong></p>
+        </div>
       )}
     </div>
   );

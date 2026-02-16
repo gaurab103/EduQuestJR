@@ -20,9 +20,9 @@ export default function BalloonPop({ onComplete, level = 1 }) {
   const [feedback, setFeedback] = useState(null);
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
-  const delay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       const accuracy = Math.round((score / ROUNDS) * 100);
@@ -51,6 +51,7 @@ export default function BalloonPop({ onComplete, level = 1 }) {
     else { setStreak(0); playWrong(); }
     teachAfterAnswer(correct, { type: 'color', correctAnswer: BALLOON_TO_COLOR[target] || target });
     setFeedback(correct ? 'correct' : 'wrong');
+    const delay = getFeedbackDelay(level, correct);
     setTimeout(() => setRound((r) => r + 1), delay);
   }
 
@@ -76,10 +77,13 @@ export default function BalloonPop({ onComplete, level = 1 }) {
           </button>
         ))}
       </div>
-      {feedback && (
-        <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-          {feedback === 'correct' ? (streak >= 3 ? '🔥 Pop Master!' : '✓ Pop!') : 'Try again next round!'}
-        </p>
+      {feedback === 'correct' && (
+        <p className={styles.feedbackOk}>{streak >= 3 ? '🔥 Pop Master!' : '✓ Pop!'}</p>
+      )}
+      {feedback === 'wrong' && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>{target}</strong></p>
+        </div>
       )}
     </div>
   );

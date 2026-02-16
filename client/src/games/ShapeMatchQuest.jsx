@@ -41,9 +41,9 @@ export default function ShapeMatchQuest({ onComplete, level = 1, childName, chil
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const CHOICE_COUNT = getChoiceCount(level);
-  const feedbackDelay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       const accuracy = Math.round((score / ROUNDS) * 100);
@@ -145,9 +145,10 @@ export default function ShapeMatchQuest({ onComplete, level = 1, childName, chil
       playWrong();
     }
     setFeedback(correct ? 'correct' : 'wrong');
-    const correctAns = mode === 0 ? target?.label : mode === 1 ? target?.sides : mode === 2 ? target?.label : (target?.askCurves ? 'the curved shape' : 'the shape with corners');
+    const correctAns = mode === 0 ? target?.label : mode === 1 ? target?.correctAnswer : mode === 2 ? target?.label : (target?.askCurves ? 'the curved shape' : 'the shape with corners');
     teachAfterAnswer(correct, { type: 'shape', answer: choice.id, correctAnswer: correctAns });
-    setTimeout(() => setRound((r) => r + 1), feedbackDelay);
+    const delay = getFeedbackDelay(level, correct);
+    setTimeout(() => setRound((r) => r + 1), delay);
   }
 
   async function requestHint() {
@@ -273,12 +274,13 @@ export default function ShapeMatchQuest({ onComplete, level = 1, childName, chil
         ))}
       </div>
 
-      {feedback && (
-        <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-          {feedback === 'correct'
-            ? streak >= 3 ? '🔥 Shape Master!' : '✓ Correct!'
-            : `That was ${target?.label || 'the shape'}. Keep going!`}
-        </p>
+      {feedback === 'correct' && (
+        <p className={styles.feedbackOk}>{streak >= 3 ? '🔥 Shape Master!' : '✓ Correct!'}</p>
+      )}
+      {feedback === 'wrong' && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>{mode === 0 ? target?.label : mode === 1 ? target?.correctAnswer : mode === 2 ? target?.label : (target?.askCurves ? 'the curved shape' : 'the shape with corners')}</strong></p>
+        </div>
       )}
     </div>
   );

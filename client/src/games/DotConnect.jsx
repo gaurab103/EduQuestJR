@@ -49,7 +49,6 @@ export default function DotConnect({ onComplete, level = 1, childAge }) {
   const [done, setDone] = useState(false);
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
-  const delay = getFeedbackDelay(level);
   const maxNum = Math.min(getMaxNumber(level), 12);
   const dotCount = Math.min(Math.max(3, Math.floor(maxNum * 0.6)), 12);
 
@@ -67,6 +66,7 @@ export default function DotConnect({ onComplete, level = 1, childAge }) {
   }, [dotCount, generate]);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       setDone(true);
@@ -92,6 +92,7 @@ export default function DotConnect({ onComplete, level = 1, childAge }) {
       playWrong();
       setFeedback('wrong');
       teachAfterAnswer(false, { type: 'counting', answer: dot.num, correctAnswer: nextNum, extra: COUNTING_FACTS[Math.floor(Math.random() * COUNTING_FACTS.length)](nextNum) });
+      const delay = getFeedbackDelay(level, false);
       setTimeout(() => setRound(r => r + 1), delay);
       return;
     }
@@ -103,6 +104,7 @@ export default function DotConnect({ onComplete, level = 1, childAge }) {
       playSuccess();
       setFeedback('correct');
       teachAfterAnswer(true, { type: 'counting', answer: dot.num, correctAnswer: dot.num, extra: COUNTING_FACTS[Math.floor(Math.random() * COUNTING_FACTS.length)](dots.length) });
+      const delay = getFeedbackDelay(level, true);
       setTimeout(() => setRound(r => r + 1), delay);
     }
   }

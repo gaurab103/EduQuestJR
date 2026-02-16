@@ -89,13 +89,13 @@ export default function AdditionIsland({ onComplete, level = 1 }) {
   const [theme, setTheme] = useState(COUNTING_THEMES[0]);
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
-  const feedbackDelay = getFeedbackDelay(level);
 
   useEffect(() => {
     setTheme(COUNTING_THEMES[Math.floor(Math.random() * COUNTING_THEMES.length)]);
   }, []);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       const accuracy = Math.round((score / ROUNDS) * 100);
@@ -130,7 +130,8 @@ export default function AdditionIsland({ onComplete, level = 1 }) {
       ? `${problem.a} + ${problem.b} = ${problem.sum}!`
       : `${problem.a} plus ${problem.b}${problem.c != null ? ' plus ' + problem.c : ''} equals ${problem.sum}!`;
     teachAfterAnswer(correct, { type: 'math', answer: num, correctAnswer: problem.sum, extra });
-    setTimeout(() => setRound((r) => r + 1), feedbackDelay);
+    const delay = getFeedbackDelay(level, correct);
+    setTimeout(() => setRound((r) => r + 1), delay);
   }
 
   if (round >= ROUNDS) return <div className={styles.container}>Calculating your rewards…</div>;
@@ -192,12 +193,13 @@ export default function AdditionIsland({ onComplete, level = 1 }) {
           </button>
         ))}
       </div>
-      {feedback && (
-        <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-          {feedback === 'correct'
-            ? streak >= 3 ? '🔥 Math Master!' : '✓ Correct!'
-            : 'Try again next round!'}
-        </p>
+      {feedback === 'correct' && (
+        <p className={styles.feedbackOk}>{streak >= 3 ? '🔥 Math Master!' : '✓ Correct!'}</p>
+      )}
+      {feedback === 'wrong' && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>{problem.sum}</strong></p>
+        </div>
       )}
     </div>
   );

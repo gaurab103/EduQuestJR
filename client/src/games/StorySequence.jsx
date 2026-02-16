@@ -63,9 +63,9 @@ export default function StorySequence({ level = 1, onComplete }) {
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const stepCount = getStepCount(level);
-  const delay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       setDone(true);
@@ -117,6 +117,7 @@ export default function StorySequence({ level = 1, onComplete }) {
         setFeedback('correct');
         playSuccess();
         teachAfterAnswer(true, { type: 'word', extra: 'Stories happen in order. First, then, next!' });
+        const delay = getFeedbackDelay(level, true);
         setTimeout(() => setRound(r => r + 1), delay);
       } else {
         setWrong(w => w + 1);
@@ -125,6 +126,7 @@ export default function StorySequence({ level = 1, onComplete }) {
         playWrong();
         teachAfterAnswer(false, { type: 'word', extra: 'Stories happen in order. First, then, next!' });
         // Reset after showing feedback
+        const delay = getFeedbackDelay(level, false);
         setTimeout(() => {
           setSelectedOrder([]);
           setFeedback(null);
@@ -268,12 +270,13 @@ export default function StorySequence({ level = 1, onComplete }) {
       </div>
 
       {/* Feedback */}
-      {feedback && (
-        <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-          {feedback === 'correct'
-            ? (streak >= 3 ? '🔥 Story Master!' : '✓ Correct!')
-            : '✗ Wrong order! Try again!'}
-        </p>
+      {feedback === 'correct' && (
+        <p className={styles.feedbackOk}>{streak >= 3 ? '🔥 Story Master!' : '✓ Correct!'}</p>
+      )}
+      {feedback === 'wrong' && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>{correctOrder.join(' → ')}</strong></p>
+        </div>
       )}
     </div>
   );

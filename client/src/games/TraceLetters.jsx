@@ -46,11 +46,11 @@ export default function TraceLetters({ onComplete, level = 1, childName }) {
   const pathRef = useRef([]);
   const startedRef = useRef(false);
   const ROUNDS = getRounds(level);
-  const delay = getFeedbackDelay(level);
   const threshold = getPassThreshold(level);
   const minPoints = getMinPoints(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       setDone(true);
@@ -188,7 +188,8 @@ export default function TraceLetters({ onComplete, level = 1, childName }) {
       playWrong();
       teachAfterAnswer(false, { type: 'letter', correctAnswer: letter });
     }
-    setTimeout(() => setRound(r => r + 1), delay + 300);
+    const delay = getFeedbackDelay(level, passed) + 300;
+    setTimeout(() => setRound(r => r + 1), delay);
   };
 
   const handleClear = () => {
@@ -317,7 +318,7 @@ export default function TraceLetters({ onComplete, level = 1, childName }) {
           style={{ marginTop: '0.5rem', fontSize: '0.85rem', padding: '0.6rem 1rem' }}>
           {feedback.type === 'correct'
             ? `${streak >= 3 ? '🔥 Trace Master!' : '✓ Great tracing!'} Coverage: ${feedback.coverage}%`
-            : `✗ ${feedback.reason}`
+            : (<><p>✗ The answer is <strong>{letter}</strong></p></>)
           }
         </div>
       )}

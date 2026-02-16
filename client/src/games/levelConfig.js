@@ -67,14 +67,21 @@ export function getTimeLimit(level) {
 
 /**
  * Get feedback delay (ms) before next round.
- * Must be long enough for teaching voice to finish before next question.
+ * When correct: short pause then move on.
+ * When wrong: longer pause so the teaching voice can explain the mistake.
+ * Call as getFeedbackDelay(level) for default or getFeedbackDelay(level, false) for wrong.
  */
-export function getFeedbackDelay(level) {
-  if (level <= 5) return 3000;
-  if (level <= 10) return 2800;
-  if (level <= 15) return 2500;
-  if (level <= 20) return 2200;
-  return 2000;
+export function getFeedbackDelay(level, isCorrect = true) {
+  if (isCorrect) {
+    // Correct: quick celebration then next
+    if (level <= 10) return 2000;
+    if (level <= 20) return 1800;
+    return 1500;
+  }
+  // Wrong: longer — voice explains the mistake
+  if (level <= 10) return 4500;
+  if (level <= 20) return 4000;
+  return 3500;
 }
 
 /**

@@ -78,9 +78,9 @@ export default function EmotionMatch({ onComplete, level = 1, childAge }) {
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const CHOICES = getChoiceCount(level);
-  const delay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       setDone(true);
@@ -137,6 +137,7 @@ export default function EmotionMatch({ onComplete, level = 1, childAge }) {
       correctAnswer: emotion?.label,
       extra: EMPATHY_FACTS[question.answer] || 'Understanding how others feel helps us be kind.',
     });
+    const delay = getFeedbackDelay(level, isCorrect);
     setTimeout(() => setRound(r => r + 1), delay);
   }
 
@@ -191,7 +192,7 @@ export default function EmotionMatch({ onComplete, level = 1, childAge }) {
       </div>
       {feedback && (
         <div className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-          {feedback === 'correct' ? '✓ Great empathy!' : `They would feel ${getEmotion(question.answer)?.label}.`}
+          {feedback === 'correct' ? '✓ Great empathy!' : `Not quite! The correct answer is ${getEmotion(question.answer)?.label}.`}
         </div>
       )}
     </div>

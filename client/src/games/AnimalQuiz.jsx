@@ -48,9 +48,9 @@ export default function AnimalQuiz({ level = 1, onComplete }) {
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const CHOICES = getChoiceCount(level);
-  const delay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       const accuracy = Math.round((correct / ROUNDS) * 100);
@@ -116,6 +116,7 @@ export default function AnimalQuiz({ level = 1, onComplete }) {
       teachAfterAnswer(false, { type: 'animal', answer: selected, correctAnswer: currentQuestion.answer });
     }
     
+    const delay = getFeedbackDelay(level, isCorrect);
     setTimeout(() => setRound(r => r + 1), delay);
   }
 
@@ -183,10 +184,13 @@ export default function AnimalQuiz({ level = 1, onComplete }) {
         })}
       </div>
       
-      {feedback && (
-        <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-          {feedback === 'correct' ? '✓ Correct!' : 'Try again next round!'}
-        </p>
+      {feedback === 'correct' && (
+        <p className={styles.feedbackOk}>✓ Correct!</p>
+      )}
+      {feedback === 'wrong' && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>{currentQuestion.answer}</strong></p>
+        </div>
       )}
     </div>
   );

@@ -33,9 +33,9 @@ export default function OddOneOut({ onComplete, level = 1 }) {
   const [streak, setStreak] = useState(0);
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
-  const delay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       onComplete(score, Math.round((score / ROUNDS) * 100));
@@ -125,6 +125,7 @@ export default function OddOneOut({ onComplete, level = 1 }) {
         setFeedback(correct ? 'correct' : 'wrong');
         const oddNames = oddIndices.map(i => items[i]?.name).join(' and ');
         teachAfterAnswer(correct, { type: 'animal', answer: newSelected.map(i => items[i]?.name).join(', '), correctAnswer: oddNames, extra: 'The different ones were ' + oddNames + '!' });
+        const delay = getFeedbackDelay(level, correct);
         setTimeout(() => setRound(r => r + 1), delay);
       }
       return;
@@ -136,6 +137,7 @@ export default function OddOneOut({ onComplete, level = 1 }) {
     else { setStreak(0); playWrong(); }
     setFeedback(correct ? 'correct' : 'wrong');
     teachAfterAnswer(correct, { type: 'animal', answer: items[idx]?.name, correctAnswer: oddItem?.name, extra: 'The different one was the ' + (oddItem?.name || 'odd one') + '!' });
+    const delay = getFeedbackDelay(level, correct);
     setTimeout(() => setRound(r => r + 1), delay);
   }
 
@@ -178,10 +180,13 @@ export default function OddOneOut({ onComplete, level = 1 }) {
       {mode === 2 && selected.length === 1 && feedback === null && (
         <p style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--primary)' }}>Now tap the other one!</p>
       )}
-      {feedback && (
-        <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-          {feedback === 'correct' ? (streak >= 3 ? '🔥 Expert!' : '✓ Correct!') : 'Try again next round!'}
-        </p>
+      {feedback === 'correct' && (
+        <p className={styles.feedbackOk}>{streak >= 3 ? '🔥 Expert!' : '✓ Correct!'}</p>
+      )}
+      {feedback === 'wrong' && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>{mode === 2 ? oddIndices.map(i => items[i]?.name).join(' and ') : items[oddIndices[0]]?.name}</strong></p>
+        </div>
       )}
     </div>
   );

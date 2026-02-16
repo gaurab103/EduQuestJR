@@ -38,9 +38,9 @@ export default function BigVsSmall({ onComplete, level = 1 }) {
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const [bigSize, smallSize] = getSizeDiff(level);
-  const delay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       onComplete(score, Math.round((score / ROUNDS) * 100));
@@ -139,6 +139,7 @@ export default function BigVsSmall({ onComplete, level = 1 }) {
     const correctItem = mode <= 1 || mode >= 4 ? (ask === 'big' ? pair?.big : pair?.small) : (mode === 2 ? triple?.find(t => t.isBiggest) : triple?.find(t => t.correctOrder));
     const selectedItem = mode <= 1 || mode >= 4 ? (choice === 'left' ? (swapped ? pair?.small : pair?.big) : (swapped ? pair?.big : pair?.small)) : null;
     teachAfterAnswer(correct, { type: 'animal', answer: selectedItem?.name || choice, correctAnswer: correctItem?.name });
+    const delay = getFeedbackDelay(level, correct);
     setTimeout(() => setRound(r => r + 1), delay);
   }
 
@@ -150,6 +151,7 @@ export default function BigVsSmall({ onComplete, level = 1 }) {
     else { setStreak(0); playWrong(); }
     setFeedback(correct ? 'correct' : 'wrong');
     teachAfterAnswer(correct, { type: 'animal', answer: triple[idx]?.name, correctAnswer: triple?.find(t => t.isBiggest)?.name });
+    const delay = getFeedbackDelay(level, correct);
     setTimeout(() => setRound(r => r + 1), delay);
   }
 
@@ -161,6 +163,7 @@ export default function BigVsSmall({ onComplete, level = 1 }) {
     else { setStreak(0); playWrong(); }
     setFeedback(correct ? 'correct' : 'wrong');
     teachAfterAnswer(correct, { type: 'animal', answer: triple[idx]?.name, correctAnswer: triple?.find(t => t.correctOrder)?.name });
+    const delay = getFeedbackDelay(level, correct);
     setTimeout(() => setRound(r => r + 1), delay);
   }
 
@@ -196,10 +199,13 @@ export default function BigVsSmall({ onComplete, level = 1 }) {
             <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)' }}>{rightItem.name}</span>
           </button>
         </div>
-        {feedback && (
-          <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-            {feedback === 'correct' ? streak >= 3 ? '🔥 Size Expert!' : '✓ Correct!' : `The ${ask === 'big' ? 'bigger' : 'smaller'} one was the ${ask === 'big' ? pair.big.name : pair.small.name}!`}
-          </p>
+        {feedback === 'correct' && (
+          <p className={styles.feedbackOk}>{streak >= 3 ? '🔥 Size Expert!' : '✓ Correct!'}</p>
+        )}
+        {feedback === 'wrong' && (
+          <div className={styles.feedbackBad}>
+            <p>✗ The answer is <strong>{ask === 'big' ? pair.big.name : pair.small.name}</strong></p>
+          </div>
         )}
       </div>
     );
@@ -222,7 +228,12 @@ export default function BigVsSmall({ onComplete, level = 1 }) {
             </button>
           ))}
         </div>
-        {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? '✓ Correct!' : 'Try again!'}</p>}
+        {feedback === 'correct' && <p className={styles.feedbackOk}>✓ Correct!</p>}
+        {feedback === 'wrong' && (
+          <div className={styles.feedbackBad}>
+            <p>✗ The answer is <strong>{triple?.find(t => t.isBiggest)?.name}</strong></p>
+          </div>
+        )}
       </div>
     );
   }
@@ -244,7 +255,12 @@ export default function BigVsSmall({ onComplete, level = 1 }) {
             </button>
           ))}
         </div>
-        {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? '✓ Correct!' : 'Try again!'}</p>}
+        {feedback === 'correct' && <p className={styles.feedbackOk}>✓ Correct!</p>}
+        {feedback === 'wrong' && (
+          <div className={styles.feedbackBad}>
+            <p>✗ The answer is <strong>{triple?.find(t => t.correctOrder)?.name}</strong></p>
+          </div>
+        )}
       </div>
     );
   }
@@ -278,10 +294,13 @@ export default function BigVsSmall({ onComplete, level = 1 }) {
             <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)' }}>{rightItem.name}</span>
           </button>
         </div>
-        {feedback && (
-          <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-            {feedback === 'correct' ? streak >= 3 ? '🔥 Size Expert!' : '✓ Correct!' : `The ${ask === 'big' ? pair.big.name : pair.small.name} is ${labels[mode - 4]}!`}
-          </p>
+        {feedback === 'correct' && (
+          <p className={styles.feedbackOk}>{streak >= 3 ? '🔥 Size Expert!' : '✓ Correct!'}</p>
+        )}
+        {feedback === 'wrong' && (
+          <div className={styles.feedbackBad}>
+            <p>✗ The answer is <strong>{ask === 'big' ? pair.big.name : pair.small.name}</strong></p>
+          </div>
         )}
       </div>
     );

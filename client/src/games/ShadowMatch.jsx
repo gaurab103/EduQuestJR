@@ -50,10 +50,10 @@ export default function ShadowMatch({ onComplete, level = 1, childName }) {
   const [done, setDone] = useState(false);
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
-  const delay = getFeedbackDelay(level);
   const choiceCount = getChoiceCount(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       setDone(true);
@@ -112,6 +112,7 @@ export default function ShadowMatch({ onComplete, level = 1, childName }) {
       teachAfterAnswer(false, { type: 'shape', correctAnswer: target?.name?.toLowerCase() });
     }
 
+    const delay = getFeedbackDelay(level, isCorrect);
     setTimeout(() => setRound(r => r + 1), delay);
   }
 
@@ -189,7 +190,7 @@ export default function ShadowMatch({ onComplete, level = 1, childName }) {
           style={{ marginTop: '0.5rem', fontSize: '0.85rem', padding: '0.6rem 1rem' }}>
           {feedback.type === 'correct'
             ? `✓ Correct! It's ${feedback.shape}! +${feedback.points} points${streak >= 3 ? ' 🔥' : ''}`
-            : `✗ Wrong! You picked ${feedback.shape}, the answer was ${feedback.answer}.`
+            : (<><p>✗ The answer is <strong>{target?.name}</strong></p></>)
           }
         </div>
       )}

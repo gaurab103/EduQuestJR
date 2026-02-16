@@ -39,9 +39,9 @@ export default function SpellingBee({ onComplete, level = 1, childName }) {
   const [done, setDone] = useState(false);
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
-  const delay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       setDone(true);
@@ -97,7 +97,9 @@ export default function SpellingBee({ onComplete, level = 1, childName }) {
       playWrong();
       teachAfterAnswer(false, { type: 'word', answer: attempt, correctAnswer: word, extra: 'The correct spelling is "' + word.toLowerCase() + '".' });
     }
-    setTimeout(() => setRound(r => r + 1), delay + 400);
+    const isCorrect = attempt === word;
+    const delay = getFeedbackDelay(level, isCorrect) + 400;
+    setTimeout(() => setRound(r => r + 1), delay);
   }
 
   if (done) {
@@ -193,9 +195,13 @@ export default function SpellingBee({ onComplete, level = 1, childName }) {
         </button>
       </div>
 
-      {feedback && (
-        <div className={feedback.type === 'correct' ? styles.feedbackOk : styles.feedbackBad}
-          style={{ marginTop: '0.5rem' }}>{feedback.text}</div>
+      {feedback?.type === 'correct' && (
+        <div className={styles.feedbackOk} style={{ marginTop: '0.5rem' }}>{feedback.text}</div>
+      )}
+      {feedback?.type === 'wrong' && (
+        <div className={styles.feedbackBad} style={{ marginTop: '0.5rem' }}>
+          <p>✗ The answer is <strong>{word}</strong></p>
+        </div>
       )}
     </div>
   );

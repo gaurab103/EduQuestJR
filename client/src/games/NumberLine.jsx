@@ -34,9 +34,9 @@ export default function NumberLine({ onComplete, level = 1, childAge }) {
   const ROUNDS = getRounds(level);
   const MAX = getMaxNumber(level);
   const CHOICES = getChoiceCount(level);
-  const delay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       onComplete(score, Math.round((score / ROUNDS) * 100));
@@ -123,6 +123,7 @@ export default function NumberLine({ onComplete, level = 1, childAge }) {
     if (correct) playSuccess();
     setFeedback(correct ? 'correct' : 'wrong');
     teachAfterAnswer(correct, { type: 'math', correctAnswer: String(answer), extra: `${answer} is in the middle!` });
+    const delay = getFeedbackDelay(level, correct);
     setTimeout(() => setRound((r) => r + 1), delay);
   }
 
@@ -167,7 +168,12 @@ export default function NumberLine({ onComplete, level = 1, childAge }) {
           <button key={n} type="button" onClick={() => handlePick(n)} className={`${styles.choiceBtn} ${styles.choiceNumber} ${feedback !== null ? (n === answer ? styles.correct : styles.wrong) : ''}`} disabled={feedback !== null}>{n}</button>
         ))}
       </div>
-      {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? '✓ Correct!' : `The answer was ${answer}!`}</p>}
+      {feedback === 'correct' && <p className={styles.feedbackOk}>✓ Correct!</p>}
+      {feedback === 'wrong' && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>{answer}</strong></p>
+        </div>
+      )}
     </div>
   );
 }

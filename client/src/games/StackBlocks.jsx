@@ -45,10 +45,10 @@ export default function StackBlocks({ onComplete, level = 1 }) {
   const [selectedColor, setSelectedColor] = useState(COLORS[0]);
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
-  const delay = getFeedbackDelay(level);
   const mustMatchPattern = level > 5;
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       const accuracy = ROUNDS > 0 ? Math.round((correct / ROUNDS) * 100) : 0;
@@ -101,7 +101,8 @@ export default function StackBlocks({ onComplete, level = 1 }) {
         playWrong();
         teachAfterAnswer(false, { type: 'math', extra: 'Stacking blocks helps us learn patterns and counting!' });
       }
-      setTimeout(() => setRound(r => r + 1), delay + 300);
+      const delay = getFeedbackDelay(level, passed) + 300;
+      setTimeout(() => setRound(r => r + 1), delay);
     }
   }
 
@@ -220,7 +221,7 @@ export default function StackBlocks({ onComplete, level = 1 }) {
           style={{ marginTop: '0.5rem' }}>
           {feedback === 'correct'
             ? `✓ Perfect stack! +${target * 5} points!`
-            : `✗ Wrong pattern! Look at the colors more carefully.`}
+            : (<><p>✗ The answer is <strong>the pattern: {pattern.map(p => p.name).join(' → ')}</strong></p></>)}
         </p>
       )}
     </div>

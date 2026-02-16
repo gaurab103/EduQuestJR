@@ -26,7 +26,6 @@ export default function BlocklyCodingLab({ onComplete, level = 1 }) {
   const [feedback, setFeedback] = useState(null);
   const completedRef = useRef(false);
   const minBlocks = getMinBlocks(level);
-  const delay = getFeedbackDelay(level);
 
   useEffect(() => {
     const cancelRead = readQuestion(`Add ${minBlocks} or more blocks, then click Run Code`);
@@ -47,6 +46,7 @@ export default function BlocklyCodingLab({ onComplete, level = 1 }) {
     teachAfterAnswer(ok, { type: 'math', extra: 'Coding helps us tell computers what to do! Great job building your sequence!' });
     setFeedback(ok ? 'correct' : 'wrong');
     completedRef.current = true;
+    const delay = getFeedbackDelay(level, ok);
     setTimeout(() => onComplete(ok ? 100 : 30, ok ? 90 : 50), delay);
   };
 
@@ -89,7 +89,7 @@ export default function BlocklyCodingLab({ onComplete, level = 1 }) {
       </div>
       {feedback && (
         <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-          {feedback === 'correct' ? '✓ Great coding!' : `Add ${minBlocks}+ blocks and try again!`}
+          {feedback === 'correct' ? '✓ Great coding!' : `Not quite! You need at least ${minBlocks} blocks. Add more blocks and try again!`}
         </p>
       )}
     </div>

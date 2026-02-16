@@ -30,9 +30,9 @@ export default function EmotionDetective({ onComplete, level = 1 }) {
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const CHOICE_COUNT = getChoiceCount(level);
-  const feedbackDelay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       const accuracy = Math.round((score / ROUNDS) * 100);
@@ -76,7 +76,8 @@ export default function EmotionDetective({ onComplete, level = 1 }) {
       teachAfterAnswer(false, { type: 'word', answer: word, correctAnswer: target?.word, extra: 'This face is ' + (target?.word || '') + '. ' + (target?.tip || '') });
     }
     setFeedback(correct ? 'correct' : 'wrong');
-    setTimeout(() => setRound((r) => r + 1), feedbackDelay);
+    const delay = getFeedbackDelay(level, correct);
+    setTimeout(() => setRound((r) => r + 1), delay);
   }
 
   if (round >= ROUNDS) return <div className={styles.container}><p className={styles.prompt}>Calculating your rewards...</p></div>;
@@ -160,12 +161,13 @@ export default function EmotionDetective({ onComplete, level = 1 }) {
         ))}
       </div>
 
-      {feedback && (
-        <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-          {feedback === 'correct'
-            ? streak >= 3 ? '🔥 Emotion Expert!' : '✓ Correct!'
-            : `This face is ${target?.word}. Great try!`}
-        </p>
+      {feedback === 'correct' && (
+        <p className={styles.feedbackOk}>{streak >= 3 ? '🔥 Emotion Expert!' : '✓ Correct!'}</p>
+      )}
+      {feedback === 'wrong' && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>{target?.word}</strong></p>
+        </div>
       )}
     </div>
   );

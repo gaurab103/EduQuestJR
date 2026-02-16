@@ -63,9 +63,9 @@ export default function ScienceSort({ onComplete, level = 1, childName }) {
   const [done, setDone] = useState(false);
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
-  const delay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       setDone(true);
@@ -104,10 +104,11 @@ export default function ScienceSort({ onComplete, level = 1, childName }) {
       teachAfterAnswer(true, { type: 'word', correctAnswer: category.groups[correctGroup].label, extra: 'Scientists sort things into groups to learn about them!' });
     } else {
       setWrong(w => w + 1);
-      setFeedback({ type: 'wrong', text: `Wrong! ${currentItem} is ${category.groups[correctGroup].label}.` });
+      setFeedback({ type: 'wrong', text: `Not quite! The correct answer is ${category.groups[correctGroup].label} — ${currentItem} belongs in ${category.groups[correctGroup].label}.` });
       playWrong();
       teachAfterAnswer(false, { type: 'word', correctAnswer: category.groups[correctGroup].label, extra: 'Scientists sort things into groups to learn about them!' });
     }
+    const delay = getFeedbackDelay(level, isCorrect);
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

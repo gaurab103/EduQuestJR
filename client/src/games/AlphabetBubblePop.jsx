@@ -60,9 +60,9 @@ export default function AlphabetBubblePop({ level = 1, onComplete }) {
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const CHOICE_COUNT = getChoiceCount(level);
-  const delay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       setDone(true);
@@ -109,6 +109,7 @@ export default function AlphabetBubblePop({ level = 1, onComplete }) {
       teachAfterAnswer(false, { type: 'letter', answer: bubble.letter, correctAnswer: targetLetter });
     }
     
+    const delay = getFeedbackDelay(level, isCorrect);
     setTimeout(() => setRound(r => r + 1), delay);
   }
 
@@ -212,9 +213,12 @@ export default function AlphabetBubblePop({ level = 1, onComplete }) {
       </div>
 
       {/* Feedback */}
-      {feedback && (
-        <div className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-          {feedback === 'correct' ? '✓ Great job! Pop!' : '✗ Try again!'}
+      {feedback === 'correct' && (
+        <div className={styles.feedbackOk}>✓ Great job! Pop!</div>
+      )}
+      {feedback === 'wrong' && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>{targetLetter}</strong></p>
         </div>
       )}
     </div>

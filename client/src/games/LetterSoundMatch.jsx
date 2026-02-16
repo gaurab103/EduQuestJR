@@ -54,9 +54,9 @@ export default function LetterSoundMatch({ level = 1, onComplete }) {
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const choiceCount = getChoiceCount(level);
-  const feedbackDelay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       const accuracy = Math.round((score / ROUNDS) * 100);
@@ -98,9 +98,10 @@ export default function LetterSoundMatch({ level = 1, onComplete }) {
       teachAfterAnswer(false, { type: 'letter', answer: choices[index]?.word, correctAnswer: currentItem?.letter });
     }
 
+    const delay = getFeedbackDelay(level, isCorrect);
     setTimeout(() => {
       setRound(r => r + 1);
-    }, feedbackDelay);
+    }, delay);
   }
 
   if (round >= ROUNDS) {
@@ -164,12 +165,13 @@ export default function LetterSoundMatch({ level = 1, onComplete }) {
         ))}
       </div>
 
-      {feedback && (
-        <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-          {feedback === 'correct' 
-            ? `✓ Correct! "${currentItem?.word}" starts with "${currentItem?.letter}"!`
-            : `Try again! Look for something that starts with "${currentItem?.letter}"`}
-        </p>
+      {feedback === 'correct' && (
+        <p className={styles.feedbackOk}>✓ Correct! "{currentItem?.word}" starts with "{currentItem?.letter}"!</p>
+      )}
+      {feedback === 'wrong' && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>{currentItem?.word} ({currentItem?.letter})</strong></p>
+        </div>
       )}
     </div>
   );

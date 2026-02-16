@@ -22,10 +22,10 @@ export default function AlphabetTracingWorld({ onComplete, level = 1 }) {
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const CHOICE_COUNT = getChoiceCount(level);
-  const feedbackDelay = getFeedbackDelay(level);
   const letterPool = getLetterPool(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       const accuracy = Math.round((score / ROUNDS) * 100);
@@ -55,7 +55,8 @@ export default function AlphabetTracingWorld({ onComplete, level = 1 }) {
       playWrong();
     }
     setFeedback(correct ? 'correct' : 'wrong');
-    setTimeout(() => setRound((r) => r + 1), feedbackDelay);
+    const delay = getFeedbackDelay(level, correct);
+    setTimeout(() => setRound((r) => r + 1), delay);
   }
 
   if (round >= ROUNDS) return <div className={styles.container}>Calculating your rewards…</div>;
@@ -95,12 +96,13 @@ export default function AlphabetTracingWorld({ onComplete, level = 1 }) {
           </button>
         ))}
       </div>
-      {feedback && (
-        <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-          {feedback === 'correct'
-            ? streak >= 3 ? '🔥 Letter Master!' : '✓ Correct!'
-            : 'Try again next round!'}
-        </p>
+      {feedback === 'correct' && (
+        <p className={styles.feedbackOk}>{streak >= 3 ? '🔥 Letter Master!' : '✓ Correct!'}</p>
+      )}
+      {feedback === 'wrong' && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>{target}</strong></p>
+        </div>
       )}
     </div>
   );

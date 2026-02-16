@@ -23,9 +23,9 @@ export default function MoreOrLess({ onComplete, level = 1 }) {
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const MAX_NUM = getMaxNumber(level);
-  const delay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       onComplete(score, Math.round((score / ROUNDS) * 100));
@@ -65,6 +65,7 @@ export default function MoreOrLess({ onComplete, level = 1 }) {
     const correctSide = (ask === 'more' && left > right) || (ask === 'less' && left < right) ? 'left' : 'right';
     const correctCount = correctSide === 'left' ? left : right;
     teachAfterAnswer(correct, { type: 'math', extra: 'The side with ' + correctCount + ' had ' + ask + '!' });
+    const delay = getFeedbackDelay(level, correct);
     setTimeout(() => setRound(r => r + 1), delay);
   }
 
@@ -92,9 +93,14 @@ export default function MoreOrLess({ onComplete, level = 1 }) {
           ))}
         </button>
       </div>
-      {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-        {feedback === 'correct' ? (streak >= 3 ? '🔥 Count Master!' : '✓ Correct!') : 'Try again!'}
-      </p>}
+      {feedback === 'correct' && (
+        <p className={styles.feedbackOk}>{streak >= 3 ? '🔥 Count Master!' : '✓ Correct!'}</p>
+      )}
+      {feedback === 'wrong' && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>the side with {correctCount} {currentItem.name}s</strong></p>
+        </div>
+      )}
     </div>
   );
 }

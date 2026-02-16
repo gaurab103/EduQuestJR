@@ -78,10 +78,10 @@ export default function TimeSorter({ onComplete, level = 1, childAge }) {
   const [done, setDone] = useState(false);
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
-  const delay = getFeedbackDelay(level);
   const stepCount = getStepCount(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       setDone(true);
@@ -133,6 +133,7 @@ export default function TimeSorter({ onComplete, level = 1, childAge }) {
         correctAnswer: 'order',
         extra: TIME_FACTS[Math.floor(Math.random() * TIME_FACTS.length)],
       });
+      const delay = getFeedbackDelay(level, isCorrect);
       setTimeout(() => setRound(r => r + 1), delay);
     }
   }
@@ -214,7 +215,7 @@ export default function TimeSorter({ onComplete, level = 1, childAge }) {
       </div>
       {feedback && (
         <div className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-          {feedback === 'correct' ? '✓ Perfect order!' : 'Try again! Tap the cards in the right order.'}
+          {feedback === 'correct' ? '✓ Perfect order!' : `The correct order is: ${correctOrder.map(a => a.label).join(' → ')}`}
         </div>
       )}
     </div>

@@ -117,9 +117,9 @@ export default function FillMissingLetter({ onComplete, level = 1 }) {
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const choiceCount = getChoiceCount(level);
-  const feedbackDelay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       const accuracy = Math.round((score / ROUNDS) * 100);
@@ -168,7 +168,8 @@ export default function FillMissingLetter({ onComplete, level = 1 }) {
     }
     setFeedback(correct ? 'correct' : 'wrong');
     teachAfterAnswer(correct, { type: 'letter', answer: letter, correctAnswer: correctLetter });
-    setTimeout(() => setRound((r) => r + 1), feedbackDelay);
+    const delay = getFeedbackDelay(level, correct);
+    setTimeout(() => setRound((r) => r + 1), delay);
   }
 
   if (round >= ROUNDS) return <div className={styles.container}>Calculating your rewards…</div>;
@@ -195,7 +196,12 @@ export default function FillMissingLetter({ onComplete, level = 1 }) {
           <button key={i} type="button" onClick={() => handlePick(l)} className={`${styles.choiceBtn} ${styles.choiceNumber} ${feedback !== null && l === correctLetter ? styles.correct : ''} ${feedback !== null && l !== correctLetter ? styles.wrong : ''}`} disabled={feedback !== null}>{l.toUpperCase()}</button>
         ))}
       </div>
-      {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? '✓ Correct!' : 'Try again!'}</p>}
+      {feedback === 'correct' && <p className={styles.feedbackOk}>✓ Correct!</p>}
+      {feedback === 'wrong' && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>{correctLetter}</strong></p>
+        </div>
+      )}
     </div>
   );
 }

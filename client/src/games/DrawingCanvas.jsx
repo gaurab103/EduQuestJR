@@ -77,6 +77,7 @@ export default function DrawingCanvas({ onComplete, level = 1, childName }) {
 
   useEffect(() => {
     if (displayChallenge) {
+      window.speechSynthesis?.cancel();
       const cancelRead = readQuestion(`${childName ? childName + ', ' : ''}${displayChallenge.prompt}!`);
       return cancelRead;
     }
@@ -241,7 +242,7 @@ export default function DrawingCanvas({ onComplete, level = 1, childName }) {
         ? `Need at least ${minStrokes} strokes (you drew ${strokes})`
         : `Need ${minCoverage}% guide coverage (you got ${coverage}%)`;
       setFeedback({
-        text: `Not quite! ${reason}. Keep practicing!`,
+        text: `Not quite! You're drawing "${displayChallenge?.prompt}". ${reason}. Keep practicing!`,
         correct: false,
       });
       playWrongSfx();
@@ -260,7 +261,7 @@ export default function DrawingCanvas({ onComplete, level = 1, childName }) {
       } else {
         setRound(r => r + 1);
       }
-    }, getFeedbackDelay(level) + 500);
+    }, getFeedbackDelay(level, passed) + 500);
   }
 
   if (done) {

@@ -37,9 +37,9 @@ export default function SubtractionSafari({ onComplete, level = 1 }) {
   const [feedback, setFeedback] = useState(null);
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
-  const feedbackDelay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       const accuracy = Math.round((score / ROUNDS) * 100);
@@ -70,7 +70,8 @@ export default function SubtractionSafari({ onComplete, level = 1 }) {
     }
     setFeedback(correct ? 'correct' : 'wrong');
     teachAfterAnswer(correct, { type: 'math', answer: num, correctAnswer: problem.diff, extra: `${problem.a} minus ${problem.b} equals ${problem.a - problem.b}!` });
-    setTimeout(() => setRound((r) => r + 1), feedbackDelay);
+    const delay = getFeedbackDelay(level, correct);
+    setTimeout(() => setRound((r) => r + 1), delay);
   }
 
   if (round >= ROUNDS) return <div className={styles.container}>Calculating your rewards…</div>;
@@ -93,10 +94,13 @@ export default function SubtractionSafari({ onComplete, level = 1 }) {
           </button>
         ))}
       </div>
-      {feedback && (
-        <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-          {feedback === 'correct' ? '✓ Correct!' : 'Try again next round!'}
-        </p>
+      {feedback === 'correct' && (
+        <p className={styles.feedbackOk}>✓ Correct!</p>
+      )}
+      {feedback === 'wrong' && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>{problem.diff}</strong></p>
+        </div>
       )}
     </div>
   );

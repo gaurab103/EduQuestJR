@@ -68,9 +68,9 @@ export default function SortBySize({ onComplete, level = 1, childAge }) {
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const itemCount = getItemCount(level);
-  const delay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       onComplete(score, Math.round((score / ROUNDS) * 100));
@@ -108,6 +108,7 @@ export default function SortBySize({ onComplete, level = 1, childAge }) {
       if (correct) playSuccess();
       setFeedback(correct ? 'correct' : 'wrong');
       teachAfterAnswer(correct, { type: 'word', correctAnswer: items.map((x) => x.label).join(', '), extra: 'Great job ordering by size!' });
+      const delay = getFeedbackDelay(level, correct);
       setTimeout(() => setRound((r) => r + 1), delay);
     }
   }
@@ -139,7 +140,7 @@ export default function SortBySize({ onComplete, level = 1, childAge }) {
           );
         })}
       </div>
-      {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? '✓ Correct order!' : 'Try the right order!'}</p>}
+      {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? '✓ Correct order!' : `The correct order is: ${targetOrder.map(idx => items[idx].label).join(' → ')}`}</p>}
     </div>
   );
 }

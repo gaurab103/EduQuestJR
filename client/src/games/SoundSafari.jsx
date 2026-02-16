@@ -89,6 +89,7 @@ export default function SoundSafari({ onComplete, level = 1, childName }) {
   }, [pool, choiceCount, generate]);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     generateRound();
   }, [round]);
 
@@ -132,6 +133,8 @@ export default function SoundSafari({ onComplete, level = 1, childName }) {
       teachAfterAnswer(false, { type, answer: item.word, correctAnswer: target.word });
     }
 
+    const isCorrect = item.word === target.word;
+    const delay = getFeedbackDelay(level, isCorrect);
     setTimeout(() => {
       setFeedback(null);
       if (round + 1 >= totalRounds) {
@@ -142,7 +145,7 @@ export default function SoundSafari({ onComplete, level = 1, childName }) {
       } else {
         setRound(r => r + 1);
       }
-    }, getFeedbackDelay(level));
+    }, delay);
   }
 
   if (done) {
@@ -246,9 +249,12 @@ export default function SoundSafari({ onComplete, level = 1, childName }) {
         ))}
       </div>
 
-      {feedback && (
-        <div className={feedback.correct ? styles.feedbackOk : styles.feedbackBad}>
-          {feedback.text}
+      {feedback?.correct && (
+        <div className={styles.feedbackOk}>{feedback.text}</div>
+      )}
+      {feedback && !feedback.correct && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>{target?.word}</strong></p>
         </div>
       )}
     </div>

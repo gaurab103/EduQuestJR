@@ -37,10 +37,10 @@ export default function MemoryFlipArena({ onComplete, level = 1 }) {
   const lockRef = useRef(false);
   const config = getGridConfig(level);
   const PAIRS = config.pairs;
-  const feedbackDelay = getFeedbackDelay(level);
   const flipBackMs = getFlipBackMs(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     const themeIndex = level % MEMORY_THEMES.length;
     const selectedTheme = MEMORY_THEMES[themeIndex];
     setTheme(selectedTheme);
@@ -80,7 +80,7 @@ export default function MemoryFlipArena({ onComplete, level = 1 }) {
         lockRef.current = false;
       } else {
         playWrong();
-        const delay = flipBackMs > 0 ? flipBackMs : feedbackDelay;
+        const delay = flipBackMs > 0 ? flipBackMs : getFeedbackDelay(level, false);
         setTimeout(() => {
           setFlipped([]);
           lockRef.current = false;

@@ -41,9 +41,9 @@ export default function ABCOrder({ level = 1, onComplete }) {
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const letterCount = getLetterCount(level);
-  const delay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       setDone(true);
@@ -91,15 +91,17 @@ export default function ABCOrder({ level = 1, onComplete }) {
         setStreak(s => s + 1);
         setFeedback('correct');
         playSuccess();
-        teachAfterAnswer(true, { type: 'letter', correctAnswer: correctLetters[0] });
+        teachAfterAnswer(true, { type: 'letter', correctAnswer: correctOrder[0] });
+        const delay = getFeedbackDelay(level, true);
         setTimeout(() => setRound(r => r + 1), delay);
       } else {
         setWrong(w => w + 1);
         setStreak(0);
         setFeedback('wrong');
         playWrong();
-        teachAfterAnswer(false, { type: 'letter', correctAnswer: correctLetters.join('') });
+        teachAfterAnswer(false, { type: 'letter', correctAnswer: correctOrder.join('') });
         // Reset after showing feedback
+        const delay = getFeedbackDelay(level, false);
         setTimeout(() => {
           setSelectedOrder([]);
           setFeedback(null);
@@ -197,12 +199,13 @@ export default function ABCOrder({ level = 1, onComplete }) {
       </div>
 
       {/* Feedback */}
-      {feedback && (
-        <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-          {feedback === 'correct'
-            ? (streak >= 3 ? '🔥 ABC Master!' : '✓ Correct!')
-            : '✗ Wrong order! Try again!'}
-        </p>
+      {feedback === 'correct' && (
+        <p className={styles.feedbackOk}>{streak >= 3 ? '🔥 ABC Master!' : '✓ Correct!'}</p>
+      )}
+      {feedback === 'wrong' && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>{correctOrder.join('')}</strong></p>
+        </div>
       )}
     </div>
   );

@@ -26,9 +26,9 @@ export default function GoodBehaviorChoice({ onComplete, level = 1 }) {
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const CHOICES = getChoiceCount(level);
-  const delay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       const accuracy = Math.round((score / ROUNDS) * 100);
@@ -60,6 +60,7 @@ export default function GoodBehaviorChoice({ onComplete, level = 1 }) {
     else { setStreak(0); playWrong(); }
     teachAfterAnswer(correct, { type: 'word', correctAnswer: item?.good, extra: 'Making good choices makes everyone happy!' });
     setFeedback(correct ? 'correct' : 'wrong');
+    const delay = getFeedbackDelay(level, correct);
     setTimeout(() => setRound((r) => r + 1), delay);
   }
 
@@ -77,7 +78,12 @@ export default function GoodBehaviorChoice({ onComplete, level = 1 }) {
           <button key={i} type="button" onClick={() => handlePick(opt)} className={`${styles.choiceBtn} ${styles.choiceNumber}`} disabled={feedback !== null}>{opt}</button>
         ))}
       </div>
-      {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? (streak >= 3 ? '🔥 Amazing streak!' : '✓ Great choice!') : 'Try again!'}</p>}
+      {feedback === 'correct' && <p className={styles.feedbackOk}>{streak >= 3 ? '🔥 Amazing streak!' : '✓ Great choice!'}</p>}
+      {feedback === 'wrong' && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>{item?.good}</strong></p>
+        </div>
+      )}
     </div>
   );
 }

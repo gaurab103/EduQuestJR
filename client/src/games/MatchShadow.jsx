@@ -70,9 +70,9 @@ export default function MatchShadow({ onComplete, level = 1, childAge }) {
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const CHOICES = getChoiceCount(level);
-  const delay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       onComplete(score, Math.round((score / ROUNDS) * 100));
@@ -102,6 +102,7 @@ export default function MatchShadow({ onComplete, level = 1, childAge }) {
     if (correct) playSuccess();
     setFeedback(correct ? 'correct' : 'wrong');
     teachAfterAnswer(correct, { type: 'shape', correctAnswer: target?.label, extra: `It's a ${target?.label}!` });
+    const delay = getFeedbackDelay(level, correct);
     setTimeout(() => setRound((r) => r + 1), delay);
   }
 
@@ -131,7 +132,12 @@ export default function MatchShadow({ onComplete, level = 1, childAge }) {
           );
         })}
       </div>
-      {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? '✓ Correct!' : `The answer was ${target.label}!`}</p>}
+      {feedback === 'correct' && <p className={styles.feedbackOk}>✓ Correct!</p>}
+      {feedback === 'wrong' && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>{target?.label}</strong></p>
+        </div>
+      )}
     </div>
   );
 }

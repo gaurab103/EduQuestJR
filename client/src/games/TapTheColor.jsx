@@ -69,9 +69,9 @@ export default function TapTheColor({ onComplete, level = 1 }) {
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const CHOICE_COUNT = Math.min(getChoiceCount(level), COLORS.length);
-  const feedbackDelay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       const accuracy = Math.round((score / ROUNDS) * 100);
@@ -183,9 +183,10 @@ export default function TapTheColor({ onComplete, level = 1 }) {
       playWrong();
     }
     setFeedback(correct ? 'correct' : 'wrong');
-    const correctAns = mode === 3 ? 'the one that is not ' + notColorTarget?.name : target?.name;
+    const correctAns = mode === 3 ? 'any color except ' + notColorTarget?.name : target?.name;
     teachAfterAnswer(correct, { type: 'color', answer: c.name, correctAnswer: correctAns });
-    setTimeout(() => setRound((r) => r + 1), feedbackDelay);
+    const delay = getFeedbackDelay(level, correct);
+    setTimeout(() => setRound((r) => r + 1), delay);
   }
 
   if (round >= ROUNDS) return <div className={styles.container}>Calculating your rewards…</div>;
@@ -235,12 +236,13 @@ export default function TapTheColor({ onComplete, level = 1 }) {
           />
         ))}
       </div>
-      {feedback && (
-        <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-          {feedback === 'correct'
-            ? streak >= 3 ? '🔥 Color Master!' : '✓ Correct!'
-            : mode === 3 ? `Tap the one that is NOT ${notColorTarget?.name}!` : 'Try again next round!'}
-        </p>
+      {feedback === 'correct' && (
+        <p className={styles.feedbackOk}>{streak >= 3 ? '🔥 Color Master!' : '✓ Correct!'}</p>
+      )}
+      {feedback === 'wrong' && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>{mode === 3 ? 'any color except ' + notColorTarget?.name : target?.name}</strong></p>
+        </div>
       )}
     </div>
   );

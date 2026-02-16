@@ -22,9 +22,9 @@ export default function ColorInsideShape({ onComplete, level = 1 }) {
   const [feedback, setFeedback] = useState(null);
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
-  const delay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       const accuracy = Math.round((score / ROUNDS) * 100);
@@ -48,6 +48,7 @@ export default function ColorInsideShape({ onComplete, level = 1 }) {
     else { setStreak(0); playWrong(); }
     teachAfterAnswer(correct, { type: 'shape', correctAnswer: targetShape?.name });
     setFeedback(correct ? 'correct' : 'wrong');
+    const delay = getFeedbackDelay(level, correct);
     setTimeout(() => setRound((r) => r + 1), delay);
   }
 
@@ -75,7 +76,12 @@ export default function ColorInsideShape({ onComplete, level = 1 }) {
           />
         ))}
       </div>
-      {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? (streak >= 3 ? '🔥 Color Expert!' : '✓ Nice coloring!') : 'Try again!'}</p>}
+      {feedback === 'correct' && <p className={styles.feedbackOk}>{streak >= 3 ? '🔥 Color Expert!' : '✓ Nice coloring!'}</p>}
+      {feedback === 'wrong' && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>{targetColor}</strong></p>
+        </div>
+      )}
     </div>
   );
 }

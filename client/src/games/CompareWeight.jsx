@@ -83,9 +83,9 @@ export default function CompareWeight({ onComplete, level = 1, childAge }) {
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const CHOICES = getChoiceCount(level);
-  const delay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       onComplete(score, Math.round((score / ROUNDS) * 100));
@@ -140,6 +140,7 @@ export default function CompareWeight({ onComplete, level = 1, childAge }) {
     setFeedback(correct ? 'correct' : 'wrong');
     const correctItem = askHeavier ? pair?.heavy : pair?.light;
     teachAfterAnswer(correct, { type: 'animal', correctAnswer: correctItem?.label, extra: `${correctItem?.label} is ${askHeavier ? 'heavier' : 'lighter'}!` });
+    const delay = getFeedbackDelay(level, correct);
     setTimeout(() => setRound((r) => r + 1), delay);
   }
 
@@ -159,6 +160,7 @@ export default function CompareWeight({ onComplete, level = 1, childAge }) {
       } else playWrong();
       setFeedback(correct ? 'correct' : 'wrong');
       teachAfterAnswer(correct, { type: 'word', correctAnswer: orderSet.map((x) => x.label).join(', '), extra: 'Great job thinking about weight!' });
+      const delay = getFeedbackDelay(level, correct);
       setTimeout(() => setRound((r) => r + 1), delay);
     }
   }
@@ -186,7 +188,7 @@ export default function CompareWeight({ onComplete, level = 1, childAge }) {
             <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>{rightItem.label}</span>
           </button>
         </div>
-        {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? '✓ Correct!' : 'Try again!'}</p>}
+        {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? '✓ Correct!' : `The correct answer is ${(askHeavier ? pair?.heavy : pair?.light)?.label} — it's ${askHeavier ? 'heavier' : 'lighter'}!`}</p>}
       </div>
     );
   }
@@ -216,7 +218,7 @@ export default function CompareWeight({ onComplete, level = 1, childAge }) {
             );
           })}
         </div>
-        {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? '✓ Correct order!' : 'Try the right order!'}</p>}
+        {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? '✓ Correct order!' : `The correct order is: ${targetOrder.map(idx => orderSet[idx].label).join(' → ')}`}</p>}
       </div>
     );
   }

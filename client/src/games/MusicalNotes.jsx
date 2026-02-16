@@ -63,7 +63,6 @@ export default function MusicalNotes({ onComplete, level = 1, childAge }) {
   const completedRef = useRef(false);
   const audioCtxRef = useRef(null);
   const ROUNDS = getRounds(level);
-  const delay = getFeedbackDelay(level);
   const seqLen = getSequenceLength(level);
 
   const ensureAudio = useCallback(() => {
@@ -77,6 +76,7 @@ export default function MusicalNotes({ onComplete, level = 1, childAge }) {
   }, []);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       setDone(true);
@@ -121,6 +121,7 @@ export default function MusicalNotes({ onComplete, level = 1, childAge }) {
       playWrong();
       setFeedback('wrong');
       teachAfterAnswer(false, { type: 'word', answer: color.name, correctAnswer: expected.name, extra: MUSIC_FACTS[Math.floor(Math.random() * MUSIC_FACTS.length)] });
+      const delay = getFeedbackDelay(level, false);
       setTimeout(() => setRound(r => r + 1), delay);
       return;
     }
@@ -132,6 +133,7 @@ export default function MusicalNotes({ onComplete, level = 1, childAge }) {
       playSuccess();
       setFeedback('correct');
       teachAfterAnswer(true, { type: 'word', answer: color.name, correctAnswer: color.name, extra: MUSIC_FACTS[Math.floor(Math.random() * MUSIC_FACTS.length)] });
+      const delay = getFeedbackDelay(level, true);
       setTimeout(() => setRound(r => r + 1), delay);
     }
   }
@@ -183,7 +185,7 @@ export default function MusicalNotes({ onComplete, level = 1, childAge }) {
       </div>
       {feedback && (
         <div className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-          {feedback === 'correct' ? '✓ Perfect pattern!' : 'Wrong note. Try again next round!'}
+          {feedback === 'correct' ? '✓ Perfect pattern!' : `Not quite! The correct note was the ${sequence[inputIndex]?.name || 'next'} one. Watch and listen carefully next round!`}
         </div>
       )}
     </div>

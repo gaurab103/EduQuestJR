@@ -57,9 +57,9 @@ export default function SyllableClap({ onComplete, level = 1, childAge }) {
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const CHOICES = getChoiceCount(level);
-  const delay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       onComplete(score, Math.round((score / ROUNDS) * 100));
@@ -87,6 +87,7 @@ export default function SyllableClap({ onComplete, level = 1, childAge }) {
     if (correct) playSuccess();
     setFeedback(correct ? 'correct' : 'wrong');
     teachAfterAnswer(correct, { type: 'word', correctAnswer: String(currentWord?.syllables), extra: `"${currentWord?.word}" has ${currentWord?.syllables} syllable${currentWord?.syllables > 1 ? 's' : ''}!` });
+    const delay = getFeedbackDelay(level, correct);
     setTimeout(() => setRound((r) => r + 1), delay);
   }
 
@@ -106,7 +107,12 @@ export default function SyllableClap({ onComplete, level = 1, childAge }) {
           <button key={n} type="button" onClick={() => handlePick(n)} className={`${styles.choiceBtn} ${styles.choiceNumber} ${feedback !== null ? (n === currentWord.syllables ? styles.correct : styles.wrong) : ''}`} disabled={feedback !== null}>{n}</button>
         ))}
       </div>
-      {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? '✓ Correct!' : `"${currentWord.word}" has ${currentWord.syllables} syllable${currentWord.syllables > 1 ? 's' : ''}!`}</p>}
+      {feedback === 'correct' && <p className={styles.feedbackOk}>✓ Correct!</p>}
+      {feedback === 'wrong' && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>{currentWord?.syllables}</strong></p>
+        </div>
+      )}
     </div>
   );
 }

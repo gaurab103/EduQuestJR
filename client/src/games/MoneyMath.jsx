@@ -50,10 +50,10 @@ export default function MoneyMath({ onComplete, level = 1, childName }) {
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const CHOICES = getChoiceCount(level);
-  const delay = getFeedbackDelay(level);
   const mode = getMode(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       setDone(true);
@@ -114,10 +114,11 @@ export default function MoneyMath({ onComplete, level = 1, childName }) {
       teachAfterAnswer(true, { type: 'math', correctAnswer: problem.type === 'identify' ? problem.coin.name : problem.total, extra: 'Learning about money helps us make smart choices!' });
     } else {
       setWrong(w => w + 1);
-      setFeedback({ type: 'wrong', text: problem.type === 'identify' ? `Wrong! That's a ${problem.coin.name}.` : `Wrong! The answer is ${problem.total}¢.` });
+      setFeedback({ type: 'wrong', text: problem.type === 'identify' ? `Not quite! The correct answer is ${problem.coin.name}.` : `Not quite! The correct total is ${problem.total}¢.` });
       playWrong();
       teachAfterAnswer(false, { type: 'math', correctAnswer: problem.type === 'identify' ? problem.coin.name : problem.total, extra: 'Learning about money helps us make smart choices!' });
     }
+    const delay = getFeedbackDelay(level, isCorrect);
     setTimeout(() => setRound(r => r + 1), delay);
   }
 

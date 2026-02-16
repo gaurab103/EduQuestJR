@@ -73,9 +73,9 @@ export default function RhymingMatch({ onComplete, level = 1 }) {
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const choiceCount = getChoiceCount(level);
-  const feedbackDelay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       onComplete(score, Math.round((score / ROUNDS) * 100));
@@ -168,7 +168,8 @@ export default function RhymingMatch({ onComplete, level = 1 }) {
       setFeedback(correct ? 'correct' : 'wrong');
       const extra = rhymePair?.rhyme ? `"${rhymePair.w1}" and "${rhymePair.w2}" rhyme!` : `"${rhymePair.w1}" and "${rhymePair.w2}" don't rhyme.`;
       teachAfterAnswer(correct, { type: 'word', answer: opt, correctAnswer: rhymePair?.rhyme ? 'Yes' : 'No', extra });
-      setTimeout(() => setRound(r => r + 1), feedbackDelay);
+      const delay = getFeedbackDelay(level, correct);
+      setTimeout(() => setRound(r => r + 1), delay);
       return;
     }
 
@@ -178,7 +179,8 @@ export default function RhymingMatch({ onComplete, level = 1 }) {
       else { setStreak(0); playWrong(); }
       setFeedback(correct ? 'correct' : 'wrong');
       teachAfterAnswer(correct, { type: 'word', answer: opt, correctAnswer: 'a word that does not rhyme', extra: correct ? '"' + opt + '" does not rhyme with "' + item?.word + '"!' : '"' + item?.word + '" and "' + item?.correct + '" rhyme!' });
-      setTimeout(() => setRound(r => r + 1), feedbackDelay);
+      const delay = getFeedbackDelay(level, correct);
+      setTimeout(() => setRound(r => r + 1), delay);
       return;
     }
 
@@ -188,7 +190,8 @@ export default function RhymingMatch({ onComplete, level = 1 }) {
       else { setStreak(0); playWrong(); }
       setFeedback(correct ? 'correct' : 'wrong');
       teachAfterAnswer(correct, { type: 'word', answer: opt, correctAnswer: item?.options[0], extra: '"' + item?.word + '" and "' + item?.options[0] + '" rhyme!' });
-      setTimeout(() => setRound(r => r + 1), feedbackDelay);
+      const delay = getFeedbackDelay(level, correct);
+      setTimeout(() => setRound(r => r + 1), delay);
     }
   }
 
@@ -205,7 +208,8 @@ export default function RhymingMatch({ onComplete, level = 1 }) {
       else { setStreak(0); playWrong(); }
       setFeedback(correct ? 'correct' : 'wrong');
       teachAfterAnswer(correct, { type: 'word', answer: w1 + ' & ' + w2, correctAnswer: w1 + ' & ' + w2, extra: correct ? '"' + w1 + '" and "' + w2 + '" rhyme!' : 'Try to find two words that end with the same sound!' });
-      setTimeout(() => setRound(r => r + 1), feedbackDelay);
+      const delay = getFeedbackDelay(level, correct);
+      setTimeout(() => setRound(r => r + 1), delay);
     }
   }
 
@@ -225,7 +229,12 @@ export default function RhymingMatch({ onComplete, level = 1 }) {
           ))}
         </div>
         {pairSelection.length === 1 && feedback === null && <p style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--primary)' }}>Now tap the word that rhymes!</p>}
-        {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? '✓ Correct!' : 'Try again!'}</p>}
+        {feedback === 'correct' && <p className={styles.feedbackOk}>✓ Correct!</p>}
+        {feedback === 'wrong' && (
+          <div className={styles.feedbackBad}>
+            <p>✗ The answer is <strong>{correctPair?.join(' and ')}</strong></p>
+          </div>
+        )}
       </div>
     );
   }
@@ -246,7 +255,12 @@ export default function RhymingMatch({ onComplete, level = 1 }) {
             <button key={i} type="button" onClick={() => handlePick(opt)} className={`${styles.choiceBtn} ${styles.choiceNumber}`} disabled={feedback !== null}>{opt}</button>
           ))}
         </div>
-        {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? '✓ Correct!' : `"${item?.word}" rhymes with "${item?.correct}"!`}</p>}
+        {feedback === 'correct' && <p className={styles.feedbackOk}>✓ Correct!</p>}
+        {feedback === 'wrong' && (
+          <div className={styles.feedbackBad}>
+            <p>✗ The answer is <strong>{options.find(o => !doRhyme(item?.word, o)) || 'a word that does not rhyme'}</strong></p>
+          </div>
+        )}
       </div>
     );
   }
@@ -263,7 +277,12 @@ export default function RhymingMatch({ onComplete, level = 1 }) {
           <button type="button" onClick={() => handlePick('Yes')} className={`${styles.choiceBtn} ${styles.choiceNumber}`} disabled={feedback !== null}>Yes</button>
           <button type="button" onClick={() => handlePick('No')} className={`${styles.choiceBtn} ${styles.choiceNumber}`} disabled={feedback !== null}>No</button>
         </div>
-        {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? '✓ Correct!' : 'Try again!'}</p>}
+        {feedback === 'correct' && <p className={styles.feedbackOk}>✓ Correct!</p>}
+        {feedback === 'wrong' && (
+          <div className={styles.feedbackBad}>
+            <p>✗ The answer is <strong>{rhymePair?.rhyme ? 'Yes' : 'No'}</strong></p>
+          </div>
+        )}
       </div>
     );
   }
@@ -284,7 +303,12 @@ export default function RhymingMatch({ onComplete, level = 1 }) {
           <button key={i} type="button" onClick={() => handlePick(opt)} className={`${styles.choiceBtn} ${styles.choiceNumber}`} disabled={feedback !== null}>{opt}</button>
         ))}
       </div>
-      {feedback && <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>{feedback === 'correct' ? '✓ Correct!' : `The answer was "${item?.options[0]}"!`}</p>}
+      {feedback === 'correct' && <p className={styles.feedbackOk}>✓ Correct!</p>}
+      {feedback === 'wrong' && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>{item?.options[0]}</strong></p>
+        </div>
+      )}
     </div>
   );
 }

@@ -90,9 +90,9 @@ export default function PlantGrower({ onComplete, level = 1, childAge }) {
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const CHOICES = getChoiceCount(level);
-  const delay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       setDone(true);
@@ -162,6 +162,7 @@ export default function PlantGrower({ onComplete, level = 1, childAge }) {
       }
       const key = correctOrder[correctOrder.length - 1]?.id;
       teachAfterAnswer(isCorrect, { type: 'word', answer: 'order', correctAnswer: 'order', extra: PLANT_FACTS[key] || PLANT_FACTS.plant });
+      const delay = getFeedbackDelay(level, isCorrect);
       setTimeout(() => setRound(r => r + 1), delay);
     }
   }
@@ -181,6 +182,7 @@ export default function PlantGrower({ onComplete, level = 1, childAge }) {
       setFeedback('wrong');
     }
     teachAfterAnswer(isCorrect, { type: 'word', answer: ans, correctAnswer: question.answer, extra: PLANT_FACTS[question.answer] || 'Plants need sun, water, and soil to grow!' });
+    const delay = getFeedbackDelay(level, isCorrect);
     setTimeout(() => setRound(r => r + 1), delay);
   }
 
@@ -238,7 +240,7 @@ export default function PlantGrower({ onComplete, level = 1, childAge }) {
         </div>
         {feedback && (
           <div className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-            {feedback === 'correct' ? '✓ Correct order!' : 'Try again! Seed → Sprout → Plant → Flower → Fruit'}
+            {feedback === 'correct' ? '✓ Correct order!' : `The correct order is: ${correctOrder.map(s => s.label).join(' → ')}`}
           </div>
         )}
       </div>
@@ -279,7 +281,7 @@ export default function PlantGrower({ onComplete, level = 1, childAge }) {
       </div>
       {feedback && (
         <div className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-          {feedback === 'correct' ? '✓ Correct!' : `The answer was ${question.answer}.`}
+          {feedback === 'correct' ? '✓ Correct!' : `Not quite! The correct answer is ${question.answer}.`}
         </div>
       )}
     </div>

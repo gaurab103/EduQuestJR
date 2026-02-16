@@ -47,9 +47,9 @@ export default function SequenceBuilder({ onComplete, level = 1 }) {
   const ROUNDS = getRounds(level);
   const seqLength = getChoiceCount(level);
   const sequences = getSequencesForLength(seqLength);
-  const delay = getFeedbackDelay(level);
 
   useEffect(() => {
+    window.speechSynthesis?.cancel();
     if (round >= ROUNDS && !completedRef.current) {
       completedRef.current = true;
       const accuracy = Math.round((score / ROUNDS) * 100);
@@ -80,6 +80,7 @@ export default function SequenceBuilder({ onComplete, level = 1 }) {
       else { setStreak(0); playWrong(); }
       teachAfterAnswer(ok, { type: 'math', correctAnswer: correct.join(' '), extra: 'Sequences follow a pattern. What comes next?' });
       setFeedback(ok ? 'correct' : 'wrong');
+      const delay = getFeedbackDelay(level, ok);
       setTimeout(() => setRound((r) => r + 1), delay);
     }
   }
@@ -111,10 +112,13 @@ export default function SequenceBuilder({ onComplete, level = 1 }) {
           </button>
         ))}
       </div>
-      {feedback && (
-        <p className={feedback === 'correct' ? styles.feedbackOk : styles.feedbackBad}>
-          {feedback === 'correct' ? (streak >= 3 ? '🔥 Sequence Master!' : '✓ Correct!') : 'Try again next round!'}
-        </p>
+      {feedback === 'correct' && (
+        <p className={styles.feedbackOk}>{streak >= 3 ? '🔥 Sequence Master!' : '✓ Correct!'}</p>
+      )}
+      {feedback === 'wrong' && (
+        <div className={styles.feedbackBad}>
+          <p>✗ The answer is <strong>{correct.join(' → ')}</strong></p>
+        </div>
       )}
     </div>
   );
