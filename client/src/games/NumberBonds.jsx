@@ -82,13 +82,13 @@ export default function NumberBonds({ onComplete, level = 1, childName }) {
       setStreak(s => s + 1);
       setFeedback({ type: 'correct', text: `${given} + ${answer} = ${target}! +${pts}` });
       playSuccess();
-      teachAfterAnswer(true, { type: 'math', answer: n, correctAnswer: answer, extra: given + ' plus ' + answer + ' equals ' + target + '!' });
+      teachAfterAnswer(true, { type: 'addition', answer: n, correctAnswer: answer, a: given, b: answer });
     } else {
       setWrong(w => w + 1);
       setStreak(0);
       setFeedback({ type: 'wrong', text: `Wrong! ${given} + ${answer} = ${target}` });
       playWrong();
-      teachAfterAnswer(false, { type: 'math', answer: n, correctAnswer: answer, extra: given + ' plus ' + answer + ' equals ' + target + '!' });
+      teachAfterAnswer(false, { type: 'addition', answer: n, correctAnswer: answer, a: given, b: answer });
     }
     const delay = getFeedbackDelay(level, isCorrect);
     setTimeout(() => setRound(r => r + 1), delay);

@@ -114,7 +114,7 @@ export default function DirectionQuest({ onComplete, level = 1, childAge }) {
     else playWrong();
     if (correct) playSuccess();
     setFeedback(correct ? 'correct' : 'wrong');
-    teachAfterAnswer(correct, { type: 'word', correctAnswer: correctDir, extra: `${correctDir} is the way to go!` });
+    teachAfterAnswer(correct, { type: 'spatial', correctAnswer: correctDir, extra: `${correctDir} is the way to go! Directions help us find our way!` });
     const delay = getFeedbackDelay(level, correct);
     setTimeout(() => setRound((r) => r + 1), delay);
   }

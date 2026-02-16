@@ -130,7 +130,7 @@ export default function AdditionIsland({ onComplete, level = 1 }) {
     const extra = problem.mode === 3
       ? `${problem.a} + ${problem.b} = ${problem.sum}!`
       : `${problem.a} plus ${problem.b}${problem.c != null ? ' plus ' + problem.c : ''} equals ${problem.sum}!`;
-    teachAfterAnswer(correct, { type: 'math', answer: num, correctAnswer: problem.sum, extra });
+    teachAfterAnswer(correct, { type: 'addition', answer: num, correctAnswer: problem.sum, a: problem.a, b: problem.b, extra });
     const delay = getFeedbackDelay(level, correct);
     setTimeout(() => setRound((r) => r + 1), delay);
   }

@@ -78,25 +78,25 @@ export function getTimeLimit(level) {
  * Get feedback delay (ms) before next round.
  * IMPORTANT: Must be long enough for the voice to finish teaching!
  *
- * Correct answers: let the praise + fact play out fully.
- * Wrong answers: must be long enough for the explanation + correct answer + fact.
+ * Voice durations (estimated):
+ *  - Correct: ~3-4 seconds (praise + fun fact)
+ *  - Wrong: ~7-10 seconds (gentle correction + what they picked +
+ *           correct answer + explanation + encouragement)
  *
- * Voice typically needs:
- *  - Correct: ~2-3 seconds for praise + fact
- *  - Wrong: ~5-7 seconds for explanation + correct answer + fact + encouragement
+ * Lower levels get MORE time because kids need longer to process.
  */
 export function getFeedbackDelay(level, isCorrect = true) {
   if (isCorrect) {
-    if (level <= 5) return 3000;
-    if (level <= 10) return 2800;
-    if (level <= 20) return 2500;
-    return 2200;
+    if (level <= 5) return 4000;
+    if (level <= 10) return 3500;
+    if (level <= 20) return 3200;
+    return 2800;
   }
-  // Wrong: longer — voice explains the mistake fully
-  if (level <= 5) return 6000;
-  if (level <= 10) return 5500;
-  if (level <= 20) return 5000;
-  return 4500;
+  // Wrong: much longer — voice explains the mistake fully, teaches, encourages
+  if (level <= 5) return 8000;
+  if (level <= 10) return 7500;
+  if (level <= 20) return 7000;
+  return 6000;
 }
 
 /**

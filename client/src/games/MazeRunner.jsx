@@ -7,6 +7,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { getRounds, getFeedbackDelay } from './levelConfig';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import styles from './GameCommon.module.css';
 
 const TWEMOJI = (cp) => `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/${cp}.svg`;
@@ -87,6 +88,7 @@ const SPATIAL_FACTS = [
 export default function MazeRunner({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [maze, setMaze] = useState(null);
   const [path, setPath] = useState([]);
@@ -99,12 +101,15 @@ export default function MazeRunner({ onComplete, level = 1, childAge }) {
   const gridSize = getGridSize(level);
 
   const loadRound = useCallback(() => {
-    const m = getMaze(gridSize);
+    const m = generate(
+      () => getMaze(gridSize),
+      (maze) => JSON.stringify(maze)
+    );
     const p = findPath(m);
     setMaze(m);
     setPath(p);
     setFeedback(null);
-  }, [gridSize]);
+  }, [gridSize, generate]);
 
   useEffect(() => {
     window.speechSynthesis?.cancel();
@@ -132,7 +137,7 @@ export default function MazeRunner({ onComplete, level = 1, childAge }) {
     if (!cellVal) {
       playWrong();
       setFeedback('wrong');
-      teachAfterAnswer(false, { type: 'word', answer: 'wall', correctAnswer: 'path', extra: SPATIAL_FACTS[Math.floor(Math.random() * SPATIAL_FACTS.length)] });
+      teachAfterAnswer(false, { type: 'spatial', answer: 'wall', correctAnswer: 'path', extra: SPATIAL_FACTS[Math.floor(Math.random() * SPATIAL_FACTS.length)] });
       const delay = getFeedbackDelay(level, false);
       setTimeout(() => { setFeedback(null); }, delay);
       return;
@@ -147,7 +152,7 @@ export default function MazeRunner({ onComplete, level = 1, childAge }) {
     if (!isStart && !isAdjacent) {
       playWrong();
       setFeedback('wrong');
-      teachAfterAnswer(false, { type: 'word', answer: 'jump', correctAnswer: 'step', extra: 'Tap the next cell right next to where you are!' });
+      teachAfterAnswer(false, { type: 'spatial', answer: 'jump', correctAnswer: 'step', extra: 'Tap the next cell right next to where you are! Move one step at a time.' });
       const delay = getFeedbackDelay(level, false);
       setTimeout(() => { setFeedback(null); }, delay);
       return;
@@ -160,7 +165,7 @@ export default function MazeRunner({ onComplete, level = 1, childAge }) {
       setCorrect(c => c + 1);
       playSuccess();
       setFeedback('correct');
-      teachAfterAnswer(true, { type: 'word', answer: 'path', correctAnswer: 'path', extra: SPATIAL_FACTS[Math.floor(Math.random() * SPATIAL_FACTS.length)] });
+      teachAfterAnswer(true, { type: 'spatial', answer: 'path', correctAnswer: 'path', extra: SPATIAL_FACTS[Math.floor(Math.random() * SPATIAL_FACTS.length)] });
       const delay = getFeedbackDelay(level, true);
       setTimeout(() => setRound(r => r + 1), delay);
     }

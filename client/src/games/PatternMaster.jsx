@@ -100,14 +100,14 @@ export default function PatternMaster({ onComplete, level = 1, childName }) {
       setFeedback({ type: 'correct', points });
       playSuccess();
       speak(streak >= 2 ? 'Amazing streak!' : 'Correct!');
-      teachAfterAnswer(true, { type: 'math', correctAnswer: answer, extra: 'The pattern continues with ' + answer + '! Patterns repeat in a sequence.' });
+      teachAfterAnswer(true, { type: 'sequence', correctAnswer: answer, extra: 'The pattern continues with ' + answer + '! Patterns repeat in a sequence.' });
     } else {
       setWrong(w => w + 1);
       setStreak(0);
       setFeedback({ type: 'wrong', answer });
       playWrong();
       speak(`Not quite! The answer was ${answer}.`);
-      teachAfterAnswer(false, { type: 'math', answer: choice, correctAnswer: answer, extra: 'The answer was ' + answer + '. Patterns repeat in a sequence!' });
+      teachAfterAnswer(false, { type: 'sequence', answer: choice, correctAnswer: answer, extra: 'The answer was ' + answer + '. Patterns repeat in a sequence!' });
     }
 
     const delay = getFeedbackDelay(level, isCorrect);

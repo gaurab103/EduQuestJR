@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import styles from './GameCommon.module.css';
 
 const SEQUENCES_3 = [
@@ -36,6 +37,7 @@ function getSequencesForLength(len) {
 export default function SequenceBuilder({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [correct, setCorrect] = useState([]);
   const [options, setOptions] = useState([]);
@@ -56,7 +58,10 @@ export default function SequenceBuilder({ onComplete, level = 1 }) {
       onComplete(score, accuracy);
       return;
     }
-    const seq = sequences[Math.floor(Math.random() * sequences.length)];
+    const seq = generate(
+      () => sequences[Math.floor(Math.random() * sequences.length)],
+      (s) => s.join(',')
+    );
     setCorrect([...seq]);
     setOptions(shuffle([...seq]));
     setSelected([]);
@@ -78,7 +83,7 @@ export default function SequenceBuilder({ onComplete, level = 1 }) {
       const ok = newSel.every((v, i) => v === correct[i]);
       if (ok) { setScore((s) => s + 1); setStreak((s) => s + 1); playSuccess(); }
       else { setStreak(0); playWrong(); }
-      teachAfterAnswer(ok, { type: 'math', correctAnswer: correct.join(' '), extra: 'Sequences follow a pattern. What comes next?' });
+      teachAfterAnswer(ok, { type: 'sequence', correctAnswer: correct.join(' → '), extra: 'Sequences follow a pattern. Look at the order and remember what comes next!' });
       setFeedback(ok ? 'correct' : 'wrong');
       const delay = getFeedbackDelay(level, ok);
       setTimeout(() => setRound((r) => r + 1), delay);

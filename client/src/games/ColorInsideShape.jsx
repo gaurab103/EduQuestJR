@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { getRounds, getFeedbackDelay } from './levelConfig';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import styles from './GameCommon.module.css';
 
 const COLORS = ['#ef4444', '#3b82f6', '#22c55e', '#eab308', '#a855f7'];
@@ -14,6 +15,7 @@ const SHAPES = [
 export default function ColorInsideShape({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [targetColor, setTargetColor] = useState(null);
   const [targetShape, setTargetShape] = useState(null);
@@ -31,10 +33,15 @@ export default function ColorInsideShape({ onComplete, level = 1 }) {
       onComplete(score, accuracy);
       return;
     }
-    const color = COLORS[Math.floor(Math.random() * COLORS.length)];
-    const shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
-    setTargetColor(color);
-    setTargetShape(shape);
+    const combo = generate(
+      () => ({
+        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+        shape: SHAPES[Math.floor(Math.random() * SHAPES.length)],
+      }),
+      (c) => `${c.color}-${c.shape.name}`
+    );
+    setTargetColor(combo.color);
+    setTargetShape(combo.shape);
     setFeedback(null);
     const cancelRead = readQuestion(`Color inside the ${shape.name}`);
     return cancelRead;
@@ -46,7 +53,7 @@ export default function ColorInsideShape({ onComplete, level = 1 }) {
     const correct = color === targetColor;
     if (correct) { setScore((s) => s + 1); setStreak((s) => s + 1); playSuccess(); }
     else { setStreak(0); playWrong(); }
-    teachAfterAnswer(correct, { type: 'shape', correctAnswer: targetShape?.name });
+    teachAfterAnswer(correct, { type: 'color', correctAnswer: targetColor, extra: `The shape was a ${targetShape?.name}.` });
     setFeedback(correct ? 'correct' : 'wrong');
     const delay = getFeedbackDelay(level, correct);
     setTimeout(() => setRound((r) => r + 1), delay);

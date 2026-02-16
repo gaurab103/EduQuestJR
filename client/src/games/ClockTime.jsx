@@ -115,12 +115,12 @@ export default function ClockTime({ onComplete, level = 1, childName }) {
       setCorrect(c => c + 1);
       setFeedback({ type: 'correct', text: `Correct! It's ${correctAnswer}!` });
       playSuccess();
-      teachAfterAnswer(true, { type: 'math', correctAnswer, extra: 'Clocks help us know what time it is!' });
+      teachAfterAnswer(true, { type: 'time', correctAnswer, extra: 'Clocks help us know what time it is!' });
     } else {
       setWrong(w => w + 1);
       setFeedback({ type: 'wrong', text: `Not quite! The correct time is ${correctAnswer}.` });
       playWrong();
-      teachAfterAnswer(false, { type: 'math', correctAnswer, extra: 'Clocks help us know what time it is!' });
+      teachAfterAnswer(false, { type: 'time', correctAnswer, extra: 'Clocks help us know what time it is!' });
     }
     const delay = getFeedbackDelay(level, isCorrect);
     setTimeout(() => setRound(r => r + 1), delay);

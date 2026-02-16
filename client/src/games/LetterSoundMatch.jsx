@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import styles from './GameCommon.module.css';
 import { useAudio } from '../context/AudioContext';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
@@ -45,6 +46,7 @@ function getWrongChoices(currentLetter, count) {
 export default function LetterSoundMatch({ level = 1, onComplete }) {
   const { playSuccess, playWrong, playClick, speak } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [currentItem, setCurrentItem] = useState(null);
   const [choices, setChoices] = useState([]);
@@ -64,8 +66,11 @@ export default function LetterSoundMatch({ level = 1, onComplete }) {
       return;
     }
 
-    // Select a random letter
-    const item = DATA[Math.floor(Math.random() * DATA.length)];
+    // Select a non-repeating letter
+    const item = generate(
+      () => DATA[Math.floor(Math.random() * DATA.length)],
+      (it) => it.letter
+    );
     setCurrentItem(item);
 
     // Get wrong choices

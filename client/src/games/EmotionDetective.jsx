@@ -69,11 +69,11 @@ export default function EmotionDetective({ onComplete, level = 1 }) {
       setScore((s) => s + 1);
       setStreak(s => s + 1);
       playSuccess();
-      teachAfterAnswer(true, { type: 'word', correctAnswer: target?.word, extra: target?.tip || 'This face is ' + target?.word + '!' });
+      teachAfterAnswer(true, { type: 'emotion', correctAnswer: target?.word, extra: target?.tip || '' });
     } else {
       setStreak(0);
       playWrong();
-      teachAfterAnswer(false, { type: 'word', answer: word, correctAnswer: target?.word, extra: 'This face is ' + (target?.word || '') + '. ' + (target?.tip || '') });
+      teachAfterAnswer(false, { type: 'emotion', answer: word, correctAnswer: target?.word, extra: target?.tip || '' });
     }
     setFeedback(correct ? 'correct' : 'wrong');
     const delay = getFeedbackDelay(level, correct);

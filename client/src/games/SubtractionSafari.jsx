@@ -69,7 +69,7 @@ export default function SubtractionSafari({ onComplete, level = 1 }) {
       playWrong();
     }
     setFeedback(correct ? 'correct' : 'wrong');
-    teachAfterAnswer(correct, { type: 'math', answer: num, correctAnswer: problem.diff, extra: `${problem.a} minus ${problem.b} equals ${problem.a - problem.b}!` });
+    teachAfterAnswer(correct, { type: 'subtraction', answer: num, correctAnswer: problem.diff, a: problem.a, b: problem.b });
     const delay = getFeedbackDelay(level, correct);
     setTimeout(() => setRound((r) => r + 1), delay);
   }

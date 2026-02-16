@@ -8,6 +8,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { getRounds, getFeedbackDelay } from './levelConfig';
 import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import styles from './GameCommon.module.css';
 
 const TWEMOJI = (cp) => `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/${cp}.svg`;
@@ -52,6 +53,7 @@ const MUSIC_FACTS = [
 export default function MusicalNotes({ onComplete, level = 1, childAge }) {
   const { playSuccess, playWrong, playClick, playCelebration } = useAudio();
   const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [sequence, setSequence] = useState([]);
   const [inputIndex, setInputIndex] = useState(0);
@@ -85,7 +87,10 @@ export default function MusicalNotes({ onComplete, level = 1, childAge }) {
       onComplete(score, accuracy);
       return;
     }
-    const seq = Array.from({ length: seqLen }, () => COLORS[Math.floor(Math.random() * COLORS.length)]);
+    const seq = generate(
+      () => Array.from({ length: seqLen }, () => COLORS[Math.floor(Math.random() * COLORS.length)]),
+      (s) => s.map(c => c.name).join(',')
+    );
     setSequence(seq);
     setInputIndex(0);
     setPhase('show');
@@ -120,7 +125,7 @@ export default function MusicalNotes({ onComplete, level = 1, childAge }) {
     if (color.name !== expected.name) {
       playWrong();
       setFeedback('wrong');
-      teachAfterAnswer(false, { type: 'word', answer: color.name, correctAnswer: expected.name, extra: MUSIC_FACTS[Math.floor(Math.random() * MUSIC_FACTS.length)] });
+      teachAfterAnswer(false, { type: 'music', answer: color.name, correctAnswer: expected.name, extra: MUSIC_FACTS[Math.floor(Math.random() * MUSIC_FACTS.length)] });
       const delay = getFeedbackDelay(level, false);
       setTimeout(() => setRound(r => r + 1), delay);
       return;
@@ -132,7 +137,7 @@ export default function MusicalNotes({ onComplete, level = 1, childAge }) {
       setCorrect(c => c + 1);
       playSuccess();
       setFeedback('correct');
-      teachAfterAnswer(true, { type: 'word', answer: color.name, correctAnswer: color.name, extra: MUSIC_FACTS[Math.floor(Math.random() * MUSIC_FACTS.length)] });
+      teachAfterAnswer(true, { type: 'music', answer: color.name, correctAnswer: color.name, extra: MUSIC_FACTS[Math.floor(Math.random() * MUSIC_FACTS.length)] });
       const delay = getFeedbackDelay(level, true);
       setTimeout(() => setRound(r => r + 1), delay);
     }

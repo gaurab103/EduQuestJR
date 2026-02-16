@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
+import { useTeaching } from './useTeaching';
+import { useNoRepeat } from './useNoRepeat';
 import styles from './GameCommon.module.css';
 
 const ALL_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
@@ -13,6 +15,8 @@ function getLetterPool(level) {
 
 export default function AlphabetTracingWorld({ onComplete, level = 1 }) {
   const { playSuccess, playWrong, playClick } = useAudio();
+  const { teachAfterAnswer, readQuestion } = useTeaching();
+  const { generate } = useNoRepeat();
   const [round, setRound] = useState(0);
   const [target, setTarget] = useState('');
   const [options, setOptions] = useState([]);
@@ -32,7 +36,10 @@ export default function AlphabetTracingWorld({ onComplete, level = 1 }) {
       onComplete(score, accuracy);
       return;
     }
-    const targetLetter = letterPool[Math.floor(Math.random() * letterPool.length)];
+    const targetLetter = generate(
+      () => letterPool[Math.floor(Math.random() * letterPool.length)],
+      (l) => l
+    );
     const opts = new Set([targetLetter]);
     while (opts.size < CHOICE_COUNT) {
       opts.add(letterPool[Math.floor(Math.random() * letterPool.length)]);
@@ -40,6 +47,8 @@ export default function AlphabetTracingWorld({ onComplete, level = 1 }) {
     setTarget(targetLetter);
     setOptions([...opts].sort(() => Math.random() - 0.5));
     setFeedback(null);
+    const cancelRead = readQuestion(`Find the letter ${targetLetter}! Which one is ${targetLetter}?`);
+    return cancelRead;
   }, [round, score, ROUNDS, CHOICE_COUNT, letterPool]);
 
   function handleChoice(letter) {
@@ -50,9 +59,11 @@ export default function AlphabetTracingWorld({ onComplete, level = 1 }) {
       setScore((s) => s + 1);
       setStreak((s) => s + 1);
       playSuccess();
+      teachAfterAnswer(true, { type: 'letter', answer: letter, correctAnswer: target });
     } else {
       setStreak(0);
       playWrong();
+      teachAfterAnswer(false, { type: 'letter', answer: letter, correctAnswer: target });
     }
     setFeedback(correct ? 'correct' : 'wrong');
     const delay = getFeedbackDelay(level, correct);

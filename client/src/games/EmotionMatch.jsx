@@ -132,7 +132,7 @@ export default function EmotionMatch({ onComplete, level = 1, childAge }) {
     }
     const emotion = EMOTIONS.find(e => e.id === question.answer);
     teachAfterAnswer(isCorrect, {
-      type: 'word',
+      type: 'emotion',
       answer: EMOTIONS.find(e => e.id === id)?.label,
       correctAnswer: emotion?.label,
       extra: EMPATHY_FACTS[question.answer] || 'Understanding how others feel helps us be kind.',

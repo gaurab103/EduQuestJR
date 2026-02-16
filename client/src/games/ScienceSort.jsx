@@ -101,12 +101,12 @@ export default function ScienceSort({ onComplete, level = 1, childName }) {
       setCorrect(c => c + 1);
       setFeedback({ type: 'correct', text: `Yes! ${currentItem} is ${category.groups[correctGroup].label}!` });
       playSuccess();
-      teachAfterAnswer(true, { type: 'word', correctAnswer: category.groups[correctGroup].label, extra: 'Scientists sort things into groups to learn about them!' });
+      teachAfterAnswer(true, { type: 'science', correctAnswer: category.groups[correctGroup].label, extra: 'Scientists sort things into groups to learn about them!' });
     } else {
       setWrong(w => w + 1);
       setFeedback({ type: 'wrong', text: `Not quite! The correct answer is ${category.groups[correctGroup].label} — ${currentItem} belongs in ${category.groups[correctGroup].label}.` });
       playWrong();
-      teachAfterAnswer(false, { type: 'word', correctAnswer: category.groups[correctGroup].label, extra: 'Scientists sort things into groups to learn about them!' });
+      teachAfterAnswer(false, { type: 'science', correctAnswer: category.groups[correctGroup].label, extra: 'Scientists sort things into groups to learn about them!' });
     }
     const delay = getFeedbackDelay(level, isCorrect);
     setTimeout(() => setRound(r => r + 1), delay);
