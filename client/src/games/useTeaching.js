@@ -298,7 +298,7 @@ function speakText(text, opts = {}) {
   const rate = u.rate || 1;
   const wordsPerSec = 2.0 * rate;
   const estimatedMs = Math.ceil((words / wordsPerSec) * 1000) + 800;
-  speechBusyUntil = Date.now() + Math.ceil(estimatedMs * 1.25);
+  speechBusyUntil = Date.now() + estimatedMs;
 
   window.speechSynthesis.speak(u);
 }
@@ -386,7 +386,7 @@ export function useTeaching() {
    *   setTimeout(() => setRound(r => r + 1), delay);
    */
   const getRecommendedDelayBeforeNext = useCallback((minDelay) => {
-    const remaining = speechBusyUntil - Date.now() + 1200;
+    const remaining = speechBusyUntil - Date.now();
     return Math.max(minDelay, Math.max(0, remaining));
   }, []);
 
