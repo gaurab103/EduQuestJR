@@ -1,10 +1,10 @@
 /**
  * Logic Grid Junior - PREMIUM
- * Unique mechanic: Clue-based deduction puzzles. Kid reads clues and
- * places items into correct positions on a grid.
- * "The cat is NOT in the red box." "The dog IS next to the blue box."
+ * Academic focus: Clue-based deduction to build reading comprehension,
+ * logical reasoning, and classification. Each puzzle teaches a real skill:
+ * animal habitats, ordinal numbers, size comparison, sequencing.
  */
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { useTeaching } from './useTeaching';
 import { useNoRepeat } from './useNoRepeat';
@@ -13,80 +13,144 @@ import styles from './GameCommon.module.css';
 
 const TWEMOJI = (cp) => `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/${cp}.svg`;
 
+// skill: academic focus for teaching feedback
 const PUZZLES_2x2 = [
   {
-    items: [{ name: 'Cat', emoji: '1f431' }, { name: 'Dog', emoji: '1f436' }],
-    slots: [{ label: 'Red Box', color: '#ef4444' }, { label: 'Blue Box', color: '#3b82f6' }],
-    solution: [0, 1],
-    clues: ['The Cat is in the Red Box.', 'The Dog is in the Blue Box.'],
-  },
-  {
-    items: [{ name: 'Apple', emoji: '1f34e' }, { name: 'Banana', emoji: '1f34c' }],
-    slots: [{ label: 'Plate 1', color: '#22c55e' }, { label: 'Plate 2', color: '#eab308' }],
-    solution: [1, 0],
-    clues: ['The Apple is NOT on Plate 1.', 'The Banana goes on Plate 1.'],
-  },
-  {
-    items: [{ name: 'Star', emoji: '2b50' }, { name: 'Moon', emoji: '1f319' }],
-    slots: [{ label: 'Top Shelf', color: '#a855f7' }, { label: 'Bottom Shelf', color: '#38bdf8' }],
-    solution: [0, 1],
-    clues: ['The Star goes on the Top Shelf.', 'The Moon is NOT on the Top Shelf.'],
-  },
-  {
+    skill: 'Animal Habitats',
     items: [{ name: 'Fish', emoji: '1f41f' }, { name: 'Bird', emoji: '1f426' }],
-    slots: [{ label: 'Water', color: '#3b82f6' }, { label: 'Sky', color: '#38bdf8' }],
+    slots: [{ label: 'In Water', color: '#3b82f6' }, { label: 'In the Sky', color: '#38bdf8' }],
     solution: [0, 1],
-    clues: ['The Fish lives in Water.', 'The Bird flies in the Sky.'],
+    clues: ['Fish swim in water.', 'Birds fly in the sky.'],
   },
   {
-    items: [{ name: 'Sun', emoji: '2600' }, { name: 'Cloud', emoji: '2601' }],
-    slots: [{ label: 'Left', color: '#eab308' }, { label: 'Right', color: '#94a3b8' }],
+    skill: 'Animal Habitats',
+    items: [{ name: 'Rabbit', emoji: '1f430' }, { name: 'Fish', emoji: '1f41f' }],
+    slots: [{ label: 'On Land', color: '#22c55e' }, { label: 'In Water', color: '#3b82f6' }],
     solution: [0, 1],
-    clues: ['The Sun is on the Left.', 'The Cloud is NOT on the Left.'],
+    clues: ['Rabbits hop on land.', 'Fish live in water.'],
+  },
+  {
+    skill: 'Ordinal Numbers',
+    items: [{ name: 'Gold', emoji: '1f947' }, { name: 'Silver', emoji: '1f948' }],
+    slots: [{ label: '1st place', color: '#ef4444' }, { label: '2nd place', color: '#94a3b8' }],
+    solution: [0, 1],
+    clues: ['Gold medal is first place.', 'Silver medal is second place.'],
+  },
+  {
+    skill: 'Position Words',
+    items: [{ name: 'Sun', emoji: '2600' }, { name: 'Moon', emoji: '1f319' }],
+    slots: [{ label: 'Day', color: '#eab308' }, { label: 'Night', color: '#6366f1' }],
+    solution: [0, 1],
+    clues: ['The sun shines in the day.', 'The moon comes out at night.'],
+  },
+  {
+    skill: 'Size Comparison',
+    items: [{ name: 'Big', emoji: '1f4a5' }, { name: 'Small', emoji: '2e2e' }],
+    slots: [{ label: 'Elephant', color: '#94a3b8' }, { label: 'Ant', color: '#78716c' }],
+    solution: [0, 1],
+    clues: ['The elephant is big.', 'The ant is small.'],
+  },
+  {
+    skill: 'Classification',
+    items: [{ name: 'Apple', emoji: '1f34e' }, { name: 'Carrot', emoji: '1f955' }],
+    slots: [{ label: 'Fruit', color: '#ef4444' }, { label: 'Vegetable', color: '#22c55e' }],
+    solution: [0, 1],
+    clues: ['An apple is a fruit.', 'A carrot is a vegetable.'],
   },
 ];
 
 const PUZZLES_3 = [
   {
-    items: [{ name: 'Cat', emoji: '1f431' }, { name: 'Dog', emoji: '1f436' }, { name: 'Fish', emoji: '1f41f' }],
-    slots: [{ label: 'Box 1', color: '#ef4444' }, { label: 'Box 2', color: '#3b82f6' }, { label: 'Box 3', color: '#22c55e' }],
-    solution: [2, 0, 1],
-    clues: ['The Cat is NOT in Box 1 or Box 2.', 'The Dog is in Box 1.', 'The Fish goes in Box 2.'],
-  },
-  {
-    items: [{ name: 'Apple', emoji: '1f34e' }, { name: 'Grapes', emoji: '1f347' }, { name: 'Orange', emoji: '1f34a' }],
-    slots: [{ label: 'Left', color: '#ef4444' }, { label: 'Middle', color: '#a855f7' }, { label: 'Right', color: '#f97316' }],
-    solution: [0, 1, 2],
-    clues: ['The Apple is on the Left.', 'The Orange is on the Right.', 'The Grapes go in the Middle.'],
-  },
-  {
+    skill: 'Animal Habitats',
     items: [{ name: 'Bear', emoji: '1f43b' }, { name: 'Rabbit', emoji: '1f430' }, { name: 'Frog', emoji: '1f438' }],
-    slots: [{ label: 'Cave', color: '#92400e' }, { label: 'Burrow', color: '#eab308' }, { label: 'Pond', color: '#22c55e' }],
+    slots: [{ label: 'Cave', color: '#92400e' }, { label: 'Burrow', color: '#a16207' }, { label: 'Pond', color: '#22c55e' }],
     solution: [0, 1, 2],
-    clues: ['The Bear lives in the Cave.', 'The Frog is NOT in the Cave or Burrow.', 'The Rabbit digs a Burrow.'],
+    clues: ['Bears live in caves.', 'Rabbits live in burrows.', 'Frogs live near ponds.'],
   },
   {
-    items: [{ name: 'Hat', emoji: '1f3a9' }, { name: 'Crown', emoji: '1f451' }, { name: 'Cap', emoji: '1f9e2' }],
-    slots: [{ label: 'Shelf A', color: '#ef4444' }, { label: 'Shelf B', color: '#3b82f6' }, { label: 'Shelf C', color: '#22c55e' }],
-    solution: [1, 0, 2],
-    clues: ['The Crown is on Shelf A.', 'The Hat is NOT on Shelf A or Shelf C.', 'The Cap is on Shelf C.'],
+    skill: 'Ordinal Numbers',
+    items: [{ name: '1st', emoji: '1f947' }, { name: '2nd', emoji: '1f948' }, { name: '3rd', emoji: '1f949' }],
+    slots: [{ label: 'First', color: '#ef4444' }, { label: 'Second', color: '#eab308' }, { label: 'Third', color: '#22c55e' }],
+    solution: [0, 1, 2],
+    clues: ['Gold medal is first.', 'Silver medal is second.', 'Bronze medal is third.'],
+  },
+  {
+    skill: 'Position Words',
+    items: [{ name: 'Apple', emoji: '1f34e' }, { name: 'Banana', emoji: '1f34c' }, { name: 'Orange', emoji: '1f34a' }],
+    slots: [{ label: 'Left', color: '#ef4444' }, { label: 'Middle', color: '#eab308' }, { label: 'Right', color: '#f97316' }],
+    solution: [0, 1, 2],
+    clues: ['The apple is on the left.', 'The banana is in the middle.', 'The orange is on the right.'],
+  },
+  {
+    skill: 'Cause and Effect',
+    items: [{ name: 'Rain', emoji: '1f327' }, { name: 'Sun', emoji: '2600' }, { name: 'Snow', emoji: '2744' }],
+    slots: [{ label: 'Umbrella', color: '#a855f7' }, { label: 'Sunglasses', color: '#eab308' }, { label: 'Coat', color: '#38bdf8' }],
+    solution: [0, 1, 2],
+    clues: ['When it rains, we need an umbrella.', 'When it is sunny, we wear sunglasses.', 'When it snows, we wear a coat.'],
+  },
+  {
+    skill: 'Animal Habitats',
+    items: [{ name: 'Dog', emoji: '1f436' }, { name: 'Fish', emoji: '1f41f' }, { name: 'Bird', emoji: '1f426' }],
+    slots: [{ label: 'House', color: '#f97316' }, { label: 'Water', color: '#3b82f6' }, { label: 'Nest', color: '#22c55e' }],
+    solution: [0, 1, 2],
+    clues: ['Dogs live in a house.', 'Fish live in water.', 'Birds live in a nest.'],
+  },
+  {
+    skill: 'Sequencing',
+    items: [{ name: 'Morning', emoji: '1f305' }, { name: 'Noon', emoji: '2600' }, { name: 'Night', emoji: '1f319' }],
+    slots: [{ label: 'Wake up', color: '#fbbf24' }, { label: 'Lunch time', color: '#f97316' }, { label: 'Bedtime', color: '#6366f1' }],
+    solution: [0, 1, 2],
+    clues: ['We wake up in the morning.', 'We eat lunch at noon.', 'We go to bed at night.'],
   },
 ];
 
 const PUZZLES_4 = [
   {
+    skill: 'Animal Habitats',
     items: [
       { name: 'Cat', emoji: '1f431' }, { name: 'Dog', emoji: '1f436' },
       { name: 'Bird', emoji: '1f426' }, { name: 'Fish', emoji: '1f41f' },
     ],
     slots: [
-      { label: 'Spot 1', color: '#ef4444' }, { label: 'Spot 2', color: '#3b82f6' },
-      { label: 'Spot 3', color: '#22c55e' }, { label: 'Spot 4', color: '#eab308' },
+      { label: 'House', color: '#ef4444' }, { label: 'Doghouse', color: '#92400e' },
+      { label: 'Nest', color: '#22c55e' }, { label: 'Fishbowl', color: '#3b82f6' },
     ],
     solution: [0, 1, 2, 3],
     clues: [
-      'The Cat is in Spot 1.', 'The Dog is in Spot 2.',
-      'The Fish is in the last spot.', 'The Bird is NOT in Spot 1, 2, or 4.',
+      'Cats live in a house.', 'Dogs live in a doghouse.',
+      'Birds live in a nest.', 'Fish live in a fishbowl.',
+    ],
+  },
+  {
+    skill: 'Ordinal Numbers',
+    items: [
+      { name: 'First', emoji: '1f947' }, { name: 'Second', emoji: '1f948' },
+      { name: 'Third', emoji: '1f949' }, { name: 'Fourth', emoji: '1f3c6' },
+    ],
+    slots: [
+      { label: '1st place', color: '#ef4444' }, { label: '2nd place', color: '#94a3b8' },
+      { label: '3rd place', color: '#b45309' }, { label: '4th place', color: '#22c55e' },
+    ],
+    solution: [0, 1, 2, 3],
+    clues: [
+      'First place gets the gold.', 'Second place gets silver.',
+      'Third place gets bronze.', 'Fourth place gets green.',
+    ],
+  },
+  {
+    skill: 'Classification',
+    items: [
+      { name: 'Apple', emoji: '1f34e' }, { name: 'Broccoli', emoji: '1f966' },
+      { name: 'Bread', emoji: '1f35e' }, { name: 'Milk', emoji: '1f95b' },
+    ],
+    slots: [
+      { label: 'Fruit', color: '#ef4444' }, { label: 'Vegetable', color: '#22c55e' },
+      { label: 'Grain', color: '#eab308' }, { label: 'Dairy', color: '#fef3c7' },
+    ],
+    solution: [0, 1, 2, 3],
+    clues: [
+      'Apple is a fruit.', 'Broccoli is a vegetable.',
+      'Bread is a grain.', 'Milk is dairy.',
     ],
   },
 ];
@@ -121,12 +185,27 @@ export default function LogicGridJunior({ onComplete, level = 1, childName }) {
       return;
     }
     const pool = getPool(level);
-    const p = generate(() => pool[Math.floor(Math.random() * pool.length)], (p) => p.clues[0]);
+    const p = generate(() => pool[Math.floor(Math.random() * pool.length)], (p) => `${p.skill}:${p.clues[0]}`);
     setPuzzle(p);
     setPlacements({});
     setSelectedItem(null);
     setFeedback(null);
-    const cancelRead = readQuestion('Read the clues and place each item in the right spot!');
+    const prompt = p.skill === 'Animal Habitats'
+      ? 'Where does each animal live? Read the clues and match them!'
+      : p.skill === 'Ordinal Numbers'
+        ? 'Which is first, second, third? Read the clues and put them in order!'
+        : p.skill === 'Classification'
+          ? 'Sort each food into the right group! Read the clues.'
+          : p.skill === 'Cause and Effect'
+            ? 'What goes together? Match each one to what we need!'
+            : p.skill === 'Position Words'
+              ? 'Where does each one go? Left, middle, or right?'
+              : p.skill === 'Sequencing'
+                ? 'What happens when? Put morning, noon, and night in order!'
+                : p.skill === 'Size Comparison'
+                  ? 'Which is big? Which is small? Match them!'
+                  : 'Read the clues and place each one in the right spot!';
+    const cancelRead = readQuestion(prompt);
     return cancelRead;
   }, [round]);
 
@@ -160,14 +239,29 @@ export default function LogicGridJunior({ onComplete, level = 1, childName }) {
         setCorrect(c => c + 1);
         playSuccess();
         setFeedback('correct');
-        teachAfterAnswer(true, { type: 'science', extra: 'You solved the logic puzzle! Reading clues carefully helps you think like a detective!' });
+        const skillMsg = puzzle.skill === 'Animal Habitats'
+          ? 'You matched animals to their homes! Knowing where animals live is science!'
+          : puzzle.skill === 'Ordinal Numbers'
+            ? 'You learned first, second, third! Order helps us count and sequence!'
+            : puzzle.skill === 'Classification'
+              ? 'You sorted things into groups! Classification is an important thinking skill!'
+              : puzzle.skill === 'Cause and Effect'
+                ? 'You matched causes and effects! That helps us understand how things work!'
+                : puzzle.skill === 'Position Words'
+                  ? 'You used left, middle, right! Position words help us describe where things are!'
+                  : puzzle.skill === 'Sequencing'
+                    ? 'You put morning, noon, and night in order! Sequencing helps us understand time!'
+                    : puzzle.skill === 'Size Comparison'
+                      ? 'You compared big and small! Size words help us describe the world!'
+                      : 'You used the clues to solve it! Reading carefully helps you think!';
+        teachAfterAnswer(true, { type: 'science', extra: skillMsg });
       } else {
         playWrong();
         setFeedback('wrong');
         const correctNames = puzzle.solution.map((itemIdx, slotIdx) =>
-          `${puzzle.items[itemIdx].name} in ${puzzle.slots[slotIdx].label}`
-        ).join(', ');
-        teachAfterAnswer(false, { type: 'science', extra: `The correct answer is: ${correctNames}. Read each clue carefully!` });
+          `${puzzle.items[itemIdx].name} goes in ${puzzle.slots[slotIdx].label}`
+        ).join('. ');
+        teachAfterAnswer(false, { type: 'science', extra: `Let's try again! ${correctNames}. Read each clue one at a time!` });
       }
       const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, allCorrect));
       setTimeout(() => setRound(r => r + 1), delay);
@@ -179,9 +273,14 @@ export default function LogicGridJunior({ onComplete, level = 1, childName }) {
     return (
       <div className={styles.container}>
         <div className={styles.celebration}>
-          <h2>Logic Master!</h2>
+          <h2>Super Thinker!</h2>
           <p style={{ fontSize: '1.1rem', fontWeight: 700 }}>Score: {score}</p>
-          <span style={{ color: 'var(--text-muted)', fontWeight: 800 }}>Accuracy: {accuracy}%</span>
+          <p style={{ color: 'var(--text-muted)', fontWeight: 600, marginTop: '0.25rem' }}>
+            You used clues to solve puzzles! That builds reading and thinking skills.
+          </p>
+          <span style={{ color: 'var(--success)', fontWeight: 800, marginTop: '0.5rem', display: 'block' }}>
+            Accuracy: {accuracy}%
+          </span>
         </div>
       </div>
     );
@@ -204,7 +303,9 @@ export default function LogicGridJunior({ onComplete, level = 1, childName }) {
         background: 'rgba(56,189,248,0.08)', borderRadius: 12, padding: '0.75rem 1rem',
         marginBottom: '1rem', textAlign: 'left',
       }}>
-        <p style={{ fontWeight: 800, marginBottom: '0.3rem', fontSize: '0.85rem' }}>Clues:</p>
+        <p style={{ fontWeight: 800, marginBottom: '0.3rem', fontSize: '0.85rem', color: 'var(--primary)' }}>
+          {puzzle.skill} — Read the clues:
+        </p>
         {puzzle.clues.map((clue, i) => (
           <p key={i} style={{ fontSize: '0.82rem', marginBottom: '0.2rem', lineHeight: 1.4 }}>
             {i + 1}. {clue}
@@ -213,7 +314,7 @@ export default function LogicGridJunior({ onComplete, level = 1, childName }) {
       </div>
 
       {/* Items to place */}
-      <p className={styles.prompt}>Tap an item, then tap where it goes:</p>
+      <p className={styles.prompt}>Tap an item, then tap the spot where it belongs:</p>
       <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '1rem' }}>
         {puzzle.items.map((item, idx) => (
           <button
@@ -275,7 +376,7 @@ export default function LogicGridJunior({ onComplete, level = 1, childName }) {
       {feedback === 'correct' && <p className={styles.feedbackOk}>All items placed correctly!</p>}
       {feedback === 'wrong' && (
         <div className={styles.feedbackBad}>
-          <p>Not quite! Check the clues again.</p>
+          <p>Not quite! Read each clue again and try matching.</p>
         </div>
       )}
     </div>
