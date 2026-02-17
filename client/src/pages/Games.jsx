@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useChildMode } from '../context/ChildModeContext';
+import { useAudio } from '../context/AudioContext';
 import { games as gamesApi, children as childrenApi, ai as aiApi, challenges as challengesApi } from '../api/client';
 import DailyTasks from '../components/DailyTasks';
 import PersonalMascot from '../components/PersonalMascot';
@@ -35,6 +36,14 @@ const DIFFICULTY_BADGE = {
   hard: { label: 'Hard', color: '#f87171' },
 };
 
+// Best interactive games for kids — featured first
+const FEATURED_SLUGS = new Set([
+  'counting-adventure', 'shape-match-quest', 'animal-quiz', 'tap-the-color',
+  'digital-coloring-book', 'memory-flip-arena', 'balloon-pop', 'sound-safari',
+  'fill-missing-letter', 'addition-island', 'odd-one-out', 'trace-letters',
+  'letter-sound-match', 'emotion-detective', 'color-mixing', 'logic-grid-junior',
+]);
+
 // Card accent colors per category
 const CATEGORY_ACCENTS = {
   cognitive: ['#38bdf8', '#818cf8'],
@@ -50,6 +59,7 @@ const CATEGORY_ACCENTS = {
 export default function Games() {
   const { user } = useAuth();
   const { isAdultMode } = useChildMode();
+  const { playClick } = useAudio();
   const [searchParams, setSearchParams] = useSearchParams();
   const urlChildId = searchParams.get('child');
   const [allGames, setAllGames] = useState([]);
@@ -92,7 +102,7 @@ export default function Games() {
 
   const isPremium = user?.subscriptionStatus === 'active' || user?.subscriptionStatus === 'trial';
 
-  const filtered = useMemo(() => {
+  const { featuredGames, otherGames } = useMemo(() => {
     const bySlug = new Map();
     allGames.forEach((g) => { if (g?.slug && !bySlug.has(g.slug)) bySlug.set(g.slug, g); });
     let list = Array.from(bySlug.values());
@@ -101,12 +111,64 @@ export default function Games() {
       const q = search.toLowerCase();
       list = list.filter((g) => g.title.toLowerCase().includes(q) || g.category.includes(q));
     }
-    return list;
+    const featured = list.filter((g) => FEATURED_SLUGS.has(g.slug));
+    const other = list.filter((g) => !FEATURED_SLUGS.has(g.slug));
+    return { featuredGames: featured, otherGames: other };
   }, [allGames, filter, search]);
 
   function handleChildChange(e) {
     const id = e.target.value;
     if (id) setSearchParams({ child: id });
+  }
+
+  function renderGameCard(game) {
+    const locked = game.isPremium && !isPremium;
+    const catImg = CATEGORY_IMAGES[game.category] || CATEGORY_IMAGES.cognitive;
+    const diff = DIFFICULTY_BADGE[game.difficulty] || DIFFICULTY_BADGE.easy;
+    const isChallenge = dailyChallenge?.game?.slug === game.slug;
+    const accent = CATEGORY_ACCENTS[game.category] || ['#38bdf8', '#818cf8'];
+    return (
+      <div
+        key={game._id}
+        className={`${styles.card} ${locked ? styles.cardLocked : ''} ${isChallenge ? styles.cardChallenge : ''}`}
+      >
+        {isChallenge && <div className={styles.challengeBadge}>🏆 Daily</div>}
+        <div className={styles.cardStrip} style={{ background: `linear-gradient(135deg, ${accent[0]}, ${accent[1]})` }} />
+        <div className={styles.cardBody}>
+          <div className={styles.cardTop}>
+            {locked ? (
+              <span className={styles.cardLockIcon}>🔒</span>
+            ) : (
+              <img src={catImg} alt="" className={styles.cardImg} />
+            )}
+            <span className={styles.diffBadge} style={{ background: `${diff.color}22`, color: diff.color }}>
+              {diff.label}
+            </span>
+          </div>
+          <h3 className={styles.cardTitle}>{game.title}</h3>
+          <span className={styles.cardCategory}>
+            {CATEGORY_LABELS[game.category] || game.category}
+          </span>
+          <span className={styles.cardLevels}>30 Levels</span>
+          {locked ? (
+            <Link to="/subscription" className={styles.lockedBtn}>
+              🔒 Premium
+            </Link>
+          ) : (
+            <Link
+              to={selectedChildId ? `/play/${game.slug}?child=${selectedChildId}` : '#'}
+              className={styles.playBtn}
+              onClick={(e) => {
+                if (!selectedChildId) e.preventDefault();
+                else playClick();
+              }}
+            >
+              {selectedChildId ? '▶ Play Now' : 'Select child first'}
+            </Link>
+          )}
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -171,7 +233,11 @@ export default function Games() {
       )}
 
       {dailyChallenge && selectedChildId && (
-        <Link to={`/play/${dailyChallenge.game.slug}?child=${selectedChildId}`} className={styles.dailyChallenge}>
+        <Link
+          to={`/play/${dailyChallenge.game.slug}?child=${selectedChildId}`}
+          className={styles.dailyChallenge}
+          onClick={() => playClick()}
+        >
           <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3c6.svg" alt="" className={styles.challengeImg} />
           <div className={styles.challengeInfo}>
             <span className={styles.challengeLabel}>{dailyChallenge.label}</span>
@@ -184,7 +250,11 @@ export default function Games() {
       {selectedChildId && <DailyTasks childId={selectedChildId} />}
 
       {aiRecommendation && selectedChildId && (
-        <Link to={`/play/${aiRecommendation.slug}?child=${selectedChildId}`} className={styles.aiRecommendation}>
+        <Link
+          to={`/play/${aiRecommendation.slug}?child=${selectedChildId}`}
+          className={styles.aiRecommendation}
+          onClick={() => playClick()}
+        >
           <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f43b.svg" alt="Buddy" className={styles.aiRecImg} />
           <span className={styles.aiLabel}>Buddy suggests:</span>
           <span className={styles.aiGame}>{aiRecommendation.title}</span>
@@ -207,7 +277,7 @@ export default function Games() {
             onClick={() => setFilter('')}
             className={filter === '' ? styles.filterActive : styles.filterBtn}
           >
-            All ({allGames.length})
+            All ({featuredGames.length + otherGames.length})
           </button>
           {Object.entries(CATEGORY_LABELS).map(([key, label]) => {
             const count = allGames.filter(g => g.category === key).length;
@@ -228,62 +298,34 @@ export default function Games() {
 
       {loading ? (
         <div className="loading-screen">Loading games...</div>
-      ) : filtered.length === 0 ? (
+      ) : featuredGames.length === 0 && otherGames.length === 0 ? (
         <div className={styles.empty}>
           <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3ae.svg" alt="" style={{ width: 48, opacity: 0.5 }} />
           <p>No games found. Try a different filter or search.</p>
         </div>
       ) : (
-        <div className={styles.grid}>
-          {filtered.map((game) => {
-            const locked = game.isPremium && !isPremium;
-            const catImg = CATEGORY_IMAGES[game.category] || CATEGORY_IMAGES.cognitive;
-            const diff = DIFFICULTY_BADGE[game.difficulty] || DIFFICULTY_BADGE.easy;
-            const isChallenge = dailyChallenge?.game?.slug === game.slug;
-            const accent = CATEGORY_ACCENTS[game.category] || ['#38bdf8', '#818cf8'];
-
-            return (
-              <div
-                key={game._id}
-                className={`${styles.card} ${locked ? styles.cardLocked : ''} ${isChallenge ? styles.cardChallenge : ''}`}
-              >
-                {isChallenge && <div className={styles.challengeBadge}>🏆 Daily</div>}
-                {/* Colored top strip */}
-                <div className={styles.cardStrip} style={{ background: `linear-gradient(135deg, ${accent[0]}, ${accent[1]})` }} />
-                <div className={styles.cardBody}>
-                  <div className={styles.cardTop}>
-                    {locked ? (
-                      <span className={styles.cardLockIcon}>🔒</span>
-                    ) : (
-                      <img src={catImg} alt="" className={styles.cardImg} />
-                    )}
-                    <span className={styles.diffBadge} style={{ background: `${diff.color}22`, color: diff.color }}>
-                      {diff.label}
-                    </span>
-                  </div>
-                  <h3 className={styles.cardTitle}>{game.title}</h3>
-                  <span className={styles.cardCategory}>
-                    {CATEGORY_LABELS[game.category] || game.category}
-                  </span>
-                  <span className={styles.cardLevels}>30 Levels</span>
-                  {locked ? (
-                    <Link to="/subscription" className={styles.lockedBtn}>
-                      🔒 Premium
-                    </Link>
-                  ) : (
-                    <Link
-                      to={selectedChildId ? `/play/${game.slug}?child=${selectedChildId}` : '#'}
-                      className={styles.playBtn}
-                      onClick={(e) => { if (!selectedChildId) e.preventDefault(); }}
-                    >
-                      {selectedChildId ? '▶ Play Now' : 'Select child first'}
-                    </Link>
-                  )}
-                </div>
+        <>
+          {featuredGames.length > 0 && (
+            <section className={styles.featuredSection}>
+              <h2 className={styles.featuredTitle}>
+                <span className={styles.featuredStar}>⭐</span> Best Games for Kids
+              </h2>
+              <div className={styles.grid}>
+                {featuredGames.map((game) => renderGameCard(game))}
               </div>
-            );
-          })}
-        </div>
+            </section>
+          )}
+          {otherGames.length > 0 && (
+            <section className={styles.otherSection}>
+              {featuredGames.length > 0 && (
+                <h2 className={styles.otherTitle}>More Games</h2>
+              )}
+              <div className={styles.grid}>
+                {otherGames.map((game) => renderGameCard(game))}
+              </div>
+            </section>
+          )}
+        </>
       )}
 
     </div>

@@ -17,16 +17,17 @@
 
 .card {
   position: relative;
-  background: linear-gradient(160deg, #fff9e6, #e8f4fc, #f0fdf4);
-  border-radius: var(--radius);
+  background: linear-gradient(165deg, #fffef5 0%, #fff9e6 25%, #e8f4fc 60%, #f0fdf4 100%);
+  border-radius: 24px;
   padding: 2rem;
-  max-width: 380px;
+  max-width: 400px;
   width: 100%;
   text-align: center;
-  box-shadow: 0 24px 64px rgba(56, 189, 248, 0.25), 0 8px 32px rgba(253, 186, 116, 0.15);
-  transform: scale(0.85);
+  box-shadow: 0 24px 64px rgba(56, 189, 248, 0.3), 0 8px 32px rgba(251, 191, 36, 0.2);
+  transform: scale(0.9);
   transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   overflow: hidden;
+  border: 2px solid rgba(251, 191, 36, 0.2);
 }
 
 .overlay.show .card {
@@ -73,11 +74,35 @@
   margin-bottom: 0.75rem;
 }
 
+.starsWrapper {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(251, 146, 60, 0.08));
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  border: 2px solid rgba(251, 191, 36, 0.4);
+  box-shadow: 0 4px 20px rgba(251, 191, 36, 0.2);
+}
+
 .stars {
   display: flex;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.starBar {
+  height: 6px;
+  background: rgba(251, 191, 36, 0.2);
+  border-radius: 999px;
+  overflow: hidden;
   margin-bottom: 0.5rem;
+}
+
+.starBarFill {
+  height: 100%;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  border-radius: 999px;
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .starsEarned {
@@ -95,23 +120,24 @@
 }
 
 .star {
-  font-size: 2.5rem;
+  font-size: 3rem;
   color: #e5e7eb;
   transition: color 0.3s ease, transform 0.3s ease;
   display: inline-block;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .starOn {
   color: #fbbf24;
-  transform: scale(1.2);
-  animation: starPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  filter: drop-shadow(0 2px 8px rgba(251, 191, 36, 0.5));
+  transform: scale(1.3);
+  animation: starPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 4px 12px rgba(251, 191, 36, 0.6));
 }
 
 @keyframes starPop {
-  0% { transform: scale(0) rotate(-45deg); }
-  60% { transform: scale(1.4) rotate(10deg); }
-  100% { transform: scale(1.2) rotate(0); }
+  0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+  50% { transform: scale(1.5) rotate(15deg); opacity: 1; }
+  100% { transform: scale(1.3) rotate(0); opacity: 1; }
 }
 
 .rewards {

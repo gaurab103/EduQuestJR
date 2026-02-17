@@ -73,7 +73,7 @@ export default function RewardModal({ rewards, child, gameLevel = 1, hasNextLeve
     });
     const starCount = rewards?.accuracy >= 80 ? 3 : rewards?.accuracy >= 50 ? 2 : 1;
 
-    // Stagger star animations
+    // Stagger star animations — each star pops in with sound
     const timers = [];
     for (let i = 0; i < starCount; i++) {
       timers.push(setTimeout(() => {
@@ -83,17 +83,22 @@ export default function RewardModal({ rewards, child, gameLevel = 1, hasNextLeve
           next[i] = true;
           return next;
         });
-      }, 400 + i * 300));
+        if (i === 0) playCelebration();
+      }, 350 + i * 400));
     }
 
-    // Play celebration sound
-    timers.push(setTimeout(() => playCelebration(), 200));
-
-    // Speak encouragement
+    // Speak encouragement after stars appear
     timers.push(setTimeout(() => {
-      const messages = ['Great job!', 'You are amazing!', 'Wonderful work!', 'Super star!'];
+      const messages = [
+        'Amazing work!',
+        'You are a superstar!',
+        'Wonderful job!',
+        'You did it!',
+        'Fantastic!',
+        'Keep it up!',
+      ];
       speak(messages[Math.floor(Math.random() * messages.length)]);
-    }, 800));
+    }, 1200));
 
     return () => {
       cancelAnimationFrame(t);
@@ -126,22 +131,30 @@ export default function RewardModal({ rewards, child, gameLevel = 1, hasNextLeve
           {dailyBonusApplied && !isReplay && (
             <p className={styles.streak} style={{ color: '#4ade80' }}>🌟 Daily 2× Bonus Applied!</p>
           )}
-          <div className={styles.stars}>
-            {[0, 1, 2].map((i) => (
-              <span
-                key={i}
-                className={`${styles.star} ${showStars[i] ? styles.starOn : ''}`}
-              >
-                ★
-              </span>
-            ))}
+          <div className={styles.starsWrapper}>
+            <div className={styles.stars}>
+              {[0, 1, 2].map((i) => (
+                <span
+                  key={i}
+                  className={`${styles.star} ${showStars[i] ? styles.starOn : ''}`}
+                >
+                  ★
+                </span>
+              ))}
+            </div>
+            <div className={styles.starBar}>
+              <div
+                className={styles.starBarFill}
+                style={{ width: `${(rewards?.accuracy >= 80 ? 3 : rewards?.accuracy >= 50 ? 2 : 1) / 3 * 100}%` }}
+              />
+            </div>
+            <p className={styles.starsEarned}>
+              {rewards?.accuracy >= 80 ? 3 : rewards?.accuracy >= 50 ? 2 : 1} of 3 stars earned!
+            </p>
+            <p className={styles.starCriteria}>
+              {rewards?.accuracy >= 80 ? '★★★ Excellent! 80%+' : rewards?.accuracy >= 50 ? '★★☆ Good! 50%+' : '★☆☆ Nice try! Keep practicing!'}
+            </p>
           </div>
-          <p className={styles.starsEarned}>
-            You earned {rewards?.accuracy >= 80 ? 3 : rewards?.accuracy >= 50 ? 2 : 1} of 3 stars!
-          </p>
-          <p className={styles.starCriteria}>
-            {rewards?.accuracy >= 80 ? '★★★ 80%+ = 3 stars' : rewards?.accuracy >= 50 ? '★★☆ 50%+ = 2 stars' : '★☆☆ Keep practicing!'}
-          </p>
           {isReplay ? (
             <div className={styles.rewards}>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600 }}>

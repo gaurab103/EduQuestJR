@@ -1,10 +1,17 @@
+import { useState } from 'react';
+
 /**
  * Shared real image URLs for all games.
  * Uses Twemoji CDN — high-quality cartoon-style images that are ALWAYS accurate.
  * Every image is guaranteed to match its name (an apple image IS an apple).
+ * Open source: Twemoji (MIT), OpenMoji (CC BY-SA 4.0).
  */
 
 const T = (code) => `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/${code.replace(/-fe0f/g, '')}.svg`;
+
+/** OpenMoji CDN — alternative cartoon-style emoji (CC BY-SA 4.0) */
+export const openMoji = (code) =>
+  `https://openmoji.org/data/color/svg/${code}.svg`;
 
 // ═══ FRUITS ═══
 export const FRUIT_IMAGES = {
@@ -168,34 +175,37 @@ export const FOOD_IMAGES = {
 /**
  * Helper: renders an <img> tag for game content.
  * Falls back to alt text if image fails to load.
+ * Uses lazy loading and smooth fade-in for better UX.
  */
 export function GameImage({ src, alt, size = 48, style = {}, className = '' }) {
+  const [loaded, setLoaded] = useState(false);
+  const [errored, setErrored] = useState(false);
   return (
-    <img
-      src={src}
-      alt={alt || ''}
-      width={size}
-      height={size}
-      className={className}
-      style={{
-        objectFit: 'contain',
-        display: 'inline-block',
-        verticalAlign: 'middle',
-        ...style,
-      }}
-      loading="lazy"
-      onError={(e) => {
-        e.target.style.display = 'none';
-        // Show alt text as fallback
-        if (e.target.nextSibling === null && alt) {
-          const span = document.createElement('span');
-          span.textContent = alt;
-          span.style.fontSize = `${Math.max(size * 0.3, 14)}px`;
-          span.style.fontWeight = '700';
-          e.target.parentNode?.appendChild(span);
-        }
-      }}
-    />
+    <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+      <img
+        src={src}
+        alt={alt || ''}
+        width={size}
+        height={size}
+        className={className}
+        style={{
+          objectFit: 'contain',
+          display: errored ? 'none' : 'inline-block',
+          verticalAlign: 'middle',
+          opacity: loaded ? 1 : 0.6,
+          transition: 'opacity 0.2s ease',
+          ...style,
+        }}
+        loading="lazy"
+        onLoad={() => setLoaded(true)}
+        onError={() => setErrored(true)}
+      />
+      {errored && alt && (
+        <span style={{ fontSize: `${Math.max(size * 0.35, 12)}px`, fontWeight: 700, maxWidth: size }}>
+          {alt}
+        </span>
+      )}
+    </span>
   );
 }
 

@@ -33,6 +33,37 @@
   font-size: 0.95rem;
 }
 
+/* ---- Featured / Best Games ---- */
+.featuredSection {
+  margin-bottom: 2rem;
+}
+
+.featuredTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+.featuredStar {
+  font-size: 1.5rem;
+  filter: drop-shadow(0 2px 8px rgba(251, 191, 36, 0.5));
+}
+
+.otherSection {
+  margin-top: 1.5rem;
+}
+
+.otherTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: var(--text-muted);
+}
+
 /* ---- Child Banner ---- */
 .childBanner {
   display: flex;
