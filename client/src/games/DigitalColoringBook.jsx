@@ -1,15 +1,29 @@
 /**
  * Digital Coloring Book - PREMIUM
  * Unique mechanic: SVG scenes with tappable regions. Kid picks a color
- * from palette then taps regions to fill them. Scored on completion.
- * Different from DrawingCanvas (freehand) -- this is structured coloring.
+ * from palette then taps regions to fill them. Scored on color accuracy.
+ * Reference images + clear criteria for world-class experience.
  */
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { useTeaching } from './useTeaching';
 import { useNoRepeat } from './useNoRepeat';
 import { getFeedbackDelay } from './levelConfig';
+import { GameImage, OBJECT_IMAGES, ANIMAL_IMAGES } from './gameImages';
 import styles from './GameCommon.module.css';
+
+// Reference images so scene name matches what kids see
+const SCENE_ICONS = {
+  'Sun and Sky': OBJECT_IMAGES.sun,
+  'Simple House': OBJECT_IMAGES.house,
+  'Simple Flower': OBJECT_IMAGES.flower,
+  'House': OBJECT_IMAGES.house,
+  'Butterfly': ANIMAL_IMAGES.butterfly,
+  'Fish': ANIMAL_IMAGES.fish,
+  'Tree': OBJECT_IMAGES.tree,
+  'Car': OBJECT_IMAGES.car,
+  'Flower': OBJECT_IMAGES.flower,
+};
 
 const PALETTE = [
   { name: 'red', hex: '#ef4444' },
@@ -25,33 +39,33 @@ const PALETTE = [
 ];
 
 // layer: 0=background (drawn first), 1=mid, 2=foreground (drawn last)
-// Simple 4-region scenes for level 1 — large, easy-to-tap areas
+// Simple 4-region scenes — recognizable shapes matching scene names
 const SIMPLE_SCENES = [
   {
     name: 'Sun and Sky',
     regions: [
-      { id: 'sky', label: 'Sky', d: 'M0,0 L260,0 L260,220 L0,220 Z', suggest: 'sky', layer: 0 },
-      { id: 'sun', label: 'Sun', d: 'M100,60 L160,60 L160,120 L100,120 Z', suggest: 'yellow', layer: 1 },
-      { id: 'cloud', label: 'Cloud', d: 'M40,140 L120,140 L120,180 L40,180 Z', suggest: 'pink', layer: 1 },
-      { id: 'ground', label: 'Ground', d: 'M0,200 L260,200 L260,220 L0,220 Z', suggest: 'green', layer: 1 },
+      { id: 'sky', label: 'Sky', d: 'M0,0 L260,0 L260,180 L0,180 Z', suggest: 'sky', layer: 0 },
+      { id: 'sun', label: 'Sun', d: 'M130,90 m-35,0 a 35,35 0 1,1 70,0 a 35,35 0 1,1 -70,0', suggest: 'yellow', layer: 1 },
+      { id: 'cloud', label: 'Cloud', d: 'M50,140 Q70,120 100,140 Q130,160 100,170 Q70,180 50,160 Q30,150 50,140 Z', suggest: 'pink', layer: 1 },
+      { id: 'ground', label: 'Ground', d: 'M0,195 L260,195 L260,220 L0,220 Z', suggest: 'green', layer: 1 },
     ],
   },
   {
     name: 'Simple House',
     regions: [
-      { id: 'sky', label: 'Sky', d: 'M0,0 L260,0 L260,100 L0,100 Z', suggest: 'sky', layer: 0 },
-      { id: 'grass', label: 'Grass', d: 'M0,170 L260,170 L260,220 L0,220 Z', suggest: 'green', layer: 0 },
-      { id: 'house', label: 'House', d: 'M80,100 L80,170 L180,170 L180,100 Z', suggest: 'yellow', layer: 1 },
-      { id: 'roof', label: 'Roof', d: 'M60,100 L130,50 L200,100 Z', suggest: 'red', layer: 1 },
+      { id: 'sky', label: 'Sky', d: 'M0,0 L260,0 L260,95 L0,95 Z', suggest: 'sky', layer: 0 },
+      { id: 'grass', label: 'Grass', d: 'M0,175 L260,175 L260,220 L0,220 Z', suggest: 'green', layer: 0 },
+      { id: 'house', label: 'House', d: 'M75,95 L75,175 L185,175 L185,95 Z', suggest: 'yellow', layer: 1 },
+      { id: 'roof', label: 'Roof', d: 'M55,95 L130,45 L205,95 Z', suggest: 'red', layer: 1 },
     ],
   },
   {
     name: 'Simple Flower',
     regions: [
-      { id: 'sky', label: 'Sky', d: 'M0,0 L260,0 L260,120 L0,120 Z', suggest: 'sky', layer: 0 },
-      { id: 'ground', label: 'Ground', d: 'M0,180 L260,180 L260,220 L0,220 Z', suggest: 'green', layer: 0 },
-      { id: 'flower', label: 'Flower', d: 'M90,80 L170,80 L170,160 L90,160 Z', suggest: 'pink', layer: 1 },
-      { id: 'stem', label: 'Stem', d: 'M120,160 L140,160 L140,180 L120,180 Z', suggest: 'green', layer: 1 },
+      { id: 'sky', label: 'Sky', d: 'M0,0 L260,0 L260,130 L0,130 Z', suggest: 'sky', layer: 0 },
+      { id: 'ground', label: 'Ground', d: 'M0,185 L260,185 L260,220 L0,220 Z', suggest: 'green', layer: 0 },
+      { id: 'flower', label: 'Flower', d: 'M130,70 m-40,0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0', suggest: 'pink', layer: 1 },
+      { id: 'stem', label: 'Stem', d: 'M115,110 L145,110 L145,185 L115,185 Z', suggest: 'green', layer: 1 },
     ],
   },
 ];
@@ -214,10 +228,17 @@ export default function DigitalColoringBook({ onComplete, level = 1, childName }
 
   if (round >= ROUNDS) {
     const finalAccuracy = totalRegions > 0 ? Math.round((totalCorrect / totalRegions) * 100) : 100;
+    const stars = finalAccuracy >= 80 ? 3 : finalAccuracy >= 50 ? 2 : 1;
     return (
       <div className={styles.container}>
         <div className={styles.celebration}>
           <h2>Art Star!</h2>
+          <p style={{ fontSize: '1.5rem', margin: '0.5rem 0' }}>
+            {'★'.repeat(stars)}{'☆'.repeat(3 - stars)}
+          </p>
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+            {finalAccuracy}% correct colors · {stars} of 3 stars
+          </p>
           <p style={{ fontSize: '1.1rem', fontWeight: 700 }}>Score: {score}</p>
           <p style={{ color: 'var(--text-muted)' }}>You colored {ROUNDS} scene{ROUNDS !== 1 ? 's' : ''}!</p>
           {finalAccuracy >= 80 && <p style={{ color: 'var(--success)', fontWeight: 700, marginTop: '0.5rem' }}>Great color choices!</p>}
@@ -228,22 +249,52 @@ export default function DigitalColoringBook({ onComplete, level = 1, childName }
 
   if (!scene) return null;
 
+  const sceneIcon = SCENE_ICONS[scene.name];
+  const colorGuide = scene.regions
+    .filter(r => r.suggest && r.label)
+    .map(r => {
+      const p = PALETTE.find(x => x.name === r.suggest);
+      return p ? `${r.label} → ${p.name}` : null;
+    })
+    .filter(Boolean);
+
   return (
     <div className={styles.container}>
       <div className={styles.hud}>
         <span>Lv {level}</span>
         <span>·</span>
-        <span>Scene {round + 1}/{ROUNDS}: {scene.name}</span>
+        <span>Scene {round + 1}/{ROUNDS}</span>
         <span>·</span>
         <span>{Object.keys(regionColors).length}/{scene.regions.length} parts</span>
+      </div>
+
+      {/* Reference: image + name match */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+        marginBottom: '0.5rem', padding: '0.5rem', background: 'rgba(56,189,248,0.08)',
+        borderRadius: 12, border: '1px solid rgba(56,189,248,0.2)',
+      }}>
+        {sceneIcon && <GameImage src={sceneIcon} alt={scene.name} size={40} />}
+        <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800 }}>Color the {scene.name}</h3>
       </div>
 
       <p className={styles.prompt}>
         Pick a color, then tap each part to paint it!
       </p>
-      {level <= 5 && Object.keys(regionColors).length === 0 && (
-        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '-0.25rem', marginBottom: '0.5rem' }}>
-          Tip: Start with the sky or background, then color the main shapes!
+
+      {/* Clear star criteria */}
+      <p style={{
+        fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.5rem',
+        background: 'rgba(251,191,36,0.12)', padding: '0.4rem 0.6rem', borderRadius: 8,
+        fontWeight: 600,
+      }}>
+        ★★★ 80%+ correct colors · ★★☆ 50%+ · ★☆☆ Keep practicing!
+      </p>
+
+      {/* Color guide: what to color what */}
+      {colorGuide.length > 0 && Object.keys(regionColors).length === 0 && (
+        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
+          Hint: {colorGuide.slice(0, 4).join(' · ')}
         </p>
       )}
 

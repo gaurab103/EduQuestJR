@@ -4,6 +4,7 @@ import { useTeaching } from './useTeaching';
 import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { GameImage, ANIMAL_IMAGES } from './gameImages';
+import { getCorrectMessage, getWrongPrefix } from './feedbackMessages';
 import styles from './GameCommon.module.css';
 
 const QUESTIONS = [
@@ -45,6 +46,7 @@ export default function AnimalQuiz({ level = 1, onComplete }) {
   const [correct, setCorrect] = useState(0);
   const [wrong, setWrong] = useState(0);
   const [feedback, setFeedback] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(null);
   const completedRef = useRef(false);
   const ROUNDS = getRounds(level);
   const CHOICES = getChoiceCount(level);
@@ -92,13 +94,15 @@ export default function AnimalQuiz({ level = 1, onComplete }) {
     setCurrentQuestion(question);
     setOptions(shuffled);
     setFeedback(null);
+    setSelectedIndex(null);
     const cancelRead = readQuestion(question.q);
     return cancelRead;
   }, [round, ROUNDS, CHOICES]);
 
-  function handleAnswer(selected) {
+  function handleAnswer(selected, index) {
     if (feedback !== null) return;
     playClick();
+    setSelectedIndex(index);
     
     const isCorrect = selected === currentQuestion.answer;
     
@@ -150,15 +154,14 @@ export default function AnimalQuiz({ level = 1, onComplete }) {
       
       <div className={styles.choices}>
         {options.map((animal, i) => {
-          const isCorrect = animal === currentQuestion.answer;
           const isSelected = feedback !== null && animal === currentQuestion.answer;
-          const isWrong = feedback === 'wrong' && animal !== currentQuestion.answer;
+          const isWrong = feedback === 'wrong' && i === selectedIndex;
           
           return (
             <button
               key={i}
               type="button"
-              onClick={() => handleAnswer(animal)}
+              onClick={() => handleAnswer(animal, i)}
               className={`${styles.choiceBtn} ${
                 isSelected ? styles.correct : ''
               } ${isWrong ? styles.wrong : ''}`}
@@ -185,11 +188,11 @@ export default function AnimalQuiz({ level = 1, onComplete }) {
       </div>
       
       {feedback === 'correct' && (
-        <p className={styles.feedbackOk}>✓ Correct!</p>
+        <p className={styles.feedbackOk}>{getCorrectMessage()}</p>
       )}
       {feedback === 'wrong' && (
         <div className={styles.feedbackBad}>
-          <p>✗ The answer is <strong>{currentQuestion.answer}</strong></p>
+          <p>{getWrongPrefix()} It&apos;s <strong>{currentQuestion.answer}</strong>!</p>
         </div>
       )}
     </div>

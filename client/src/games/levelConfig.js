@@ -83,11 +83,11 @@ export function getTimeLimit(level) {
  */
 export function getFeedbackDelay(level, isCorrect = true, answeredTooFast = false) {
   if (isCorrect) {
-    // Must allow voice to finish praise + fact. ~4–6s typical.
-    if (level <= 5) return 5500;
-    if (level <= 10) return 5000;
-    if (level <= 20) return 4500;
-    return 4000;
+    // Must allow voice to finish praise + fact. Slightly snappier for engagement.
+    if (level <= 5) return 5000;
+    if (level <= 10) return 4600;
+    if (level <= 20) return 4200;
+    return 3800;
   }
   // Wrong: longer for careful teaching. ECD kids need time to process.
   let base = level <= 5 ? 10000 : level <= 10 ? 9500 : level <= 20 ? 9000 : 8000;

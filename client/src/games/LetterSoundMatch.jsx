@@ -5,6 +5,7 @@ import styles from './GameCommon.module.css';
 import { useAudio } from '../context/AudioContext';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { GameImage, ANIMAL_IMAGES, FRUIT_IMAGES, OBJECT_IMAGES, VEGGIE_IMAGES, FOOD_IMAGES, NATURE_IMAGES } from './gameImages';
+import { getCorrectMessage, getWrongPrefix } from './feedbackMessages';
 
 // DATA array mapping letters A-Z to words and images
 const DATA = [
@@ -171,11 +172,11 @@ export default function LetterSoundMatch({ level = 1, onComplete }) {
       </div>
 
       {feedback === 'correct' && (
-        <p className={styles.feedbackOk}>✓ Correct! "{currentItem?.word}" starts with "{currentItem?.letter}"!</p>
+        <p className={styles.feedbackOk}>{getCorrectMessage()} &quot;{currentItem?.word}&quot; starts with &quot;{currentItem?.letter}&quot;!</p>
       )}
       {feedback === 'wrong' && (
         <div className={styles.feedbackBad}>
-          <p>✗ The answer is <strong>{currentItem?.word} ({currentItem?.letter})</strong></p>
+          <p>{getWrongPrefix()} It&apos;s <strong>{currentItem?.word}</strong> ({currentItem?.letter})</p>
         </div>
       )}
     </div>

@@ -25,6 +25,7 @@ const GAMES = [
   // ── Free Literacy Games ──
   { title: 'Alphabet Bubble Pop', slug: 'alphabet-bubble-pop', category: 'literacy', difficulty: 'easy', isPremium: false },
   { title: 'Letter Sound Match', slug: 'letter-sound-match', category: 'literacy', difficulty: 'easy', isPremium: false },
+  { title: 'Picture Word Match', slug: 'picture-word-match', category: 'literacy', difficulty: 'easy', isPremium: false },
   { title: 'ABC Order', slug: 'abc-order', category: 'literacy', difficulty: 'easy', isPremium: false },
   { title: 'Rhyming Match', slug: 'rhyming-match', category: 'literacy', difficulty: 'easy', isPremium: false },
   { title: 'Opposites Match', slug: 'opposites-match', category: 'literacy', difficulty: 'easy', isPremium: false },

@@ -5,6 +5,7 @@ import { useNoRepeat } from './useNoRepeat';
 import { ai as aiApi } from '../api/client';
 import { getRounds, getMaxNumber, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { COUNTING_THEMES, GameImage } from './gameImages';
+import { getCorrectMessage, getWrongPrefix } from './feedbackMessages';
 import styles from './GameCommon.module.css';
 
 function getMode(level, round) {
@@ -134,8 +135,9 @@ export default function CountingAdventure({ onComplete, level = 1, childName, ch
         <span>Lv {level} · {round + 1}/{ROUNDS}</span><span>·</span><span>⭐ {score}</span>
         {streak >= 2 && <span>· 🔥 {streak}</span>}
       </div>
-      <p className={styles.prompt}>{questionData.prompt}</p>
-      <QuestionDisplay q={questionData} level={level} />
+      <div className={styles.roundContent}>
+        <p className={styles.prompt}>{questionData.prompt}</p>
+        <QuestionDisplay q={questionData} level={level} />
       <div className={styles.choices}>
         {options.map(num => (
           <button key={num} type="button" onClick={() => handleAnswer(num)}
@@ -144,13 +146,14 @@ export default function CountingAdventure({ onComplete, level = 1, childName, ch
         ))}
       </div>
       {feedback === 'correct' && (
-        <p className={styles.feedbackOk}>{streak >= 3 ? '🔥 Amazing streak!' : '✓ Correct!'}</p>
+        <p className={styles.feedbackOk}>{getCorrectMessage(streak)}</p>
       )}
       {feedback === 'wrong' && (
         <div className={styles.feedbackBad}>
-          <p>✗ The answer is <strong>{questionData.correct}</strong></p>
+          <p>{getWrongPrefix()} The answer is <strong>{questionData.correct}</strong></p>
         </div>
       )}
+      </div>
     </div>
   );
 }

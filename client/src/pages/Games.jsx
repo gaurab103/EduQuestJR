@@ -41,7 +41,8 @@ const FEATURED_SLUGS = new Set([
   'counting-adventure', 'shape-match-quest', 'animal-quiz', 'tap-the-color',
   'digital-coloring-book', 'memory-flip-arena', 'balloon-pop', 'sound-safari',
   'fill-missing-letter', 'addition-island', 'odd-one-out', 'trace-letters',
-  'letter-sound-match', 'emotion-detective', 'color-mixing', 'logic-grid-junior',
+  'letter-sound-match', 'picture-word-match', 'emotion-detective', 'color-mixing',
+  'logic-grid-junior',
 ]);
 
 // Card accent colors per category

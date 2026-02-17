@@ -134,12 +134,26 @@ export default function ColorMixing({ level = 1, onComplete }) {
       playSuccess();
       speak(currentChallenge.answer);
       setFeedback('correct');
-      teachAfterAnswer(true, { type: 'color', answer: selected, correctAnswer: currentChallenge.answer });
+      teachAfterAnswer(true, {
+        type: 'color',
+        answer: selected,
+        correctAnswer: currentChallenge.answer,
+        ...(isMixingLevel && currentChallenge.color1 && currentChallenge.color2 && {
+          mix: { a: currentChallenge.color1, b: currentChallenge.color2, result: currentChallenge.answer },
+        }),
+      });
     } else {
       setWrong(w => w + 1);
       playWrong();
       setFeedback('wrong');
-      teachAfterAnswer(false, { type: 'color', answer: selected, correctAnswer: currentChallenge.answer });
+      teachAfterAnswer(false, {
+        type: 'color',
+        answer: selected,
+        correctAnswer: currentChallenge.answer,
+        ...(isMixingLevel && currentChallenge.color1 && currentChallenge.color2 && {
+          mix: { a: currentChallenge.color1, b: currentChallenge.color2, result: currentChallenge.answer },
+        }),
+      });
     }
     
     const delay = getRecommendedDelayBeforeNext(getFeedbackDelay(level, isCorrect));

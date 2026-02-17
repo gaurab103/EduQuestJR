@@ -37,6 +37,7 @@ import VocabMatch from './VocabMatch';
 import SpellingBee from './SpellingBee';
 import AlphabetBubblePop from './AlphabetBubblePop';
 import LetterSoundMatch from './LetterSoundMatch';
+import PictureWordMatch from './PictureWordMatch';
 import ABCOrder from './ABCOrder';
 import StorySequence from './StorySequence';
 import AnimalQuiz from './AnimalQuiz';
@@ -112,6 +113,7 @@ export const GAME_COMPONENTS = {
   'spelling-bee': SpellingBee,
   'alphabet-bubble-pop': AlphabetBubblePop,
   'letter-sound-match': LetterSoundMatch,
+  'picture-word-match': PictureWordMatch,
   'abc-order': ABCOrder,
   'story-sequence': StorySequence,
   'animal-quiz': AnimalQuiz,

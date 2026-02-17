@@ -253,6 +253,11 @@ function buildExplanation(type, context) {
       }
       return EMOTION_FACTS[String(ca || '').toLowerCase()] || '';
 
+    case 'vocab':
+      if (correctAnswer) return `Yes! That's a ${correctAnswer}!`;
+      if (answer) return `The word for that picture is ${answer}.`;
+      return '';
+
     case 'science':
       return extra || pick(SCIENCE_FACTS);
 
