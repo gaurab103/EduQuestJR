@@ -156,16 +156,16 @@ export default function Games() {
               🔒 Premium
             </Link>
           ) : (
-            <Link
-              to={selectedChildId ? `/play/${game.slug}?child=${selectedChildId}` : '#'}
-              className={styles.playBtn}
-              onClick={(e) => {
-                if (!selectedChildId) e.preventDefault();
-                else playClick();
-              }}
-            >
-              {selectedChildId ? '▶ Play Now' : 'Select child first'}
-            </Link>
+                    <Link
+                      to={selectedChildId ? `/play/${game.slug}?child=${selectedChildId}` : '#'}
+                      className={styles.playBtn}
+                      onClick={(e) => {
+                        if (!selectedChildId) e.preventDefault();
+                        else playClick();
+                      }}
+                    >
+                      {selectedChildId ? '▶ Play Now' : (childList.length === 0 ? 'Add child to play' : 'Select child')}
+                    </Link>
           )}
         </div>
       </div>
@@ -220,10 +220,10 @@ export default function Games() {
         <div className={styles.noChildBanner}>
           <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f9d2.svg" alt="" className={styles.noChildImg} />
           <div>
-            <strong>Almost there!</strong>
-            <p>A parent needs to add a child profile before you can play.</p>
+            <strong>Add a child to play</strong>
+            <p>Games save progress to a child&apos;s profile. Add a child from the Dashboard to start playing.</p>
             <Link to="/dashboard" className={styles.noChildBtn}>
-              Go to Parent Setup
+              {isAdultMode ? 'Add Child Profile' : 'Go to Parent Setup'}
             </Link>
           </div>
         </div>

@@ -270,6 +270,7 @@ export async function submitProgress(req, res, next) {
       rewards: {
         xp: xpEarned,
         coins: coinsEarned,
+        accuracy,
         levelUp,
         previousLevel,
         newLevel: child.level,

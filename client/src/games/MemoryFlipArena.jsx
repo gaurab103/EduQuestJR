@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { useTeaching } from './useTeaching';
-import { getFeedbackDelay } from './levelConfig';
 import { MEMORY_THEMES, GameImage } from './gameImages';
 import styles from './GameCommon.module.css';
 
@@ -17,9 +16,11 @@ function getGridConfig(level) {
 }
 
 function getFlipBackMs(level) {
-  if (level <= 10) return 0;
-  if (level <= 15) return 1200;
-  if (level <= 20) return 900;
+  // Quick flip-back on wrong match — never use full teaching delay
+  if (level <= 5) return 800;
+  if (level <= 10) return 700;
+  if (level <= 15) return 900;
+  if (level <= 20) return 800;
   return 700;
 }
 
@@ -80,11 +81,10 @@ export default function MemoryFlipArena({ onComplete, level = 1 }) {
         lockRef.current = false;
       } else {
         playWrong();
-        const delay = flipBackMs > 0 ? flipBackMs : getFeedbackDelay(level, false);
         setTimeout(() => {
           setFlipped([]);
           lockRef.current = false;
-        }, delay);
+        }, flipBackMs);
       }
     }
   }
@@ -107,7 +107,6 @@ export default function MemoryFlipArena({ onComplete, level = 1 }) {
         <span>Moves: {moves}</span>
         <span>·</span>
         <span>Matched: {matched.length / 2}/{PAIRS}</span>
-        {flipBackMs > 0 && <span>· ⏱️ {flipBackMs / 1000}s</span>}
       </div>
       <p className={styles.prompt}>Find matching {theme.name.toLowerCase()} pairs!</p>
       <div className={styles.memoryGrid} style={{
@@ -144,11 +143,6 @@ export default function MemoryFlipArena({ onComplete, level = 1 }) {
       {matched.length > 0 && matched.length < PAIRS * 2 && (
         <p style={{ marginTop: '0.75rem', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>
           {matched.length / 2 === PAIRS - 1 ? 'Almost there! One more!' : `${PAIRS - matched.length / 2} more to find!`}
-        </p>
-      )}
-      {flipBackMs > 0 && (
-        <p style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-          Cards flip back in {flipBackMs / 1000} seconds!
         </p>
       )}
     </div>

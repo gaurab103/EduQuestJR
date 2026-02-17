@@ -46,7 +46,7 @@ const SIMPLE_SCENES = [
     regions: [
       { id: 'sky', label: 'Sky', d: 'M0,0 L260,0 L260,180 L0,180 Z', suggest: 'sky', layer: 0 },
       { id: 'sun', label: 'Sun', d: 'M130,90 m-35,0 a 35,35 0 1,1 70,0 a 35,35 0 1,1 -70,0', suggest: 'yellow', layer: 1 },
-      { id: 'cloud', label: 'Cloud', d: 'M50,140 Q70,120 100,140 Q130,160 100,170 Q70,180 50,160 Q30,150 50,140 Z', suggest: 'pink', layer: 1 },
+      { id: 'cloud', label: 'Cloud', d: 'M50,140 Q70,120 100,140 Q130,160 100,170 Q70,180 50,160 Q30,150 50,140 Z', suggest: 'sky', layer: 1 },
       { id: 'ground', label: 'Ground', d: 'M0,195 L260,195 L260,220 L0,220 Z', suggest: 'green', layer: 1 },
     ],
   },
@@ -228,7 +228,7 @@ export default function DigitalColoringBook({ onComplete, level = 1, childName }
 
   if (round >= ROUNDS) {
     const finalAccuracy = totalRegions > 0 ? Math.round((totalCorrect / totalRegions) * 100) : 100;
-    const stars = finalAccuracy >= 80 ? 3 : finalAccuracy >= 50 ? 2 : 1;
+    const stars = finalAccuracy >= 75 ? 3 : finalAccuracy >= 45 ? 2 : 1;
     return (
       <div className={styles.container}>
         <div className={styles.celebration}>
@@ -241,7 +241,7 @@ export default function DigitalColoringBook({ onComplete, level = 1, childName }
           </p>
           <p style={{ fontSize: '1.1rem', fontWeight: 700 }}>Score: {score}</p>
           <p style={{ color: 'var(--text-muted)' }}>You colored {ROUNDS} scene{ROUNDS !== 1 ? 's' : ''}!</p>
-          {finalAccuracy >= 80 && <p style={{ color: 'var(--success)', fontWeight: 700, marginTop: '0.5rem' }}>Great color choices!</p>}
+          {finalAccuracy >= 75 && <p style={{ color: 'var(--success)', fontWeight: 700, marginTop: '0.5rem' }}>Great color choices!</p>}
         </div>
       </div>
     );
@@ -288,7 +288,7 @@ export default function DigitalColoringBook({ onComplete, level = 1, childName }
         background: 'rgba(251,191,36,0.12)', padding: '0.4rem 0.6rem', borderRadius: 8,
         fontWeight: 600,
       }}>
-        ★★★ 80%+ correct colors · ★★☆ 50%+ · ★☆☆ Keep practicing!
+        ★★★ 75%+ · ★★☆ 45%+ · ★☆☆ Keep practicing!
       </p>
 
       {/* Color guide: what to color what */}
@@ -321,21 +321,27 @@ export default function DigitalColoringBook({ onComplete, level = 1, childName }
         ))}
       </div>
 
-      {/* SVG Scene */}
+      {/* SVG Scene - coloring book style */}
       <div style={{
-        background: '#fff', borderRadius: 16, padding: 8,
-        border: '2px solid var(--card-border)', display: 'inline-block',
+        background: 'linear-gradient(180deg, #fefce8 0%, #fff 100%)',
+        borderRadius: 20,
+        padding: 16,
+        border: '3px solid #e5e7eb',
+        display: 'inline-block',
         maxWidth: '100%',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.8)',
       }}>
-        <svg viewBox="0 0 260 220" style={{ width: '100%', maxWidth: 360, height: 'auto' }}>
+        <svg viewBox="0 0 260 220" style={{ width: '100%', maxWidth: 360, height: 'auto', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.06))' }}>
           {[...scene.regions].sort((a, b) => (a.layer ?? 0) - (b.layer ?? 0)).map(r => (
             <path
               key={r.id}
               d={r.d}
-              fill={regionColors[r.id] || '#f3f4f6'}
-              stroke="#333"
-              strokeWidth={2}
-              style={{ cursor: done ? 'default' : 'pointer', transition: 'fill 0.2s', pointerEvents: 'all' }}
+              fill={regionColors[r.id] || '#f8fafc'}
+              stroke={regionColors[r.id] ? 'rgba(0,0,0,0.15)' : '#94a3b8'}
+              strokeWidth={regionColors[r.id] ? 1.5 : 2.5}
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              style={{ cursor: done ? 'default' : 'pointer', transition: 'fill 0.25s ease, stroke 0.2s', pointerEvents: 'all' }}
               onClick={() => handleRegionClick(r.id)}
             >
               <title>{r.label}</title>

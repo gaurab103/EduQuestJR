@@ -71,7 +71,7 @@ export default function RewardModal({ rewards, child, gameLevel = 1, hasNextLeve
     const t = requestAnimationFrame(() => {
       requestAnimationFrame(() => setShow(true));
     });
-    const starCount = rewards?.accuracy >= 80 ? 3 : rewards?.accuracy >= 50 ? 2 : 1;
+    const starCount = rewards?.accuracy >= 75 ? 3 : rewards?.accuracy >= 45 ? 2 : 1;
 
     // Stagger star animations — each star pops in with sound
     const timers = [];
@@ -145,14 +145,14 @@ export default function RewardModal({ rewards, child, gameLevel = 1, hasNextLeve
             <div className={styles.starBar}>
               <div
                 className={styles.starBarFill}
-                style={{ width: `${(rewards?.accuracy >= 80 ? 3 : rewards?.accuracy >= 50 ? 2 : 1) / 3 * 100}%` }}
+                style={{ width: `${(rewards?.accuracy >= 75 ? 3 : rewards?.accuracy >= 45 ? 2 : 1) / 3 * 100}%` }}
               />
             </div>
             <p className={styles.starsEarned}>
-              {rewards?.accuracy >= 80 ? 3 : rewards?.accuracy >= 50 ? 2 : 1} of 3 stars earned!
+              {rewards?.accuracy >= 75 ? 3 : rewards?.accuracy >= 45 ? 2 : 1} of 3 stars earned!
             </p>
             <p className={styles.starCriteria}>
-              {rewards?.accuracy >= 80 ? '★★★ Excellent! 80%+' : rewards?.accuracy >= 50 ? '★★☆ Good! 50%+' : '★☆☆ Nice try! Keep practicing!'}
+              {rewards?.accuracy >= 75 ? '★★★ Excellent! 75%+' : rewards?.accuracy >= 45 ? '★★☆ Good! 45%+' : '★☆☆ Nice try! Keep practicing!'}
             </p>
           </div>
           {isReplay ? (
