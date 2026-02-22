@@ -1,7 +1,49 @@
 .page {
-  max-width: 560px;
+  max-width: 600px;
   margin: 0 auto;
   padding: 0.5rem 0;
+}
+
+.heroCard {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(139, 92, 246, 0.08));
+  border: 2px solid rgba(56, 189, 248, 0.2);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.heroIcon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.heroTitle {
+  font-size: 1.25rem;
+  font-weight: 900;
+  margin: 0 0 0.25rem;
+}
+
+.heroSub {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.subRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.subBadge {
+  padding: 0.25rem 0.75rem;
+  background: rgba(74, 222, 128, 0.2);
+  color: #16a34a;
+  border-radius: 999px;
+  font-size: 0.9rem;
 }
 
 .pageHeader {

@@ -296,7 +296,7 @@ export async function listProgress(req, res, next) {
     const list = await Progress.find({ childId: child._id })
       .populate('gameId', 'title slug category')
       .sort({ completedAt: -1 })
-      .limit(50)
+      .limit(200)
       .lean();
 
     res.json({ progress: list });

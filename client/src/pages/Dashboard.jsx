@@ -82,7 +82,7 @@ export default function Dashboard() {
             .then(results => {
               const all = results.flatMap(r => r.progress || []);
               all.sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
-              setRecentActivity(all.slice(0, 8));
+              setRecentActivity(all.slice(0, 100));
             });
           aiApi.encouragement({ childName: 'parent', childAge: 0, level: 0, streak: 0, recentAccuracy: 0 })
             .then(res => setAiTip(res.message))
@@ -187,10 +187,16 @@ export default function Dashboard() {
   const highestLevel = Math.max(1, ...childList.map(c => c.level || 1));
 
   const today = new Date().toDateString();
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toDateString();
   const todayActivity = recentActivity.filter(p => new Date(p.completedAt).toDateString() === today);
+  const yesterdayActivity = recentActivity.filter(p => new Date(p.completedAt).toDateString() === yesterdayStr);
   const gamesPlayedToday = todayActivity.length;
+  const gamesPlayedYesterday = yesterdayActivity.length;
   const timeSpentTodayMinutes = Math.round(gamesPlayedToday * 2.5);
   const bestAccuracyToday = todayActivity.length > 0 ? Math.max(...todayActivity.map(p => p.accuracy || 0)) : 0;
+  const gamesDiff = gamesPlayedYesterday > 0 ? gamesPlayedToday - gamesPlayedYesterday : null;
 
   // Weekly activity for mini chart (last 7 days)
   const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -270,6 +276,40 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Today's Highlights — Hero section (prominent) */}
+      {childList.length > 0 && (
+        <div className={styles.todayHighlights}>
+          <div className={styles.todayHighlightsHeader}>
+            <h2 className={styles.todayHighlightsTitle}>
+              <span className={styles.todayHighlightsIcon}>📊</span>
+              Today&apos;s Highlights
+            </h2>
+            {gamesDiff !== null && gamesDiff !== 0 && (
+              <span className={styles.todayVsYesterday} data-trend={gamesDiff > 0 ? 'up' : 'down'}>
+                {gamesDiff > 0 ? '↑' : '↓'} {Math.abs(gamesDiff)} vs yesterday
+              </span>
+            )}
+          </div>
+          <div className={styles.todayHighlightsRow}>
+            <div className={styles.todayHighlightCard} data-accent="games">
+              <span className={styles.todayHighlightValue}><AnimatedCountUp value={gamesPlayedToday} /></span>
+              <span className={styles.todayHighlightLabel}>Games played</span>
+              <span className={styles.todayHighlightSub}>today</span>
+            </div>
+            <div className={styles.todayHighlightCard} data-accent="time">
+              <span className={styles.todayHighlightValue}><AnimatedCountUp value={timeSpentTodayMinutes} suffix=" min" /></span>
+              <span className={styles.todayHighlightLabel}>Learning time</span>
+              <span className={styles.todayHighlightSub}>~2.5 min per game</span>
+            </div>
+            <div className={styles.todayHighlightCard} data-accent="accuracy">
+              <span className={styles.todayHighlightValue}><AnimatedCountUp value={bestAccuracyToday} suffix="%" /></span>
+              <span className={styles.todayHighlightLabel}>Best accuracy</span>
+              <span className={styles.todayHighlightSub}>today</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Weekly Activity Mini Chart */}
       {childList.length > 0 && recentActivity.length > 0 && (
         <div className={styles.weeklyChart}>
@@ -288,27 +328,6 @@ export default function Dashboard() {
                 {weeklyByDay[i] > 0 && <span className={styles.weeklyChartCount}>{weeklyByDay[i]}</span>}
               </div>
             ))}
-          </div>
-        </div>
-      )}
-
-      {/* Today's Highlights */}
-      {childList.length > 0 && (
-        <div className={styles.todayHighlights}>
-          <h2 className={styles.todayHighlightsTitle}>Today's Highlights</h2>
-          <div className={styles.todayHighlightsRow}>
-            <div className={styles.todayHighlightCard}>
-              <span className={styles.todayHighlightValue}><AnimatedCountUp value={gamesPlayedToday} /></span>
-              <span className={styles.todayHighlightLabel}>Games played today</span>
-            </div>
-            <div className={styles.todayHighlightCard}>
-              <span className={styles.todayHighlightValue}><AnimatedCountUp value={timeSpentTodayMinutes} suffix=" min" /></span>
-              <span className={styles.todayHighlightLabel}>Time spent learning</span>
-            </div>
-            <div className={styles.todayHighlightCard}>
-              <span className={styles.todayHighlightValue}><AnimatedCountUp value={bestAccuracyToday} suffix="%" /></span>
-              <span className={styles.todayHighlightLabel}>Best accuracy today</span>
-            </div>
           </div>
         </div>
       )}
@@ -458,7 +477,7 @@ export default function Dashboard() {
                         <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3ae.svg" alt="" className={styles.actionBtnImg} />
                         Let {c.name} Play
                       </button>
-                      <Link to={`/analytics/${c._id}`} className={styles.childActionBtn}>
+                      <Link to={`/analytics/${c._id}`} className={styles.childActionBtn} title="View analytics">
                         📊
                       </Link>
                       <Link to={`/shop?child=${c._id}`} className={styles.childActionBtn}>
@@ -681,6 +700,12 @@ export default function Dashboard() {
             <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4ca.svg" alt="" className={styles.actionCardImg} />
             <span className={styles.actionLabel}>Settings</span>
           </Link>
+          {childList.length > 0 && (
+            <Link to={`/analytics/${childList[0]._id}`} className={styles.actionCard} style={{ background: 'linear-gradient(135deg, #0ea5e9, #06b6d4)' }}>
+              <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4ca.svg" alt="" className={styles.actionCardImg} />
+              <span className={styles.actionLabel}>Analytics</span>
+            </Link>
+          )}
         </div>
       </section>
     </div>

@@ -60,6 +60,12 @@ export default function Settings() {
         <Link to="/dashboard" className={styles.back}>← Dashboard</Link>
       </div>
 
+      <div className={styles.heroCard}>
+        <span className={styles.heroIcon}>⚙️</span>
+        <h2 className={styles.heroTitle}>Advanced Settings</h2>
+        <p className={styles.heroSub}>Manage your account, PIN, language, and preferences.</p>
+      </div>
+
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Profile</h2>
         <div className={styles.card}>
@@ -124,22 +130,36 @@ export default function Settings() {
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Audio</h2>
+        <h2 className={styles.sectionTitle}>Learning Preferences</h2>
         <div className={styles.card}>
           <div className={styles.toggleRow}>
-            <span>Sound Effects & Speech</span>
+            <span>Sound effects & speech</span>
             <button type="button" onClick={toggleMute} className={styles.toggleBtn}>
               {muted ? '🔇 Muted' : '🔊 On'}
             </button>
           </div>
+          <p className={styles.detail}>Buddy Bear and game sounds use this setting.</p>
         </div>
       </section>
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Subscription</h2>
         <div className={styles.card}>
-          <p>Current plan: <strong>{user?.subscriptionStatus === 'active' ? 'Premium' : user?.subscriptionStatus === 'trial' ? 'Trial (Premium)' : 'Free'}</strong></p>
-          <Link to="/subscription" className={styles.linkBtn}>Manage Subscription</Link>
+          <div className={styles.subRow}>
+            <span>Current plan</span>
+            <strong className={styles.subBadge}>
+              {user?.subscriptionStatus === 'active' ? 'Premium' : user?.subscriptionStatus === 'trial' ? 'Trial (Premium)' : 'Free'}
+            </strong>
+          </div>
+          <Link to="/subscription" className={styles.linkBtn}>Manage Subscription →</Link>
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Data & Privacy</h2>
+        <div className={styles.card}>
+          <p className={styles.detail}>Your data is stored securely. Progress is tied to your account.</p>
+          <Link to="/dashboard" className={styles.linkBtn}>Back to Dashboard</Link>
         </div>
       </section>
     </div>

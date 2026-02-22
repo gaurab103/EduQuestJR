@@ -88,6 +88,15 @@
   margin: 0;
 }
 
+.gameDesc {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin: 0.25rem 0 0;
+  max-width: 420px;
+  text-align: center;
+  line-height: 1.4;
+}
+
 .hintBtn {
   padding: 0.4rem 0.8rem;
   background: rgba(139, 92, 246, 0.2);

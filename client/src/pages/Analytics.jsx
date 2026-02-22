@@ -43,10 +43,29 @@ export default function Analytics() {
     chartDays.push({ date: key, label: d.toLocaleDateString('en', { month: 'short', day: 'numeric' }), count: dailyActivity[key] || 0 });
   }
 
+  // Compute week-over-week insight
+  const last7Days = chartDays.slice(-7);
+  const prev7Days = chartDays.slice(-14, -7);
+  const sumLast7 = last7Days.reduce((s, d) => s + d.count, 0);
+  const sumPrev7 = prev7Days.reduce((s, d) => s + d.count, 0);
+  const weekTrend = sumPrev7 > 0 ? Math.round(((sumLast7 - sumPrev7) / sumPrev7) * 100) : null;
+
   return (
     <div className={styles.page}>
       <Link to={`/child/${childId}`} className={styles.back}>← Back to {child.name}</Link>
-      <h1 className={styles.title}>Analytics for {child.name}</h1>
+
+      <div className={styles.heroBanner}>
+        <div className={styles.heroAvatar}>{child.avatarConfig?.emoji || '👤'}</div>
+        <div className={styles.heroContent}>
+          <h1 className={styles.title}>Learning Analytics</h1>
+          <p className={styles.heroSub}>{child.name}&apos;s progress & insights</p>
+          {weekTrend !== null && (
+            <span className={styles.trendBadge} data-trend={weekTrend >= 0 ? 'up' : 'down'}>
+              {weekTrend >= 0 ? '↑' : '↓'} {Math.abs(weekTrend)}% vs last week
+            </span>
+          )}
+        </div>
+      </div>
 
       <div className={styles.summaryGrid}>
         <div className={styles.summaryCard}>
@@ -68,7 +87,7 @@ export default function Analytics() {
       </div>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Daily Activity (Last 14 Days)</h2>
+        <h2 className={styles.sectionTitle}>📈 Daily Activity (Last 14 Days)</h2>
         <div className={styles.barChart}>
           {chartDays.map((d) => (
             <div key={d.date} className={styles.barCol}>
@@ -82,7 +101,7 @@ export default function Analytics() {
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Category Breakdown</h2>
+        <h2 className={styles.sectionTitle}>🧠 Category Breakdown</h2>
         <div className={styles.catList}>
           {categoryStats.map((c) => (
             <div key={c.category} className={styles.catItem}>
@@ -98,7 +117,7 @@ export default function Analytics() {
 
       {topGames.length > 0 && (
         <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Top Games</h2>
+          <h2 className={styles.sectionTitle}>🏆 Top Games</h2>
           <div className={styles.topList}>
             {topGames.map((g, i) => (
               <div key={g.slug} className={styles.topItem}>
@@ -113,7 +132,7 @@ export default function Analytics() {
 
       {accuracyTrend.length > 0 && (
         <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Accuracy Trend (Last 10 Games)</h2>
+          <h2 className={styles.sectionTitle}>📊 Accuracy Trend (Last 10 Games)</h2>
           <div className={styles.trendChart}>
             {accuracyTrend.map((t, i) => (
               <div key={i} className={styles.trendCol}>
@@ -127,7 +146,7 @@ export default function Analytics() {
 
       {recentGames.length > 0 && (
         <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Recent Games</h2>
+          <h2 className={styles.sectionTitle}>🎮 Recent Games</h2>
           <div className={styles.recentList}>
             {recentGames.map((g, i) => (
               <div key={i} className={styles.recentItem}>

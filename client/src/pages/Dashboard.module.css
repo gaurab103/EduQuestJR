@@ -188,6 +188,117 @@
 .planLimit { display: block; font-size: 0.7rem; color: var(--text-muted); font-weight: 600; }
 .upgradeLink { display: block; font-size: 0.78rem; color: var(--primary); font-weight: 700; }
 
+/* ======= TODAY'S HIGHLIGHTS (Hero) ======= */
+.todayHighlights {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(139, 92, 246, 0.1));
+  border: 2px solid rgba(56, 189, 248, 0.25);
+  border-radius: var(--radius);
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 8px 32px rgba(56, 189, 248, 0.12);
+}
+
+.todayHighlightsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.todayHighlightsTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 900;
+  margin: 0;
+  color: var(--text);
+}
+
+.todayHighlightsIcon {
+  font-size: 1.5rem;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.todayVsYesterday {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+}
+
+.todayVsYesterday[data-trend="up"] {
+  background: rgba(74, 222, 128, 0.2);
+  color: #16a34a;
+}
+
+.todayVsYesterday[data-trend="down"] {
+  background: rgba(251, 146, 60, 0.2);
+  color: #ea580c;
+}
+
+.todayHighlightsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.todayHighlightCard {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 1.25rem 1rem;
+  text-align: center;
+  box-shadow: var(--shadow-soft);
+  border: 2px solid transparent;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.todayHighlightCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+
+.todayHighlightCard[data-accent="games"] {
+  border-color: rgba(56, 189, 248, 0.3);
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.08), transparent);
+}
+
+.todayHighlightCard[data-accent="time"] {
+  border-color: rgba(139, 92, 246, 0.3);
+  background: linear-gradient(180deg, rgba(139, 92, 246, 0.08), transparent);
+}
+
+.todayHighlightCard[data-accent="accuracy"] {
+  border-color: rgba(74, 222, 128, 0.3);
+  background: linear-gradient(180deg, rgba(74, 222, 128, 0.08), transparent);
+}
+
+.todayHighlightValue {
+  display: block;
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--primary);
+  line-height: 1.2;
+  margin-bottom: 0.2rem;
+}
+
+.todayHighlightLabel {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.todayHighlightSub {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-top: 0.15rem;
+}
+
 /* ======= WEEKLY CHART ======= */
 .weeklyChart {
   background: var(--card-bg);
@@ -1002,6 +1113,12 @@
 }
 
 @media (max-width: 480px) {
+  .todayHighlightsRow {
+    grid-template-columns: 1fr;
+  }
+  .todayHighlightValue {
+    font-size: 1.75rem;
+  }
   .welcomeBanner {
     flex-direction: column;
     align-items: flex-start;

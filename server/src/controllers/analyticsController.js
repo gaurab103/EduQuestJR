@@ -68,7 +68,7 @@ export async function getAnalytics(req, res, next) {
     }));
 
     res.json({
-      child: { _id: child._id, name: child.name, level: child.level, xp: child.xp, coins: child.coins, currentStreak: child.currentStreak },
+      child: { _id: child._id, name: child.name, level: child.level, xp: child.xp, coins: child.coins, currentStreak: child.currentStreak, avatarConfig: child.avatarConfig },
       totalGames,
       avgAccuracy: Math.round(avgAccuracy),
       avgScore: Math.round(avgScore),
