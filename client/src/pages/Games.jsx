@@ -175,6 +175,9 @@ export default function Games() {
             </span>
           </div>
           <h3 className={styles.cardTitle}>{game.title}</h3>
+          {game.description && (
+            <p className={styles.cardDesc}>{game.description}</p>
+          )}
           <span className={styles.cardCategory}>
             {CATEGORY_LABELS[game.category] || game.category}
           </span>

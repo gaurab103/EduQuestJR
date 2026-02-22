@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useChildMode } from '../context/ChildModeContext';
 import { useAudio } from '../context/AudioContext';
@@ -12,6 +12,7 @@ import styles from './Layout.module.css';
 export default function Layout({ children }) {
   const { user, logout, isAuthenticated } = useAuth();
   const { isAdultMode, enterAdultMode, exitAdultMode } = useChildMode();
+  const navigate = useNavigate();
   const { muted, toggleMute } = useAudio();
   const { isDark, toggleTheme } = useTheme();
   const [showPinModal, setShowPinModal] = useState(false);
@@ -93,6 +94,7 @@ export default function Layout({ children }) {
           onSuccess={(pin) => {
             if (enterAdultMode(pin)) {
               setShowPinModal(false);
+              navigate('/dashboard');
               return true;
             }
             return false;

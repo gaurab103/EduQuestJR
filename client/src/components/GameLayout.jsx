@@ -65,6 +65,9 @@ export default function GameLayout({ child, game, minutesLeftToday, isPremium, p
             </button>
           </div>
           <h1 className={styles.gameTitle}>{game.title}</h1>
+          {game.description && (
+            <p className={styles.gameDesc}>{game.description}</p>
+          )}
         </div>
       )}
       {hint && <p className={styles.hintText}>{hint}</p>}

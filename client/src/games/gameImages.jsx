@@ -18,16 +18,17 @@ const W = (path, w = 200) => {
   const file = path.split('/').pop();
   return `https://upload.wikimedia.org/wikipedia/commons/thumb/${path}/${w}px-${file}`;
 };
+// Verified Wikimedia Commons URLs (CC BY/CC BY-SA)
 export const PHOTO_IMAGES = {
-  apple:    W('1/15/Red_Apple.jpg'),
-  orange:   W('e/ed/Orange-Fruit-Pieces.jpg'),
-  banana:   W('8/8a/Banana-Single.jpg'),
-  dog:      W('2/26/YellowLabradorLooking_new.jpg'),
-  cat:      W('3/3a/Cat03.jpg'),
-  fish:     W('e/ea/Red_snapper_American_red_snapper.jpg'),
-  sun:      W('2/2b/Sun_in_February.jpg', 150),
-  tree:     W('2/2f/Apple_tree_in_bloom.jpg'),
-  flower:   W('a/a4/Flower_July_2011-1.jpg'),
+  apple:    'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Red_Apple.jpg/200px-Red_Apple.jpg',
+  orange:   'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Orange-Fruit-Pieces.jpg/200px-Orange-Fruit-Pieces.jpg',
+  banana:   'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Banana-Single.jpg/200px-Banana-Single.jpg',
+  dog:      'https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/YellowLabradorLooking_new.jpg/200px-YellowLabradorLooking_new.jpg',
+  cat:      'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/200px-Cat03.jpg',
+  fish:     'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Red_snapper_American_red_snapper.jpg/200px-Red_snapper_American_red_snapper.jpg',
+  sun:      'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Sun_in_February.jpg/150px-Sun_in_February.jpg',
+  tree:     'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Apple_tree_in_bloom.jpg/200px-Apple_tree_in_bloom.jpg',
+  flower:   'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Flower_July_2011-1.jpg/200px-Flower_July_2011-1.jpg',
 };
 
 // ═══ FRUITS ═══
