@@ -8,32 +8,32 @@ import { useTeaching } from './useTeaching';
 import { useNoRepeat } from './useNoRepeat';
 import { getRounds, getChoiceCount, getFeedbackDelay } from './levelConfig';
 import { getCorrectMessage, getWrongPrefix } from './feedbackMessages';
-import { GameImage, ANIMAL_IMAGES, FRUIT_IMAGES, OBJECT_IMAGES, VEGGIE_IMAGES, FOOD_IMAGES } from './gameImages';
+import { GameImage, ANIMAL_IMAGES, FRUIT_IMAGES, OBJECT_IMAGES, VEGGIE_IMAGES, FOOD_IMAGES, PHOTO_IMAGES } from './gameImages';
 import styles from './GameCommon.module.css';
 
 const PICTURE_WORDS = [
-  { word: 'Apple', img: FRUIT_IMAGES.apple },
+  { word: 'Apple', img: PHOTO_IMAGES.apple || FRUIT_IMAGES.apple },
   { word: 'Bear', img: ANIMAL_IMAGES.bear },
-  { word: 'Cat', img: ANIMAL_IMAGES.cat },
-  { word: 'Dog', img: ANIMAL_IMAGES.dog },
+  { word: 'Cat', img: PHOTO_IMAGES.cat || ANIMAL_IMAGES.cat },
+  { word: 'Dog', img: PHOTO_IMAGES.dog || ANIMAL_IMAGES.dog },
   { word: 'Elephant', img: ANIMAL_IMAGES.elephant },
-  { word: 'Fish', img: ANIMAL_IMAGES.fish },
+  { word: 'Fish', img: PHOTO_IMAGES.fish || ANIMAL_IMAGES.fish },
   { word: 'Grapes', img: FRUIT_IMAGES.grapes },
   { word: 'House', img: OBJECT_IMAGES.house },
   { word: 'Lion', img: ANIMAL_IMAGES.lion },
   { word: 'Monkey', img: ANIMAL_IMAGES.monkey },
-  { word: 'Orange', img: FRUIT_IMAGES.orange },
+  { word: 'Orange', img: PHOTO_IMAGES.orange || FRUIT_IMAGES.orange },
   { word: 'Penguin', img: ANIMAL_IMAGES.penguin },
   { word: 'Rabbit', img: ANIMAL_IMAGES.rabbit },
-  { word: 'Sun', img: OBJECT_IMAGES.sun },
-  { word: 'Tree', img: OBJECT_IMAGES.tree },
+  { word: 'Sun', img: PHOTO_IMAGES.sun || OBJECT_IMAGES.sun },
+  { word: 'Tree', img: PHOTO_IMAGES.tree || OBJECT_IMAGES.tree },
   { word: 'Whale', img: ANIMAL_IMAGES.whale },
   { word: 'Car', img: OBJECT_IMAGES.car },
-  { word: 'Flower', img: OBJECT_IMAGES.flower },
+  { word: 'Flower', img: PHOTO_IMAGES.flower || OBJECT_IMAGES.flower },
   { word: 'Star', img: OBJECT_IMAGES.star },
   { word: 'Moon', img: OBJECT_IMAGES.moon },
   { word: 'Butterfly', img: ANIMAL_IMAGES.butterfly },
-  { word: 'Banana', img: FRUIT_IMAGES.banana },
+  { word: 'Banana', img: PHOTO_IMAGES.banana || FRUIT_IMAGES.banana },
   { word: 'Cookie', img: FOOD_IMAGES.cookie },
   { word: 'Pizza', img: FOOD_IMAGES.pizza },
   { word: 'Carrot', img: VEGGIE_IMAGES.carrot },

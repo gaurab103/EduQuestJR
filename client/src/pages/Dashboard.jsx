@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useChildMode } from '../context/ChildModeContext';
 import { children as childrenApi, progress as progressApi, challenges as challengesApi, ai as aiApi } from '../api/client';
@@ -57,7 +57,8 @@ const CATEGORY_IMAGES = {
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const { isAdultMode, enterAdultMode } = useChildMode();
+  const { isAdultMode, enterAdultMode, exitAdultMode } = useChildMode();
+  const navigate = useNavigate();
   const [childList, setChildList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
@@ -191,6 +192,19 @@ export default function Dashboard() {
   const timeSpentTodayMinutes = Math.round(gamesPlayedToday * 2.5);
   const bestAccuracyToday = todayActivity.length > 0 ? Math.max(...todayActivity.map(p => p.accuracy || 0)) : 0;
 
+  // Weekly activity for mini chart (last 7 days)
+  const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const weekStart = new Date();
+  weekStart.setDate(weekStart.getDate() - 6);
+  const weeklyByDay = [0, 0, 0, 0, 0, 0, 0];
+  recentActivity.forEach(p => {
+    const d = new Date(p.completedAt);
+    if (d >= weekStart) {
+      const idx = d.getDay();
+      weeklyByDay[idx] = (weeklyByDay[idx] || 0) + 1;
+    }
+  });
+
   const getTimeOfDay = () => {
     const h = new Date().getHours();
     if (h < 12) return 'Good morning';
@@ -200,6 +214,23 @@ export default function Dashboard() {
 
   return (
     <div className={styles.dashboard}>
+      {/* Parent Mode indicator + Switch to Child CTA */}
+      {childList.length > 0 && (
+        <div className={styles.modeSwitchBanner}>
+          <div className={styles.modeSwitchLeft}>
+            <span className={styles.modeBadge}>👑 Parent Mode</span>
+            <span className={styles.modeHint}>Games are only playable in Child Mode</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => { exitAdultMode(); navigate(childList.length > 0 ? `/games?child=${childList[0]._id}` : '/games'); }}
+            className={styles.modeSwitchBtn}
+          >
+            👶 Switch to Child Mode
+          </button>
+        </div>
+      )}
+
       {/* Welcome banner with logo */}
       <div className={styles.welcomeBanner}>
         <div className={styles.welcomeLeft}>
@@ -238,6 +269,28 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Weekly Activity Mini Chart */}
+      {childList.length > 0 && recentActivity.length > 0 && (
+        <div className={styles.weeklyChart}>
+          <h3 className={styles.weeklyChartTitle}>This Week</h3>
+          <div className={styles.weeklyChartBars}>
+            {DAYS.map((label, i) => (
+              <div key={label} className={styles.weeklyChartCol}>
+                <div
+                  className={styles.weeklyChartBar}
+                  style={{
+                    height: `${Math.max(8, Math.min(100, (weeklyByDay[i] || 0) * 20))}%`,
+                    background: weeklyByDay[i] > 0 ? 'linear-gradient(180deg, var(--primary), #818cf8)' : 'rgba(0,0,0,0.06)',
+                  }}
+                />
+                <span className={styles.weeklyChartLabel}>{label}</span>
+                {weeklyByDay[i] > 0 && <span className={styles.weeklyChartCount}>{weeklyByDay[i]}</span>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Today's Highlights */}
       {childList.length > 0 && (
@@ -395,12 +448,16 @@ export default function Dashboard() {
                       </div>
                       <span className={styles.xpBarLabel}>{xpPct}% to Level {(c.level || 1) + 1}</span>
                     </Link>
-                    {/* Action buttons */}
+                    {/* Action buttons — games only in child mode */}
                     <div className={styles.childActions}>
-                      <Link to={`/games?child=${c._id}`} className={styles.childActionPrimary}>
+                      <button
+                        type="button"
+                        onClick={() => { exitAdultMode(); navigate(`/games?child=${c._id}`); }}
+                        className={styles.childActionPrimary}
+                      >
                         <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3ae.svg" alt="" className={styles.actionBtnImg} />
-                        Start Learning
-                      </Link>
+                        Let {c.name} Play
+                      </button>
                       <Link to={`/analytics/${c._id}`} className={styles.childActionBtn}>
                         📊
                       </Link>
@@ -595,14 +652,19 @@ export default function Dashboard() {
         </section>
       )}
 
-      {/* Quick Actions with real images */}
+      {/* Quick Actions — games require child mode */}
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Quick Actions</h2>
         <div className={styles.quickActions}>
-          <Link to="/games" className={styles.actionCard} style={{ background: 'linear-gradient(135deg, #38bdf8, #818cf8)' }}>
+          <button
+            type="button"
+            onClick={() => { exitAdultMode(); navigate(childList.length > 0 ? `/games?child=${childList[0]._id}` : '/games'); }}
+            className={styles.actionCard}
+            style={{ background: 'linear-gradient(135deg, #38bdf8, #818cf8)', border: 'none', cursor: 'pointer' }}
+          >
             <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3ae.svg" alt="" className={styles.actionCardImg} />
-            <span className={styles.actionLabel}>Play Games</span>
-          </Link>
+            <span className={styles.actionLabel}>Switch to Child Mode & Play</span>
+          </button>
           <Link to="/map" className={styles.actionCard} style={{ background: 'linear-gradient(135deg, #4ade80, #38bdf8)' }}>
             <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f30d.svg" alt="" className={styles.actionCardImg} />
             <span className={styles.actionLabel}>Adventure Map</span>

@@ -37,7 +37,6 @@ export default function Layout({ children }) {
             isAdultMode ? (
               <>
                 <Link to="/dashboard">Dashboard</Link>
-                <Link to="/games">Games</Link>
                 <Link to="/settings">Settings</Link>
                 <span className={styles.userName}>{user?.name}</span>
                 <button type="button" onClick={toggleTheme} className={styles.themeBtn} aria-label="Toggle theme" title={isDark ? 'Light mode' : 'Dark mode'}>

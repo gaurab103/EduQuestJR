@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useChildMode } from '../context/ChildModeContext';
 import { useAudio } from '../context/AudioContext';
@@ -59,7 +59,8 @@ const CATEGORY_ACCENTS = {
 
 export default function Games() {
   const { user } = useAuth();
-  const { isAdultMode } = useChildMode();
+  const { isAdultMode, exitAdultMode } = useChildMode();
+  const navigate = useNavigate();
   const { playClick } = useAudio();
   const [searchParams, setSearchParams] = useSearchParams();
   const urlChildId = searchParams.get('child');
@@ -68,11 +69,38 @@ export default function Games() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('');
   const [search, setSearch] = useState('');
+  const [bestOnly, setBestOnly] = useState(true);
   const [aiRecommendation, setAiRecommendation] = useState(null);
   const [dailyChallenge, setDailyChallenge] = useState(null);
 
   const selectedChildId = urlChildId || (childList.length > 0 ? childList[0]._id : null);
   const selectedChild = childList.find(c => c._id === selectedChildId) || null;
+
+  // Games are only playable in Child Mode — parent must switch first
+  if (isAdultMode) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.parentModeBlock}>
+          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f46a.svg" alt="" className={styles.parentModeImg} />
+          <h1 className={styles.parentModeTitle}>Parent Mode</h1>
+          <p className={styles.parentModeText}>
+            Games are only available in Child Mode. Switch to let your child play and learn!
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              exitAdultMode();
+              navigate(childList.length > 0 ? `/games?child=${childList[0]._id}` : '/games');
+            }}
+            className={styles.parentModeBtn}
+          >
+            👶 Switch to Child Mode
+          </button>
+          <Link to="/dashboard" className={styles.parentModeBack}>← Back to Dashboard</Link>
+        </div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     if (!urlChildId && childList.length > 0) {
@@ -114,8 +142,8 @@ export default function Games() {
     }
     const featured = list.filter((g) => FEATURED_SLUGS.has(g.slug));
     const other = list.filter((g) => !FEATURED_SLUGS.has(g.slug));
-    return { featuredGames: featured, otherGames: other };
-  }, [allGames, filter, search]);
+    return { featuredGames: featured, otherGames: bestOnly ? [] : other };
+  }, [allGames, filter, search, bestOnly]);
 
   function handleChildChange(e) {
     const id = e.target.value;
@@ -174,16 +202,22 @@ export default function Games() {
 
   return (
     <div className={styles.page}>
+      {/* Child Mode welcome — games only playable here */}
+      <div className={styles.childWelcome}>
+        <h1 className={styles.childWelcomeTitle}>
+          Hi{selectedChild ? ` ${selectedChild.name}` : ''}! 👋
+        </h1>
+        <p className={styles.childWelcomeSub}>
+          Pick a game and have fun learning! Your progress is saved.
+        </p>
+      </div>
+
       <div className={styles.pageHeader}>
         <img src="/logo.png" alt="EduQuestJr" className={styles.headerLogo} />
         <div>
-          <h1 className={styles.title}>
-            {isAdultMode ? 'Game Library' : "Let's Play!"}
-          </h1>
+          <h1 className={styles.title}>Let&apos;s Play!</h1>
           <p className={styles.subtitle}>
-            {isAdultMode
-              ? `${allGames.length} games across ${Object.keys(CATEGORY_LABELS).length} categories. ${!isPremium ? 'Some games require Premium.' : ''}`
-              : 'Pick a game and have fun learning!'}
+            {featuredGames.length + otherGames.length} games · Pick one and start learning!
           </p>
         </div>
       </div>
@@ -308,9 +342,23 @@ export default function Games() {
         <>
           {featuredGames.length > 0 && (
             <section className={styles.featuredSection}>
-              <h2 className={styles.featuredTitle}>
-                <span className={styles.featuredStar}>⭐</span> Best Games for Kids
-              </h2>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                <h2 className={styles.featuredTitle}>
+                  <span className={styles.featuredStar}>⭐</span> Best Games for Kids
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => setBestOnly(!bestOnly)}
+                  style={{
+                    fontSize: '0.85rem', fontWeight: 700, padding: '0.4rem 0.8rem',
+                    borderRadius: 999, border: '2px solid rgba(56,189,248,0.3)',
+                    background: bestOnly ? 'rgba(56,189,248,0.1)' : 'transparent',
+                    color: 'var(--primary)', cursor: 'pointer',
+                  }}
+                >
+                  {bestOnly ? 'Show all games' : 'Best only'}
+                </button>
+              </div>
               <div className={styles.grid}>
                 {featuredGames.map((game) => renderGameCard(game))}
               </div>

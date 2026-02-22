@@ -13,6 +13,23 @@ const T = (code) => `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/s
 export const openMoji = (code) =>
   `https://openmoji.org/data/color/svg/${code}.svg`;
 
+/** Real photos from Wikimedia Commons (CC BY) — for richer visuals */
+const W = (path, w = 200) => {
+  const file = path.split('/').pop();
+  return `https://upload.wikimedia.org/wikipedia/commons/thumb/${path}/${w}px-${file}`;
+};
+export const PHOTO_IMAGES = {
+  apple:    W('1/15/Red_Apple.jpg'),
+  orange:   W('e/ed/Orange-Fruit-Pieces.jpg'),
+  banana:   W('8/8a/Banana-Single.jpg'),
+  dog:      W('2/26/YellowLabradorLooking_new.jpg'),
+  cat:      W('3/3a/Cat03.jpg'),
+  fish:     W('e/ea/Red_snapper_American_red_snapper.jpg'),
+  sun:      W('2/2b/Sun_in_February.jpg', 150),
+  tree:     W('2/2f/Apple_tree_in_bloom.jpg'),
+  flower:   W('a/a4/Flower_July_2011-1.jpg'),
+};
+
 // ═══ FRUITS ═══
 export const FRUIT_IMAGES = {
   apple:      T('1f34e'),
@@ -214,11 +231,11 @@ export const COUNTING_THEMES = [
   {
     bg: 'Fruit Farm',
     objects: [
-      { name: 'apple', img: FRUIT_IMAGES.apple },
-      { name: 'orange', img: FRUIT_IMAGES.orange },
+      { name: 'apple', img: PHOTO_IMAGES.apple || FRUIT_IMAGES.apple },
+      { name: 'orange', img: PHOTO_IMAGES.orange || FRUIT_IMAGES.orange },
       { name: 'grapes', img: FRUIT_IMAGES.grapes },
       { name: 'strawberry', img: FRUIT_IMAGES.strawberry },
-      { name: 'banana', img: FRUIT_IMAGES.banana },
+      { name: 'banana', img: PHOTO_IMAGES.banana || FRUIT_IMAGES.banana },
       { name: 'watermelon', img: FRUIT_IMAGES.watermelon },
       { name: 'cherry', img: FRUIT_IMAGES.cherry },
     ],
@@ -226,8 +243,8 @@ export const COUNTING_THEMES = [
   {
     bg: 'Animal Park',
     objects: [
-      { name: 'dog', img: ANIMAL_IMAGES.dog },
-      { name: 'cat', img: ANIMAL_IMAGES.cat },
+      { name: 'dog', img: PHOTO_IMAGES.dog || ANIMAL_IMAGES.dog },
+      { name: 'cat', img: PHOTO_IMAGES.cat || ANIMAL_IMAGES.cat },
       { name: 'rabbit', img: ANIMAL_IMAGES.rabbit },
       { name: 'bear', img: ANIMAL_IMAGES.bear },
       { name: 'frog', img: ANIMAL_IMAGES.frog },
@@ -238,7 +255,7 @@ export const COUNTING_THEMES = [
   {
     bg: 'Garden',
     objects: [
-      { name: 'flower', img: OBJECT_IMAGES.flower },
+      { name: 'flower', img: PHOTO_IMAGES.flower || OBJECT_IMAGES.flower },
       { name: 'butterfly', img: ANIMAL_IMAGES.butterfly },
       { name: 'bee', img: ANIMAL_IMAGES.bee },
       { name: 'ladybug', img: ANIMAL_IMAGES.ladybug },

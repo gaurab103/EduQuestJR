@@ -47,6 +47,57 @@
   color: var(--text-muted);
 }
 
+/* ======= MODE SWITCH BANNER ======= */
+.modeSwitchBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(56, 189, 248, 0.08));
+  border: 2px solid rgba(139, 92, 246, 0.2);
+  border-radius: var(--radius);
+  flex-wrap: wrap;
+}
+
+.modeSwitchLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.modeBadge {
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.modeHint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.modeSwitchBtn {
+  padding: 0.65rem 1.25rem;
+  background: linear-gradient(135deg, #38bdf8, #818cf8);
+  color: white;
+  font-weight: 800;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+}
+
+.modeSwitchBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4);
+}
+
 /* ======= WELCOME BANNER ======= */
 .welcomeBanner {
   display: flex;
@@ -136,6 +187,58 @@
 
 .planLimit { display: block; font-size: 0.7rem; color: var(--text-muted); font-weight: 600; }
 .upgradeLink { display: block; font-size: 0.78rem; color: var(--primary); font-weight: 700; }
+
+/* ======= WEEKLY CHART ======= */
+.weeklyChart {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(0,0,0,0.04);
+}
+
+.weeklyChartTitle {
+  font-size: 0.9rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+  color: var(--text);
+}
+
+.weeklyChartBars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.25rem;
+  height: 72px;
+}
+
+.weeklyChartCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.weeklyChartBar {
+  width: 100%;
+  min-height: 8px;
+  border-radius: var(--radius-xs) var(--radius-xs) 0 0;
+  transition: height 0.4s ease;
+}
+
+.weeklyChartLabel {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.weeklyChartCount {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--primary);
+}
 
 /* ======= OVERVIEW STATS (image-based) ======= */
 .overviewGrid {
@@ -418,6 +521,9 @@
   gap: 0.4rem;
   transition: transform 0.2s, box-shadow 0.2s;
   box-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
 }
 
 .childActionPrimary:hover {

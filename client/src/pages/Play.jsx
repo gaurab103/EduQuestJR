@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useSearchParams, useNavigate, Link } from 'react-router-dom';
+import { useChildMode } from '../context/ChildModeContext';
 import { progress as progressApi } from '../api/client';
 import GameLayout from '../components/GameLayout';
 import LevelSelector from '../components/LevelSelector';
@@ -12,6 +13,41 @@ export default function Play() {
   const [searchParams] = useSearchParams();
   const childId = searchParams.get('child');
   const navigate = useNavigate();
+  const { isAdultMode, exitAdultMode } = useChildMode();
+
+  // Games are only playable in Child Mode
+  if (isAdultMode) {
+    return (
+      <div style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
+        <p style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--text-muted)' }}>
+          Games are only available in Child Mode. Switch to let your child play!
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            exitAdultMode();
+            navigate(childId ? `/play/${gameSlug}?child=${childId}` : '/games');
+          }}
+          style={{
+            padding: '0.75rem 1.5rem',
+            background: 'linear-gradient(135deg, #38bdf8, #818cf8)',
+            color: 'white',
+            fontWeight: 700,
+            border: 'none',
+            borderRadius: 'var(--radius)',
+            cursor: 'pointer',
+            fontSize: '1rem',
+          }}
+        >
+          👶 Switch to Child Mode
+        </button>
+        <br />
+        <Link to="/dashboard" style={{ display: 'inline-block', marginTop: '1rem', color: 'var(--primary)', fontWeight: 600 }}>
+          ← Back to Dashboard
+        </Link>
+      </div>
+    );
+  }
 
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(true);
