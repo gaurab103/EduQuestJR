@@ -42,9 +42,12 @@ const FEATURES = [
   { icon: '🎮', text: '70+ premium games — full library' },
   { icon: '🌟', text: '30 levels per game — all unlocked' },
   { icon: '🐻', text: 'AI Buddy chat — unlimited' },
-  { icon: '📊', text: 'Advanced parent analytics' },
+  { icon: '📊', text: 'World-class parent analytics' },
   { icon: '🎁', text: 'Exclusive stickers & badges' },
   { icon: '⏰', text: 'No daily play limits' },
+  { icon: '👶', text: 'Unlimited child profiles' },
+  { icon: '📸', text: 'Child photo avatars' },
+  { icon: '🔒', text: 'Cancel anytime — no commitment' },
 ];
 
 function PaymentButtons({ planType, onSuccess, onError }) {

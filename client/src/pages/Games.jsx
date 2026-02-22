@@ -6,6 +6,7 @@ import { useAudio } from '../context/AudioContext';
 import { games as gamesApi, children as childrenApi, ai as aiApi, challenges as challengesApi } from '../api/client';
 import DailyTasks from '../components/DailyTasks';
 import PersonalMascot from '../components/PersonalMascot';
+import ChildAvatar from '../components/ChildAvatar';
 import styles from './Games.module.css';
 
 const CATEGORY_LABELS = {
@@ -229,7 +230,7 @@ export default function Games() {
       {childList.length > 0 && (
         <div className={styles.childBanner}>
           <div className={styles.childBannerLeft}>
-            <span className={styles.childBannerAvatar}>{selectedChild?.avatarConfig?.emoji || '👤'}</span>
+            <ChildAvatar child={selectedChild} size="banner" />
             <div>
               <span className={styles.childBannerName}>Playing as {selectedChild?.name || 'Select child'}</span>
               {selectedChild && (

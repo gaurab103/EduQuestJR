@@ -6,6 +6,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { children as childrenApi, progress as progressApi, stickers as stickersApi, ai as aiApi } from '../api/client';
+import ChildAvatar from '../components/ChildAvatar';
 import { useAudio } from '../context/AudioContext';
 import styles from './MyProfile.module.css';
 
@@ -70,7 +71,7 @@ export default function MyProfile() {
       <div className={styles.heroCard}>
         <div className={styles.heroBg} />
         <div className={styles.heroContent}>
-          <div className={styles.avatarBig}>{child.avatarConfig?.emoji || '🐻'}</div>
+          <div className={styles.avatarBig}><ChildAvatar child={child} size="large" /></div>
           <h1 className={styles.heroName}>{child.name}</h1>
           <div className={styles.heroLevel}>
             <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3af.svg" alt="" className={styles.heroLevelImg} />

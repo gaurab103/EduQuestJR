@@ -143,7 +143,7 @@ export default function Settings() {
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Subscription</h2>
+        <h2 className={styles.sectionTitle}>Subscription & Billing</h2>
         <div className={styles.card}>
           <div className={styles.subRow}>
             <span>Current plan</span>
@@ -151,7 +151,15 @@ export default function Settings() {
               {user?.subscriptionStatus === 'active' ? 'Premium' : user?.subscriptionStatus === 'trial' ? 'Trial (Premium)' : 'Free'}
             </strong>
           </div>
-          <Link to="/subscription" className={styles.linkBtn}>Manage Subscription →</Link>
+          {(user?.subscriptionStatus === 'active' || user?.subscriptionStatus === 'trial') && user?.subscriptionExpiry && (
+            <p className={styles.detail}>Renews: {new Date(user.subscriptionExpiry).toLocaleDateString()}</p>
+          )}
+          <div className={styles.subActions}>
+            <Link to="/subscription" className={styles.linkBtn}>
+              {user?.subscriptionStatus === 'active' || user?.subscriptionStatus === 'trial' ? 'Manage Subscription →' : 'Upgrade to Premium →'}
+            </Link>
+          </div>
+          <p className={styles.detail}>Payments via PayPal. Cancel anytime from your PayPal account.</p>
         </div>
       </section>
 

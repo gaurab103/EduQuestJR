@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useChildMode } from '../context/ChildModeContext';
 import { children as childrenApi, progress as progressApi, challenges as challengesApi, ai as aiApi } from '../api/client';
 import AvatarPicker from '../components/AvatarPicker';
+import ChildAvatar from '../components/ChildAvatar';
 import DailyTasks from '../components/DailyTasks';
 import styles from './Dashboard.module.css';
 
@@ -65,6 +66,7 @@ export default function Dashboard() {
   const [newName, setNewName] = useState('');
   const [newAge, setNewAge] = useState(4);
   const [newAvatar, setNewAvatar] = useState('🐻');
+  const [newPhotoUrl, setNewPhotoUrl] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [addError, setAddError] = useState('');
   const [recentActivity, setRecentActivity] = useState([]);
@@ -102,11 +104,12 @@ export default function Dashboard() {
       const { child } = await childrenApi.create({
         name: newName.trim(),
         age: newAge,
-        avatarConfig: { emoji: newAvatar },
+        avatarConfig: { emoji: newAvatar, photoUrl: newPhotoUrl.trim() || undefined },
       });
       setChildList((prev) => [child, ...prev]);
       setNewName('');
       setNewAvatar('🐻');
+      setNewPhotoUrl('');
       setShowAdd(false);
       if (!selectedChildForTasks) setSelectedChildForTasks(child._id);
     } catch (err) {
@@ -428,7 +431,7 @@ export default function Dashboard() {
                       {/* Colorful header with progress ring */}
                       <div className={styles.childCardHeader}>
                         <div className={styles.childAvatarWrap} style={{ '--progress-pct': progressRingPct }}>
-                          <span className={styles.childAvatar}>{c.avatarConfig?.emoji || '👤'}</span>
+                          <ChildAvatar child={c} size="card" />
                         </div>
                         <div className={styles.childInfo}>
                           <span className={styles.childName}>{c.name}</span>
@@ -510,6 +513,14 @@ export default function Dashboard() {
                 <h3 className={styles.addFormTitle}>Add a New Learner</h3>
                 <p className={styles.addLabel}>Choose an avatar:</p>
                 <AvatarPicker value={newAvatar} onChange={setNewAvatar} size="small" />
+                <label className={styles.addLabel}>Photo URL (optional)</label>
+                <input
+                  type="url"
+                  value={newPhotoUrl}
+                  onChange={(e) => setNewPhotoUrl(e.target.value)}
+                  placeholder="https://... (paste image link)"
+                  className={styles.addInput}
+                />
                 <form onSubmit={handleAddChild} className={styles.addFormFields}>
                   <input
                     value={newName}

@@ -42,6 +42,9 @@ export default function GameLayout({ child, game, minutesLeftToday, isPremium, p
         <div className={styles.meta}>
           <span className={styles.childName}>{child?.name}</span>
           <span className={styles.level}>Level {child?.level ?? 1}</span>
+          {(child?.currentStreak || 0) > 0 && (
+            <span className={styles.streakBadge}>🔥 {child.currentStreak}</span>
+          )}
           {pct != null && (
             <div className={styles.levelBar}>
               <div className={styles.levelBarFill} style={{ width: `${pct * 100}%` }} />

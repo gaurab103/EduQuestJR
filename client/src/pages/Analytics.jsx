@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { children as childrenApi } from '../api/client';
+import ChildAvatar from '../components/ChildAvatar';
 import styles from './Analytics.module.css';
 
 const CAT_LABELS = {
@@ -55,7 +56,7 @@ export default function Analytics() {
       <Link to={`/child/${childId}`} className={styles.back}>← Back to {child.name}</Link>
 
       <div className={styles.heroBanner}>
-        <div className={styles.heroAvatar}>{child.avatarConfig?.emoji || '👤'}</div>
+        <div className={styles.heroAvatar}><ChildAvatar child={child} size="normal" /></div>
         <div className={styles.heroContent}>
           <h1 className={styles.title}>Learning Analytics</h1>
           <p className={styles.heroSub}>{child.name}&apos;s progress & insights</p>

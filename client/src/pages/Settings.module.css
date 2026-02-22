@@ -46,6 +46,10 @@
   font-size: 0.9rem;
 }
 
+.subActions {
+  margin-top: 0.5rem;
+}
+
 .pageHeader {
   display: flex;
   align-items: center;

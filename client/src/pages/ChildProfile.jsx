@@ -4,6 +4,7 @@ import { children as childrenApi, progress as progressApi, stickers as stickersA
 import { useChildMode } from '../context/ChildModeContext';
 import { useAudio } from '../context/AudioContext';
 import AvatarPicker from '../components/AvatarPicker';
+import ChildAvatar from '../components/ChildAvatar';
 import BadgeShelf from '../components/BadgeShelf';
 import styles from './ChildProfile.module.css';
 
@@ -38,6 +39,7 @@ export default function ChildProfile() {
   const [editName, setEditName] = useState('');
   const [editAge, setEditAge] = useState(4);
   const [editAvatar, setEditAvatar] = useState('🐻');
+  const [editPhotoUrl, setEditPhotoUrl] = useState('');
   const [saving, setSaving] = useState(false);
   const [aiGreeting, setAiGreeting] = useState('');
 
@@ -53,6 +55,7 @@ export default function ChildProfile() {
       setEditName(childRes.child.name);
       setEditAge(childRes.child.age);
       setEditAvatar(childRes.child.avatarConfig?.emoji || '🐻');
+      setEditPhotoUrl(childRes.child.avatarConfig?.photoUrl || '');
 
       const c = childRes.child;
       const recentAcc = progressRes.progress?.length > 0
@@ -78,7 +81,10 @@ export default function ChildProfile() {
       const { child: updated } = await childrenApi.update(childId, {
         name: editName.trim(),
         age: editAge,
-        avatarConfig: { emoji: editAvatar },
+        avatarConfig: {
+          emoji: editAvatar,
+          photoUrl: editPhotoUrl.trim() || undefined,
+        },
       });
       setChild(updated);
       setEditing(false);
@@ -113,7 +119,7 @@ export default function ChildProfile() {
       <div className={styles.profileCard}>
         <div className={styles.profileTop}>
           <div className={styles.avatarWrapper}>
-            <span className={styles.avatar}>{child.avatarConfig?.emoji || '👤'}</span>
+            <ChildAvatar child={child} size="large" />
             <span className={styles.levelBadge}>Lv {child.level}</span>
           </div>
           <div className={styles.profileInfo}>
@@ -205,7 +211,17 @@ export default function ChildProfile() {
       {editing && isAdultMode && (
         <div className={styles.editSection}>
           <h3>Edit Profile</h3>
+          <label className={styles.editLabel}>Avatar emoji</label>
           <AvatarPicker value={editAvatar} onChange={setEditAvatar} size="small" />
+          <label className={styles.editLabel}>Photo URL (optional)</label>
+          <input
+            type="url"
+            value={editPhotoUrl}
+            onChange={(e) => setEditPhotoUrl(e.target.value)}
+            className={styles.editInput}
+            placeholder="https://... (paste image link)"
+          />
+          <p className={styles.editHint}>Paste a link to your child&apos;s photo. Emoji shows if no photo.</p>
           <input
             value={editName}
             onChange={(e) => setEditName(e.target.value)}

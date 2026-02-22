@@ -253,6 +253,19 @@
 
 .editSection h3 { margin: 0; font-size: 1.1rem; }
 
+.editLabel {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.editHint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: -0.25rem 0 0;
+}
+
 .editInput {
   padding: 0.6rem 0.75rem;
   border: 2px solid #e5e7eb;

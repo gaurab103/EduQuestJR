@@ -68,6 +68,15 @@
   font-size: 0.9rem;
 }
 
+.streakBadge {
+  padding: 0.2rem 0.5rem;
+  background: linear-gradient(135deg, rgba(251, 146, 60, 0.2), rgba(251, 191, 36, 0.2));
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #ea580c;
+}
+
 .gameHeader {
   display: flex;
   flex-direction: column;

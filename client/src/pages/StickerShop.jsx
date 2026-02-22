@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { stickers as stickersApi, children as childrenApi } from '../api/client';
+import ChildAvatar from '../components/ChildAvatar';
 import { useAudio } from '../context/AudioContext';
 import styles from './StickerShop.module.css';
 
@@ -100,7 +101,7 @@ export default function StickerShop() {
 
       {childList.length > 0 && (
         <div className={styles.childBanner}>
-          <span className={styles.childAvatar}>{child?.avatarConfig?.emoji || '👤'}</span>
+          <ChildAvatar child={child} size="small" />
           <div className={styles.childInfo}>
             <span className={styles.childName}>{child?.name || 'Select child'}</span>
             {childList.length > 1 && (
